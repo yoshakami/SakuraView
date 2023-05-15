@@ -17,22 +17,24 @@ namespace SakuraView
         // Environment.Exit(0);
         public SakuraView()
         {
+            InitializeComponent();
             if (System.IO.File.Exists(execPath + "SakuraView.txt"))
             {
                 string[] config = System.IO.File.ReadAllLines(execPath + "SakuraView.txt");
                 SetAlgorithm(config[2]);
-                SetWindowPosition(config[6]);
                 upscaleMode = config[4].ToLower();
+                SetWindowPosition(config[6]);
+                SetBanner(config[8]);
 
             }
             else
             {
-                string[] new_lines = { "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Invalid, Low, NearestNeighbor}", "High", "Scale mode {Fill, Fit, Stretch, VanillaFit, VanillaFill, None", "VanillaFit", "Window Location (\"Minimized\", \"Normal\", \"Maximized\", \"Bottom_left\", \"Left\", \"Top_left\", \"Top\", \"Top_right\", \"Right\", \"Bottom_right\", \"Bottom\")", "Normal", "Banner {View, Hide}", "Hide" };
+                string[] new_lines = { "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Invalid, Low, NearestNeighbor}", "High", "Scale mode {Fill, Fit, Stretch, VanillaFit, VanillaFill, None", "VanillaFit", "Window Location Window Location (\"Minimized\", \"Normal\", \"Maximized\", \"Normal2\", \"Maximized2\")", "Normal", "Banner {View, Hide}", "Hide" };
                 upscaleMode = "vanilla";
+                FormBorderStyle = FormBorderStyle.None;
                 this.WindowState = FormWindowState.Normal;
                 System.IO.File.WriteAllLines(execPath + "SakuraView.txt", new_lines);
             }
-            InitializeComponent();
             string[] args = Environment.GetCommandLineArgs();
             Console.WriteLine(args);
             if (args.Length > 1)
@@ -41,240 +43,97 @@ namespace SakuraView
             }
 
         }
+        private void SetBanner (string banner)
+        {
+            if (banner.ToLower() == "hide")
+                FormBorderStyle = FormBorderStyle.None;
+            else
+                FormBorderStyle = FormBorderStyle.Sizable;
+        }
         private void SetAlgorithm(string upscaleAlgorithm)
         {
             switch (upscaleAlgorithm.ToLower())
             {
                 case "bicubic":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bicubic;
                     break;
                 case "bilinear":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bilinear;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Bilinear;
                     break;
                 case "default":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
                     break;
                 case "high":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
                     break;
                 case "highqualitybicubic":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                     break;
                 case "highqualitybilinear":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
                     break;
                 case "invalid":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Invalid;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Invalid;
                     break;
                 case "low":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
                     break;
                 case "nearestneighbor":
-                    pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                     break;
             }
         }
         private void SetWindowPosition(string windowPosition)
         {
-            switch (windowPosition.ToUpper())
+            switch (windowPosition.ToLower())
             {
-                case "MINIMIZED":
+                case "minimized":
                     this.WindowState = FormWindowState.Minimized;
                     break;
-                case "MAXIMIZED":
-                    this.WindowState = FormWindowState.Maximized;
+                case "maximized":
+                    WindowState = FormWindowState.Maximized;
                     break;
-                case "NORMAL":
-                    this.WindowState = FormWindowState.Normal;
-                    break;
-                case "LEFT":
+                case "normal":
                     for (byte i = 0; i < Screen.AllScreens.Length; i++)
                     {
                         if (Screen.AllScreens[i].Bounds.X == 0)
                         {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height);
+                            this.Location = Screen.AllScreens[i].Bounds.Location;
+                            break;
+                        }
+                    }
+                    break;
+                case "normal2":
+                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
+                    {
+                        if (Screen.AllScreens[i].Bounds.X != 0)
+                        {
                             this.Location = Screen.AllScreens[i].Bounds.Location;
                         }
                     }
                     break;
-                case "TOP_LEFT":
+                case "maximized2":
                     for (byte i = 0; i < Screen.AllScreens.Length; i++)
                     {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
+                        if (Screen.AllScreens[i].Bounds.X != 0)
                         {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
                             this.Location = Screen.AllScreens[i].Bounds.Location;
                         }
                     }
-                    break;
-                case "TOP":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                        }
-                    }
-                    break;
-                case "TOP_RIGHT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X + Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Y);
-                        }
-                    }
-                    break;
-                case "RIGHT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X + Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Y);
-                        }
-                    }
-                    break;
-                case "BOTTOM_RIGHT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X + Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Y + Screen.AllScreens[i].Bounds.Height / 2);
-                        }
-                    }
-                    break;
-                case "BOTTOM":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X, Screen.AllScreens[i].Bounds.Y + Screen.AllScreens[i].Bounds.Height / 2);
-                        }
-                    }
-                    break;
-                case "BOTTOM_LEFT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X, Screen.AllScreens[i].Bounds.Y + Screen.AllScreens[i].Bounds.Height / 2);
-                        }
-                    }
-                    break;
-                case "1080P":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X == 0)
-                        {
-                            this.Size = new Size(1920, 1080);
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                        }
-                    }
-                    break;
-                case "SCREEN2_LEFT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height);
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                        }
-                    }
-                    break;
-                case "SCREEN2_TOP_LEFT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                        }
-                    }
-                    break;
-                case "SCREEN2_TOP":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                        }
-                    }
-                    break;
-                case "SCREEN2_TOP_RIGHT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X + Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Y);
-                        }
-                    }
-                    break;
-                case "SCREEN2_RIGHT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X + Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Y);
-                        }
-                    }
-                    break;
-                case "SCREEN2_BOTTOM_RIGHT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X + Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Y + Screen.AllScreens[i].Bounds.Height / 2);
-                        }
-                    }
-                    break;
-                case "SCREEN2_BOTTOM":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X, Screen.AllScreens[i].Bounds.Y + Screen.AllScreens[i].Bounds.Height / 2);
-                        }
-                    }
-                    break;
-                case "SCREEN2_BOTTOM_LEFT":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(Screen.AllScreens[i].Bounds.Width / 2, Screen.AllScreens[i].Bounds.Height / 2);
-                            this.Location = new Point(Screen.AllScreens[i].Bounds.X, Screen.AllScreens[i].Bounds.Y + Screen.AllScreens[i].Bounds.Height / 2);
-                        }
-                    }
-                    break;
-                case "SCREEN2_1080P":
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
-                    {
-                        if (Screen.AllScreens[i].Bounds.X != 0)
-                        {
-                            this.Size = new Size(1920, 1080);
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                        }
-                    }
+                    WindowState = FormWindowState.Maximized;
                     break;
             }
         }
         private void LoadImage(String filePath)
         {
             string extension = Path.GetExtension(filePath).ToLower();
-            pictureBox1.Image = Image.FromFile(filePath);
-            width = pictureBox1.Image.Size.Width;
-            height = pictureBox1.Image.Size.Height;
+            SakuraBox.Image = Image.FromFile(filePath);
+            ScaleImage();
+        }
+        private void ScaleImage()
+        {
+            width = SakuraBox.Image.Size.Width;
+            height = SakuraBox.Image.Size.Height;
             widthSpan = 0;
             heightSpan = 0;
             for (byte i = 0; i < Screen.AllScreens.Length; i++)
@@ -283,11 +142,11 @@ namespace SakuraView
                 {
                     if (upscaleMode == "fill")
                     {
-                        Fill();
+                        Fill(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
                     }
                     else if (upscaleMode == "fit")  // the highest value becomes the screen bounds
                     {
-                        Fit();
+                        Fit(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
                     }
                     else if (upscaleMode == "stretch")
                     {
@@ -298,33 +157,34 @@ namespace SakuraView
                     { // upscaleMode == "none" - we downscale the image to the "fit" algorithm
                         if (upscaleMode == "vanillafill")
                         {
-                            Fill();
+                            Fill(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
                         }
                         if (upscaleMode == "vanillafit")
                         {
-                            Fit();
+                            Fit(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
                         }
                     }
-                    pictureBox1.Location = new Point(Screen.AllScreens[i].Bounds.Location.X + widthSpan, Screen.AllScreens[i].Bounds.Location.Y + heightSpan);
+                    SakuraBox.Location = new Point(Screen.AllScreens[i].Bounds.Location.X + widthSpan, Screen.AllScreens[i].Bounds.Location.Y + heightSpan);
                     break;
                 }
             }
-            pictureBox1.Size = new System.Drawing.Size(width, height);
+            this.Size = new System.Drawing.Size(width, height);
+            SakuraBox.Size = this.Size;
         }
         private void Fill(int ScreenWidth, int ScreenHeight)
         {
             if (width < height)
             {
-                decimal ratio = width / Screen.AllScreens[i].Bounds.Width;
-                width = Screen.AllScreens[i].Bounds.Width;
+                decimal ratio = width / ScreenWidth;
+                width = ScreenWidth;
                 heightSpan = height;
                 height = (int)(height * ratio);
                 heightSpan = Math.Abs(heightSpan - height) >> 1;
             }
             else
             {
-                decimal ratio = height / Screen.AllScreens[i].Bounds.Height;
-                height = Screen.AllScreens[i].Bounds.Height;
+                decimal ratio = height / ScreenHeight;
+                height = ScreenHeight;
                 widthSpan = width;
                 width = (int)(width * ratio);
                 widthSpan = Math.Abs(widthSpan - width) >> 1;
@@ -334,14 +194,14 @@ namespace SakuraView
         {
             if (width > height)
             {
-                decimal ratio = width / Screen.AllScreens[i].Bounds.Width;
-                width = Screen.AllScreens[i].Bounds.Width;
+                decimal ratio = width / ScreenWidth;
+                width = ScreenWidth;
                 height = (int)(height * ratio);
             }
             else
             {
-                decimal ratio = height / Screen.AllScreens[i].Bounds.Height;
-                height = Screen.AllScreens[i].Bounds.Height;
+                decimal ratio = height / ScreenHeight;
+                height = ScreenHeight;
                 width = (int)(width * ratio);
             }
         }
