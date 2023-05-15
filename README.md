@@ -31,7 +31,7 @@ F3: Fit\
 F4: Stretch\
 F5: VanillaFit\
 F6: VanillaFill\
-F7: None\
+F7: Center\
 F8: Minimized\
 F9: Normal\
 F10: Normal2\
@@ -44,18 +44,18 @@ D: Default\
 H: High\
 Q: HighQualityBicubic\
 J: HighQualityBilinear\
-I: Invalid\
 L: Low\
 N: NeareastNeighbor\
 \
 Escape: Quit\
 E: Empty List\
 T: Toogle Banner\
-S: Show/Stash Info\
+I: Toogle Info\
 A: Toogle Always On Top\
 X: Swap Horizontally\
 Y: Swap Vertically\
 R: Rotate ↻\
+S: Save config\
 \
 Show Images :\
 0 Middle\

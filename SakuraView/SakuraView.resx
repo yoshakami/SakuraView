@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SakuraHelp.Text" xml:space="preserve">
-    <value>F1: Toogle Help     F2: Fill     F3: Fit     F4: Stretch     F5: VanillaFit     F6: VanillaFill     F7: None     F8: Minimized     F9: Normal     F10: Normal2     F11: Maximized     F12: Maximized2
+    <value>F1: Toogle Help     F2: Fill     F3: Fit     F4: Stretch     F5: VanillaFit     F6: VanillaFill     F7: Center     F8: Minimized     F9: Normal     F10: Normal2     F11: Maximized     F12: Maximized2
 
 B: Bicubic     F: Bilinear     D: Default     H: High     Q: HighQualityBicubic     J: HighQualityBilinear     I: Invalid     L: Low     N: NeareastNeighbor
 
