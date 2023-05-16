@@ -613,27 +613,12 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.I)
             {
-                if (!info)
-                {
-                    info = true;
-                    SetInfo();
-                }
-                else
-                {
-                    info = false;
-                    SetInfo();
-                }
+                info = info != true;
+                SetInfo();
             }
             else if (e.KeyCode == Keys.A)
             {
-                if (this.TopMost == true)
-                {
-                    this.TopMost = false;
-                }
-                else
-                {
-                    this.TopMost = true;
-                }
+                this.TopMost = this.TopMost != true;
             }
             else if (e.KeyCode == Keys.X)
             {
