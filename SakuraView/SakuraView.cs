@@ -29,8 +29,9 @@ namespace SakuraView
         static int currentImage;
         static int x;
         static int y;
-        static string help;
-        static string info;
+        static bool help = false;
+        static bool info = false;
+        static bool banner = false;
         static List<string> imagePaths = new List<string>();
         static List<Image> images = new List<Image>();
         static string[] new_lines = { "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
@@ -41,7 +42,7 @@ namespace SakuraView
             "Banner {View, Hide}", "View",  // config[12]
             "Help {View, Hide}", "View",  // config[14]
             "Info {View, Hide}", "View",  // config[16]
-            "Always On Top {True, False}", "True"};  // config[18]
+            "Always On Top {True, False}", "False"};  // config[18]
         // when escape is pressed 
         // Environment.Exit(0);
         public SakuraView()
@@ -56,15 +57,13 @@ namespace SakuraView
                 SetWindowPosition(config[6]);
                 SetTextColour(config[8]);
                 SetBackgroundColour(config[10]);
-                SetBanner(config[12]);
-                help = config[14].ToLower();
-                SetHelp();
-                info = config[16].ToLower();
+                banner = config[12].ToLower() == "view";
+                SetBanner(true);
+                help = config[14].ToLower() == "view";
+                SetHelp(true);
+                info = config[16].ToLower() == "view";
                 SetInfo(true);
-                if (config[18].ToLower() == "true")
-                {
-                    this.TopMost = true;
-                }
+                this.TopMost = config[18].ToLower() == "true";
             }
             catch
             {
@@ -97,31 +96,52 @@ namespace SakuraView
             SakuraSize.ForeColor = System.Drawing.Color.FromName(textColour);
             SakuraHelp.ForeColor = System.Drawing.Color.FromName(textColour);
         }
-        private void SetBanner(string banner)
+        private void SetBanner(bool first_time = false)
         {
-            if (banner.ToLower() == "hide")
+            if (banner)
             {
                 FormBorderStyle = FormBorderStyle.None;
 
             }
-            else { 
-                FormBorderStyle = FormBorderStyle.Sizable; }
-        }
-        private void SetHelp(bool first_time=false)
-        {
-            if (help.ToLower() == "hide") { 
-                SakuraHelp.Visible = false;
-            bottomSpace += 147 + 53; }
-            else { 
-                SakuraHelp.Visible = true;
-            if (!first_time)
+            else
             {
-                bottomSpace -= 147 + 53;
-            } }
+                FormBorderStyle = FormBorderStyle.Sizable;
+            }
         }
-        private void SetInfo(bool first_time=false)
+        private void SetHelp(bool first_time = false)
         {
-            if (info.ToLower() == "hide")
+            if (!help)
+            {
+                SakuraHelp.Visible = false;
+                if (!info)
+                {
+                    bottomSpace += SakuraHelp.Height;  // add the height of SakuraHelp
+                } else
+                {
+                    bottomSpace += SakuraHelp.Height + 50;  // add the height of SakuraHelp + padding
+
+                }
+            }
+            else
+            {
+                SakuraHelp.Visible = true;
+                if (!first_time)
+                {
+                    if (!info)
+                    {
+                        bottomSpace -= SakuraHelp.Height;  // sub the height of SakuraHelp
+                    }
+                    else
+                    {
+                        bottomSpace -= SakuraHelp.Height + 50;  // sub the height of SakuraHelp + padding
+
+                    }
+                }
+            }
+        }
+        private void SetInfo(bool first_time = false)
+        {
+            if (!info)
             {
                 SakuraName.Visible = false;
                 SakuraIndex.Visible = false;
@@ -129,7 +149,7 @@ namespace SakuraView
                 SakuraDimensions.Visible = false;
                 SakuraDepth.Visible = false;
                 SakuraSize.Visible = false;
-                bottomSpace += 21 - 53;
+                bottomSpace += SakuraName.Height;
             }
             else
             {
@@ -141,7 +161,13 @@ namespace SakuraView
                 SakuraSize.Visible = true;
                 if (!first_time)
                 {
-                    bottomSpace -= 21 + 53;
+                    if (help)
+                    {
+                        bottomSpace -= SakuraName.Height + 50;
+                    } else
+                    {
+                        bottomSpace -= SakuraName.Height;
+                    }
                 }
             }
         }
@@ -360,12 +386,12 @@ namespace SakuraView
             this.Size = new System.Drawing.Size(width, height + bottomSpace);
             SakuraBox.Size = new System.Drawing.Size(width, height);
             SakuraHelp.Location = new Point(0, height);
-            SakuraName.Location = new Point(0, height + bottomSpace - 21);
-            SakuraIndex.Location = new Point(width >> 5, height + bottomSpace - 21);
-            SakuraDate.Location = new Point(width >> 4, height + bottomSpace - 21);
-            SakuraDimensions.Location = new Point(width >> 3, height + bottomSpace - 21);
-            SakuraDepth.Location = new Point(width >> 2, height + bottomSpace - 21);
-            SakuraSize.Location = new Point(width >> 1, height + bottomSpace - 21);
+            SakuraName.Location = new Point(0, height + bottomSpace - SakuraName.Height);
+            SakuraIndex.Location = new Point(width >> 5, height + bottomSpace - SakuraName.Height);
+            SakuraDate.Location = new Point(width >> 4, height + bottomSpace - SakuraName.Height);
+            SakuraDimensions.Location = new Point(width >> 3, height + bottomSpace - SakuraName.Height);
+            SakuraDepth.Location = new Point(width >> 2, height + bottomSpace - SakuraName.Height);
+            SakuraSize.Location = new Point(width >> 1, height + bottomSpace - SakuraName.Height);
         }
         private void Fill(int ScreenWidth, int ScreenHeight)
         {
@@ -439,14 +465,14 @@ namespace SakuraView
             else if (e.KeyCode == Keys.D0) { ViewImage(imagePaths.Count >> 1); }
             else if (e.KeyCode == Keys.F1)
             {
-                if (help == "hide")
+                if (!help)
                 {
-                    help = "view";
+                    help = true;
                     SetHelp();
                 }
                 else
                 {
-                    help = "hide";
+                    help = false;
                     SetHelp();
                 }
             }
@@ -566,23 +592,23 @@ namespace SakuraView
             {
                 if (this.FormBorderStyle == FormBorderStyle.None)
                 {
-                    SetBanner("view");
+                    SetBanner(true);
                 }
                 else
                 {
-                    SetBanner("hide");
+                    SetBanner(false);
                 }
             }
             else if (e.KeyCode == Keys.I)
             {
-                if (info == "hide")
+                if (!info)
                 {
-                    info = "view";
+                    info = true;
                     SetInfo();
                 }
                 else
                 {
-                    info = "hide";
+                    info = false;
                     SetInfo();
                 }
             }
