@@ -61,7 +61,7 @@
     </Compile>
     <Compile Include="Sakura.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebPWrapper.cs" />
+    <Compile Include="Webp.cs" />
     <EmbeddedResource Include="SakuraView.resx">
       <DependentUpon>SakuraView.cs</DependentUpon>
     </EmbeddedResource>

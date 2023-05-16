@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
-using WebPWrapper;
+using Webp;  // Webp.cs
 
 /* vanilla usings:
 using System;
@@ -23,7 +23,12 @@ namespace SakuraView
         static int height;
         static int widthSpan;
         static int heightSpan;
+        static int bottomSpace = 0;
+        static int screenWidth;
+        static int screenHeight;
         static int currentImage;
+        static int x;
+        static int y;
         static string help;
         static string info;
         static List<string> imagePaths = new List<string>();
@@ -55,7 +60,7 @@ namespace SakuraView
                 help = config[14].ToLower();
                 SetHelp();
                 info = config[16].ToLower();
-                SetInfo();
+                SetInfo(true);
                 if (config[18].ToLower() == "true")
                 {
                     this.TopMost = true;
@@ -95,18 +100,26 @@ namespace SakuraView
         private void SetBanner(string banner)
         {
             if (banner.ToLower() == "hide")
+            {
                 FormBorderStyle = FormBorderStyle.None;
-            else
-                FormBorderStyle = FormBorderStyle.Sizable;
+
+            }
+            else { 
+                FormBorderStyle = FormBorderStyle.Sizable; }
         }
-        private void SetHelp()
+        private void SetHelp(bool first_time=false)
         {
-            if (help.ToLower() == "hide")
+            if (help.ToLower() == "hide") { 
                 SakuraHelp.Visible = false;
-            else
+            bottomSpace += 147 + 53; }
+            else { 
                 SakuraHelp.Visible = true;
+            if (!first_time)
+            {
+                bottomSpace -= 147 + 53;
+            } }
         }
-        private void SetInfo()
+        private void SetInfo(bool first_time=false)
         {
             if (info.ToLower() == "hide")
             {
@@ -116,6 +129,7 @@ namespace SakuraView
                 SakuraDimensions.Visible = false;
                 SakuraDepth.Visible = false;
                 SakuraSize.Visible = false;
+                bottomSpace += 21 - 53;
             }
             else
             {
@@ -125,7 +139,10 @@ namespace SakuraView
                 SakuraDimensions.Visible = true;
                 SakuraDepth.Visible = true;
                 SakuraSize.Visible = true;
-
+                if (!first_time)
+                {
+                    bottomSpace -= 21 + 53;
+                }
             }
         }
         private void SetAlgorithm(string upscaleAlgorithm)
@@ -306,38 +323,49 @@ namespace SakuraView
             heightSpan = 0;
             for (byte i = 0; i < Screen.AllScreens.Length; i++)
             {
-                if (0 < this.Location.X && this.Location.X < Screen.AllScreens[i].Bounds.Width && 0 < this.Location.Y && this.Location.Y < Screen.AllScreens[i].Bounds.Height)  // finds the screen boundaries the window is currently in
+                screenWidth = Screen.AllScreens[i].Bounds.Width;
+                screenHeight = Screen.AllScreens[i].Bounds.Height;
+                x = Screen.AllScreens[i].Bounds.Location.X;
+                y = Screen.AllScreens[i].Bounds.Location.Y;
+                if (x < this.Location.X && this.Location.X < (x + screenWidth) && y < this.Location.Y && this.Location.Y < (y + screenHeight))  // finds the screen boundaries the window is currently in
                 {
                     if (upscaleMode == "fill")
                     {
-                        Fill(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
+                        Fill(screenWidth, screenHeight);
                     }
                     else if (upscaleMode == "fit")  // the highest value becomes the screen bounds
                     {
-                        Fit(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
+                        Fit(screenWidth, screenHeight);
                     }
                     else if (upscaleMode == "stretch")
                     {
-                        width = Screen.AllScreens[i].Bounds.Width;
-                        height = Screen.AllScreens[i].Bounds.Height;
+                        width = screenWidth;
+                        height = screenHeight;
                     }
-                    else if (upscaleMode != "none" && (width > Screen.AllScreens[i].Bounds.Width || height > Screen.AllScreens[i].Bounds.Height))
+                    else if (upscaleMode != "none" && (width > screenWidth || height > screenHeight))
                     { // upscaleMode == "none" - we downscale the image to the "fit" algorithm
                         if (upscaleMode == "vanillafill")
                         {
-                            Fill(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
+                            Fill(screenWidth, screenHeight);
                         }
                         if (upscaleMode == "vanillafit")
                         {
-                            Fit(Screen.AllScreens[i].Bounds.Width, Screen.AllScreens[i].Bounds.Height);
+                            Fit(screenWidth, screenHeight);
                         }
                     }
                     SakuraBox.Location = new Point(Screen.AllScreens[i].Bounds.Location.X + widthSpan, Screen.AllScreens[i].Bounds.Location.Y + heightSpan);
                     break;
                 }
             }
-            this.Size = new System.Drawing.Size(width, height);
-            SakuraBox.Size = this.Size;
+            this.Size = new System.Drawing.Size(width, height + bottomSpace);
+            SakuraBox.Size = new System.Drawing.Size(width, height);
+            SakuraHelp.Location = new Point(0, height);
+            SakuraName.Location = new Point(0, height + bottomSpace - 21);
+            SakuraIndex.Location = new Point(width >> 5, height + bottomSpace - 21);
+            SakuraDate.Location = new Point(width >> 4, height + bottomSpace - 21);
+            SakuraDimensions.Location = new Point(width >> 3, height + bottomSpace - 21);
+            SakuraDepth.Location = new Point(width >> 2, height + bottomSpace - 21);
+            SakuraSize.Location = new Point(width >> 1, height + bottomSpace - 21);
         }
         private void Fill(int ScreenWidth, int ScreenHeight)
         {
