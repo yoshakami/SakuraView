@@ -201,14 +201,6 @@ namespace SakuraView
                     break;
             }
         }
-        public Image byteArrayToImage(byte[] bytesArr)
-        {
-            using (MemoryStream memstr = new MemoryStream(bytesArr))
-            {
-                Image img = Image.FromStream(memstr);
-                return img;
-            }
-        }
         private void LoadImage(String filePath)
         {
             if (System.IO.File.Exists(filePath))
@@ -221,25 +213,16 @@ namespace SakuraView
                         file.Position = 0x08;
                         file.Read(id, 0, 4);
                     }
-                    if (id[0] == 87 && id[1] == 69 && id[2] == 66 && id[3] == 80) //Webp
+                    if (id[0] == 87 && id[1] == 69 && id[2] == 66 && id[3] == 80) // Webp
                     {
                         using (WebP webp = new WebP())
                         {
                             SakuraBox.Image = webp.Load(filePath);
-                            /*byte[] new_webp_data = webp.EncodeLossless(imageIn);
-                            width = webp.Get_width();
-                            height = webp.Get_height();
-                            // imageIn = webp.Decode(new_webp_data);
-                            webp_data = new_webp_data;*/
                         }
                     }
                     else
                     {
-
-                            SakuraBox.Image = LoadImageFromFile(filePath);
-                        // = Image.FromFile(filePath);
-                        //width = imageIn.Width;
-                        //height = imageIn.Height;
+                        SakuraBox.Image = LoadImageFromFile(filePath);
                     }
                     while (images.Count < currentImage)
                     {
@@ -249,13 +232,12 @@ namespace SakuraView
                 }
                 catch (Exception e)
                 {
-                    //System.Diagnostics.Debug.WriteLine(e.Message);
                     Console.WriteLine("Invalid input Image");
                     throw e;
                 }
             }
-            string extension = Path.GetExtension(filePath).ToLower();
-            string baseName = Path.GetFileNameWithoutExtension(filePath);
+            //string extension = Path.GetExtension(filePath).ToLower();
+            //string baseName = Path.GetFileNameWithoutExtension(filePath);
             // Extract icon from executable and set as picture box image
             //Icon icon = Icon.ExtractAssociatedIcon(filePath);
             //SakuraBox.Image = icon.ToBitmap();
@@ -292,7 +274,7 @@ namespace SakuraView
             //SakuraBox.Size = this.Size;
             ScaleImage();
         }
-        private Image LoadImageFromFile(string path)
+        private Image LoadImageFromFile(string path)  // allows the image not to be locked by the program
         {
             byte[] bytes = File.ReadAllBytes(path);
             using (MemoryStream ms = new MemoryStream(bytes))
@@ -550,6 +532,7 @@ namespace SakuraView
                 SakuraDepth.Text = "";
                 SakuraIndex.Text = "";
                 SakuraDimensions.Text = "";
+                GC.Collect(2, GCCollectionMode.Forced, false, false);
             }
             else if (e.KeyCode == Keys.T)
             {
