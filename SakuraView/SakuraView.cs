@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
+using Dynamicweb;
+using System.Net.NetworkInformation;
 // using Aspose.Imaging.ImageOptions;
 namespace SakuraView
 {
@@ -193,7 +195,7 @@ namespace SakuraView
         private void LoadImage(String filePath)
         {
             string extension = Path.GetExtension(filePath).ToLower();
-
+            string baseName = Path.GetFileNameWithoutExtension(filePath);
             // Extract icon from executable and set as picture box image
             //Icon icon = Icon.ExtractAssociatedIcon(filePath);
             //SakuraBox.Image = icon.ToBitmap();
@@ -204,10 +206,20 @@ namespace SakuraView
             {
                 IconInfo cursorInfo = iconReader.ReadIcon(filePath, IconReaderFormat.DEFAULT, false)[0];
                 pictureBox1.Image = cursorInfo.ToBitmap();
+            }*/ /*
+            Dynamicweb.Imaging.PdfImageConverter pdf = new Dynamicweb.Imaging.PdfImageConverter();
+            IEnumerable<byte[]> imageCollection = pdf.ConvertToImages(filePath);
+            foreach (byte[] image in imageCollection)
+            {
+
             }*/
 
+            Dynamicweb.Imaging.ImageEditor i = new Dynamicweb.Imaging.ImageEditor();
+            i.ImageType = Dynamicweb.Imaging.ImageType.Png;
+            i.CopyImageFile(filePath, baseName + ".png");
+
             // Load image
-            SakuraBox.Image = Image.FromFile(filePath);
+            SakuraBox.Image = Image.FromFile(baseName + ".png");
 
             // Load WebP image into picture box using Google.Webp decoder library
             //SixLabors.ImageSharp.Image.Load(filePath);
