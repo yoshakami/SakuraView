@@ -118,13 +118,54 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SakuraHelp.Text" xml:space="preserve">
-    <value>F1: Toogle Help     F2: Fill     F3: Fit     F4: Stretch     F5: VanillaFit     F6: VanillaFill     F7: Center     F8: Minimized     F9: Normal     F10: Normal2     F11: Maximized     F12: Maximized2
+    <value>F1: Toogle Help
+F2: Fill
+F3: Fit
+F4: Stretch
+F5: VanillaFit
+F6: VanillaFill
+F7: Center
+F8: Minimized
+F9: Normal
+F10: Normal2
+F11: Maximized
+F12: Maximized2
 
-B: Bicubic     F: Bilinear     D: Default     H: High     Q: HighQualityBicubic     J: HighQualityBilinear     I: Invalid     L: Low     N: NeareastNeighbor
+Show Images :
+0 Middle
+1 First
+2 Second
+3 Third
+4 Fourth
+5 Fifth
+6 Sixth
+7 Seventh
+8 Heighth
+9 Ninth
 
-Escape: Quit     E: Empty List     T: Toogle Banner     S: Show/Stash Info     A: Toogle Always On Top     X: Swap Horizontally     Y: Swap Vertically     R: Rotate ↻     G: GitHub Releases
+← Previous
+→ Next
+↑ First
+↓ Last
 
-Show Images :     0 Middle     1 First     2 Second     3 Third     4 Fourth     5 Fifth     6 Sixth     7 Seventh     8 Heighth     9 Ninth           ← Previous     → Next     ↑ First     ↓ Last</value>
+B: Bicubic
+F: Bilinear
+D: Default
+H: High
+Q: HighQualityBicubic
+J: HighQualityBilinear
+L: Low
+N: NeareastNeighbor
+
+Escape: Quit
+E: Empty List
+T: Toogle Banner
+I: Toogle Info
+A: Toogle Always On Top
+X: Swap Horizontally
+Y: Swap Vertically
+R: Rotate ↻
+S: Save config</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

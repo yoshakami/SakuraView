@@ -33,23 +33,11 @@ namespace SakuraView
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SakuraView));
-            this.SakuraBox = new PictureBoxWithInterpolationMode();
             this.SakuraInfo = new System.Windows.Forms.Label();
             this.SakuraHelp = new System.Windows.Forms.Label();
+            this.SakuraBox = new PictureBoxWithInterpolationMode();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
-            // 
-            // SakuraBox
-            // 
-            this.SakuraBox.Enabled = false;
-            this.SakuraBox.ErrorImage = null;
-            this.SakuraBox.InitialImage = null;
-            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
-            this.SakuraBox.Name = "SakuraBox";
-            this.SakuraBox.Size = new System.Drawing.Size(50, 50);
-            this.SakuraBox.TabIndex = 0;
-            this.SakuraBox.TabStop = false;
             // 
             // SakuraInfo
             // 
@@ -73,13 +61,25 @@ namespace SakuraView
             this.SakuraHelp.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraHelp.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraHelp.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraHelp.Location = new System.Drawing.Point(12, 220);
+            this.SakuraHelp.Location = new System.Drawing.Point(1055, 0);
             this.SakuraHelp.Name = "SakuraHelp";
-            this.SakuraHelp.Size = new System.Drawing.Size(1233, 147);
+            this.SakuraHelp.Size = new System.Drawing.Size(178, 1008);
             this.SakuraHelp.TabIndex = 7;
             this.SakuraHelp.Text = resources.GetString("SakuraHelp.Text");
             this.SakuraHelp.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
             this.SakuraHelp.DragEnter += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragEnter);
+            // 
+            // SakuraBox
+            // 
+            this.SakuraBox.Enabled = false;
+            this.SakuraBox.ErrorImage = null;
+            this.SakuraBox.InitialImage = null;
+            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
+            this.SakuraBox.Name = "SakuraBox";
+            this.SakuraBox.Size = new System.Drawing.Size(50, 50);
+            this.SakuraBox.TabIndex = 0;
+            this.SakuraBox.TabStop = false;
             // 
             // SakuraView
             // 
