@@ -59,15 +59,15 @@ namespace SakuraView
                 SetAlgorithm(config[2]);
                 upscaleMode = config[4].ToLower();
                 SetSizeMode();
-                SetWindowPosition(config[6]);
                 SetTextColour(config[8]);
                 SetBackgroundColour(config[10]);
                 banner = config[12].ToLower() == "view";
-                SetBanner(true);
                 help = config[14].ToLower() == "view";
-                SetHelp(true);
                 info = config[16].ToLower() == "view";
+                SetBanner(true);
+                SetHelp(true);
                 SetInfo(true);
+                SetWindowPosition(config[6]);
                 this.TopMost = config[18].ToLower() == "true";
             }
             catch
@@ -114,13 +114,14 @@ namespace SakuraView
         }
         private void SetHelp(bool init = false)
         {
-            if (!help)
+            if (help)
             {
-                SakuraHelp.Visible = false;
+                SakuraHelp.Visible = true;
                 if (!info)
                 {
                     bottomSpace += SakuraHelp.Height;  // add the height of SakuraHelp
-                } else
+                }
+                else
                 {
                     bottomSpace += SakuraHelp.Height + 50;  // add the height of SakuraHelp + padding
 
@@ -128,7 +129,7 @@ namespace SakuraView
             }
             else
             {
-                SakuraHelp.Visible = true;
+                SakuraHelp.Visible = false;
                 if (!init)
                 {
                     if (!info)
@@ -145,20 +146,21 @@ namespace SakuraView
         }
         private void SetInfo(bool init = false)
         {
-            if (!info)
+            if (info)
             {
-                SakuraInfo.Visible = false;
+                SakuraInfo.Visible = true;
                 bottomSpace += SakuraInfo.Height;
             }
             else
             {
-                SakuraInfo.Visible = true;
+                SakuraInfo.Visible = false;
                 if (!init)
                 {
                     if (help)
                     {
                         bottomSpace -= SakuraInfo.Height + 50;
-                    } else
+                    }
+                    else
                     {
                         bottomSpace -= SakuraInfo.Height;
                     }
@@ -227,6 +229,7 @@ namespace SakuraView
                     }
                     break;
                 case "maximized":
+                    if (this.WindowState == FormWindowState.Maximized) { this.WindowState = FormWindowState.Normal; }
                     for (byte i = 0; i < Screen.AllScreens.Length; i++)
                     {
                         if (Screen.AllScreens[i].Bounds.X == 0)
@@ -240,6 +243,7 @@ namespace SakuraView
                     WindowState = FormWindowState.Maximized;
                     break;
                 case "maximized2":
+                    if (this.WindowState == FormWindowState.Maximized) { this.WindowState = FormWindowState.Normal; }
                     for (byte i = 0; i < Screen.AllScreens.Length; i++)
                     {
                         if (Screen.AllScreens[i].Bounds.X != 0)
@@ -364,33 +368,38 @@ namespace SakuraView
                 screenHeight = Screen.AllScreens[i].Bounds.Height;
                 x = Screen.AllScreens[i].Bounds.Location.X;
                 y = Screen.AllScreens[i].Bounds.Location.Y;
-                if (x < this.Location.X && this.Location.X < (x + screenWidth) && y < this.Location.Y && this.Location.Y < (y + screenHeight))  // finds the screen boundaries the window is currently in
+                if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
                 {
                     if (upscaleMode == "fill")
                     {
-                        Fill(screenWidth, screenHeight);
+                        screenHeight -= topSpace + bottomSpace;
+                        Fill();
                     }
                     else if (upscaleMode == "fit")  // the highest value becomes the screen bounds
                     {
-                        Fit(screenWidth, screenHeight);
+                        screenHeight -= topSpace + bottomSpace;
+                        Fit();
                     }
                     else if (upscaleMode == "stretch")
                     {
                         width = screenWidth;
+                        screenHeight -= topSpace + bottomSpace;
                         height = screenHeight;
                     }
-                    else if (upscaleMode != "none" && (width > screenWidth || height > screenHeight))
+                    else if (upscaleMode != "none" && (width > screenWidth || height > screenHeight - topSpace - bottomSpace))
                     { // upscaleMode == "none" - we downscale the image to the "fit" algorithm
                         if (upscaleMode == "vanillafill")
                         {
-                            Fill(screenWidth, screenHeight);
+                            screenHeight -= topSpace + bottomSpace;
+                            Fill();
                         }
                         if (upscaleMode == "vanillafit")
                         {
-                            Fit(screenWidth, screenHeight);
+                            screenHeight -= topSpace + bottomSpace;
+                            Fit();
                         }
                     }
-                    SakuraBox.Location = new Point(Screen.AllScreens[i].Bounds.Location.X + widthSpan, Screen.AllScreens[i].Bounds.Location.Y + heightSpan);
+                    SakuraBox.Location = new Point(widthSpan, heightSpan);
                     break;
                 }
             }
@@ -408,39 +417,19 @@ namespace SakuraView
             SakuraHelp.Location = new Point(0, height);
             SakuraInfo.Location = new Point(0, height + bottomSpace - SakuraInfo.Height);
         }
-        private void Fill(int ScreenWidth, int ScreenHeight)
+        private void Fill()
         {
-            if (width < height)
-            {
-                decimal ratio = width / ScreenWidth;
-                width = ScreenWidth;
-                heightSpan = height;
-                height = (int)(height * ratio);
-                heightSpan = Math.Abs(heightSpan - height) >> 1;
-            }
-            else
-            {
-                decimal ratio = height / ScreenHeight;
-                height = ScreenHeight;
-                widthSpan = width;
-                width = (int)(width * ratio);
-                widthSpan = Math.Abs(widthSpan - width) >> 1;
-            }
+            decimal ratio = (decimal)screenHeight / (decimal)height;
+            height = screenHeight;
+            widthSpan = width;
+            width = (int)(width * ratio);
+            widthSpan = Math.Abs(widthSpan - width) >> 1;
         }
-        private void Fit(int ScreenWidth, int ScreenHeight)
+        private void Fit()
         {
-            if (width > height)
-            {
-                decimal ratio = width / ScreenWidth;
-                width = ScreenWidth;
-                height = (int)(height * ratio);
-            }
-            else
-            {
-                decimal ratio = height / ScreenHeight;
-                height = ScreenHeight;
-                width = (int)(width * ratio);
-            }
+            decimal ratio = (decimal)screenHeight / (decimal)height;
+            height = screenHeight;
+            width = (int)(width * ratio);
         }
         private void SakuraViewClass_DragDrop(object sender, DragEventArgs e)
         {
@@ -541,7 +530,7 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.F11)
             {
-                this.WindowState = FormWindowState.Maximized;
+                SetWindowPosition("maximized");
             }
             else if (e.KeyCode == Keys.F12)
             {
@@ -600,16 +589,8 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.T)
             {
-                if (!banner)
-                {
-                    banner = true;
-                    SetBanner();
-                }
-                else
-                {
-                    banner = false;
-                    SetBanner();
-                }
+                banner = banner != true;
+                SetBanner();
             }
             else if (e.KeyCode == Keys.I)
             {

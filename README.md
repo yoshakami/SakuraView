@@ -23,53 +23,55 @@ v0.4 dds, eps, iff, pic, pix, rgb, rla, tga, tim, xpm, and yuv support\
 v0.5 tex0, tpl, bti, brres, bmd, and u8 support
 
 ## Keyboard Shortcuts
-press F1 to show them, then F1 again to hide them. The text below is also shown in the application for people too lazy to come here.\
-\
-F1: Toogle Help\
-F2: Fill\
-F3: Fit\
-F4: Stretch\
-F5: VanillaFit\
-F6: VanillaFill\
-F7: Center\
-F8: Minimized\
-F9: Normal\
-F10: Normal2\
-F11: Maximized\
-F12: Maximized2\
-\
-B: Bicubic\
-F: Bilinear\
-D: Default\
-H: High\
-Q: HighQualityBicubic\
-J: HighQualityBilinear\
-L: Low\
-N: NeareastNeighbor\
-\
-Escape: Quit\
-E: Empty List\
-T: Toogle Banner\
-I: Toogle Info\
-A: Toogle Always On Top\
-X: Swap Horizontally\
-Y: Swap Vertically\
-R: Rotate ↻\
-S: Save config\
-\
-Show Images :\
-0 Middle\
-1 First\
-2 Second\
-3 Third\
-4 Fourth\
-5 Fifth\
-6 Sixth\
-7 Seventh\
-8 Heighth\
-9 Ninth\
-\
-← Previous\
-→ Next\
-↑ First\
-↓ Last\
+press F1 to show them, then F1 again to hide them. The text below is also shown in the application for people too lazy to come here.
+
+<pre>
+F1: Toogle Help
+F2: Fill
+F3: Fit
+F4: Stretch
+F5: VanillaFit
+F6: VanillaFill
+F7: Center
+F8: Minimized
+F9: Normal
+F10: Normal2
+F11: Maximized
+F12: Maximized2
+
+Show Images :
+0 Middle
+1 First
+2 Second
+3 Third
+4 Fourth
+5 Fifth
+6 Sixth
+7 Seventh
+8 Heighth
+9 Ninth
+
+← Previous
+→ Next
+↑ First
+↓ Last
+
+B: Bicubic
+F: Bilinear
+D: Default
+H: High
+Q: HighQualityBicubic
+J: HighQualityBilinear
+L: Low
+N: NeareastNeighbor
+
+Escape: Quit
+E: Empty List
+T: Toogle Banner
+I: Toogle Info
+A: Toogle Always On Top
+X: Swap Horizontally
+Y: Swap Vertically
+R: Rotate ↻
+S: Save config
+</pre>
