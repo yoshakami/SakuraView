@@ -3,9 +3,16 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
-using Dynamicweb;
-using System.Net.NetworkInformation;
-// using Aspose.Imaging.ImageOptions;
+using WebPWrapper;
+
+/* vanilla usings:
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.IO;
+using System.Collections.Generic;
+using WebPWrapper; */
+
 namespace SakuraView
 {
     public partial class SakuraView : Form
@@ -37,23 +44,25 @@ namespace SakuraView
             InitializeComponent();
             try
             {
-                    string[] config = System.IO.File.ReadAllLines(execPath + "SakuraView.txt");
-                    SetAlgorithm(config[2]);
-                    upscaleMode = config[4].ToLower();
-                    SetSizeMode();
-                    SetWindowPosition(config[6]);
-                    SetTextColour(config[8]);
-                    SetBackgroundColour(config[10]);
-                    SetBanner(config[12]);
-                    help = config[14].ToLower();
-                    SetHelp();
-                    info = config[16].ToLower();
-                    SetInfo();
-                    if (config[18].ToLower() == "true")
-                    {
-                        this.TopMost = true;
-                    }
-            } catch {
+                string[] config = System.IO.File.ReadAllLines(execPath + "SakuraView.txt");
+                SetAlgorithm(config[2]);
+                upscaleMode = config[4].ToLower();
+                SetSizeMode();
+                SetWindowPosition(config[6]);
+                SetTextColour(config[8]);
+                SetBackgroundColour(config[10]);
+                SetBanner(config[12]);
+                help = config[14].ToLower();
+                SetHelp();
+                info = config[16].ToLower();
+                SetInfo();
+                if (config[18].ToLower() == "true")
+                {
+                    this.TopMost = true;
+                }
+            }
+            catch
+            {
 
                 upscaleMode = "vanillafit";
                 this.WindowState = FormWindowState.Normal;
@@ -192,8 +201,59 @@ namespace SakuraView
                     break;
             }
         }
+        public Image byteArrayToImage(byte[] bytesArr)
+        {
+            using (MemoryStream memstr = new MemoryStream(bytesArr))
+            {
+                Image img = Image.FromStream(memstr);
+                return img;
+            }
+        }
         private void LoadImage(String filePath)
         {
+            if (System.IO.File.Exists(filePath))
+            {
+                try
+                {
+                    byte[] id = new byte[4];
+                    using (System.IO.FileStream file = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                    {
+                        file.Position = 0x08;
+                        file.Read(id, 0, 4);
+                    }
+                    if (id[0] == 87 && id[1] == 69 && id[2] == 66 && id[3] == 80) //Webp
+                    {
+                        using (WebP webp = new WebP())
+                        {
+                            SakuraBox.Image = webp.Load(filePath);
+                            /*byte[] new_webp_data = webp.EncodeLossless(imageIn);
+                            width = webp.Get_width();
+                            height = webp.Get_height();
+                            // imageIn = webp.Decode(new_webp_data);
+                            webp_data = new_webp_data;*/
+                        }
+                    }
+                    else
+                    {
+
+                            SakuraBox.Image = LoadImageFromFile(filePath);
+                        // = Image.FromFile(filePath);
+                        //width = imageIn.Width;
+                        //height = imageIn.Height;
+                    }
+                    while (images.Count < currentImage)
+                    {
+                        images.Add(null);
+                    }
+                    images.Add(SakuraBox.Image);
+                }
+                catch (Exception e)
+                {
+                    //System.Diagnostics.Debug.WriteLine(e.Message);
+                    Console.WriteLine("Invalid input Image");
+                    throw e;
+                }
+            }
             string extension = Path.GetExtension(filePath).ToLower();
             string baseName = Path.GetFileNameWithoutExtension(filePath);
             // Extract icon from executable and set as picture box image
@@ -211,15 +271,11 @@ namespace SakuraView
             IEnumerable<byte[]> imageCollection = pdf.ConvertToImages(filePath);
             foreach (byte[] image in imageCollection)
             {
-
+                SakuraBox.Image = byteArrayToImage(image);
             }*/
 
-            Dynamicweb.Imaging.ImageEditor i = new Dynamicweb.Imaging.ImageEditor();
-            i.ImageType = Dynamicweb.Imaging.ImageType.Png;
-            i.CopyImageFile(filePath, baseName + ".png");
-
             // Load image
-            SakuraBox.Image = Image.FromFile(baseName + ".png");
+            // SakuraBox.Image = Image.FromFile(baseName + ".png");
 
             // Load WebP image into picture box using Google.Webp decoder library
             //SixLabors.ImageSharp.Image.Load(filePath);
@@ -235,6 +291,14 @@ namespace SakuraView
             Console.WriteLine("hello");
             //SakuraBox.Size = this.Size;
             ScaleImage();
+        }
+        private Image LoadImageFromFile(string path)
+        {
+            byte[] bytes = File.ReadAllBytes(path);
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                return Image.FromStream(ms);
+            }
         }
         private void SetSizeMode()
         {

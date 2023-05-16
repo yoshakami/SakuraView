@@ -120,6 +120,7 @@
     </Compile>
     <Compile Include="Sakura.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebPWrapper.cs" />
     <EmbeddedResource Include="SakuraView.resx">
       <DependentUpon>SakuraView.cs</DependentUpon>
     </EmbeddedResource>
@@ -145,6 +146,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libwebp_x64.dll" />
+    <Content Include="libwebp_x86.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
