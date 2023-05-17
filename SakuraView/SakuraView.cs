@@ -314,6 +314,7 @@ namespace SakuraView
                         images.Add(null);
                     }
                     images.Add(SakuraBox.Image);
+                    padding = "";
                     SakuraInfo.Text = Path.GetFileName(filePath) + padding + fileSize + padding + SakuraBox.Image.PixelFormat + padding + SakuraBox.Image.Width + "x" + SakuraBox.Image.Height + padding + File.GetCreationTime(filePath) + padding + upscaleMode + padding + upscaleAlgorithm + padding + (currentImage + 1) + " / " + (imagesPath.Count + 1);
 
                     while (SakuraInfo.Width < this.ClientSize.Width - 20)
