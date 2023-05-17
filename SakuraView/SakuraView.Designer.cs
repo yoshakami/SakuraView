@@ -47,7 +47,7 @@ namespace SakuraView
             this.SakuraInfo.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraInfo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraInfo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraInfo.Location = new System.Drawing.Point(12, 420);
+            this.SakuraInfo.Location = new System.Drawing.Point(16, 517);
             this.SakuraInfo.Margin = new System.Windows.Forms.Padding(0);
             this.SakuraInfo.Name = "SakuraInfo";
             this.SakuraInfo.Size = new System.Drawing.Size(93, 21);
@@ -63,7 +63,8 @@ namespace SakuraView
             this.SakuraSideHelp.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraSideHelp.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraSideHelp.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraSideHelp.Location = new System.Drawing.Point(1055, 0);
+            this.SakuraSideHelp.Location = new System.Drawing.Point(1407, 0);
+            this.SakuraSideHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.SakuraSideHelp.Name = "SakuraSideHelp";
             this.SakuraSideHelp.Size = new System.Drawing.Size(178, 1008);
             this.SakuraSideHelp.TabIndex = 7;
@@ -78,7 +79,8 @@ namespace SakuraView
             this.SakuraHelp.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraHelp.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraHelp.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraHelp.Location = new System.Drawing.Point(12, 362);
+            this.SakuraHelp.Location = new System.Drawing.Point(16, 446);
+            this.SakuraHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.SakuraHelp.Name = "SakuraHelp";
             this.SakuraHelp.Size = new System.Drawing.Size(1079, 42);
             this.SakuraHelp.TabIndex = 8;
@@ -93,25 +95,27 @@ namespace SakuraView
             this.SakuraBox.Location = new System.Drawing.Point(0, 0);
             this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
             this.SakuraBox.Name = "SakuraBox";
-            this.SakuraBox.Size = new System.Drawing.Size(50, 50);
+            this.SakuraBox.Size = new System.Drawing.Size(67, 62);
             this.SakuraBox.TabIndex = 0;
             this.SakuraBox.TabStop = false;
             // 
             // SakuraView
             // 
             this.AllowDrop = true;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(1245, 450);
+            this.ClientSize = new System.Drawing.Size(1660, 554);
             this.Controls.Add(this.SakuraHelp);
             this.Controls.Add(this.SakuraSideHelp);
             this.Controls.Add(this.SakuraInfo);
             this.Controls.Add(this.SakuraBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "SakuraView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SakuraView";
+            this.Load += new System.EventHandler(this.SakuraView_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);

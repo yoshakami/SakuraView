@@ -18,11 +18,13 @@ namespace SakuraView
     public partial class SakuraView : Form
     {
         static readonly string execPath = AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/");
-        static string upscaleMode;
-        static string windowPosition;
-        static string upscaleAlgorithm;
+        static string upscaleMode = "vanillafit";
+        static string windowPosition = "normal";
         static int width;
         static int height;
+        static string upscaleAlgorithm = "high";
+        static decimal widthRatio;
+        static decimal heightRatio;
         static int widthSpan;
         static int heightSpan;
         static int bottomSpace = 0;
@@ -31,16 +33,18 @@ namespace SakuraView
         static int screenHeight;
         static int currentImage;
         static int bannerHeight;
+        static byte i;
+        static byte j;
         static int x;
         static int y;
+        static int z;
         static bool windowFound;
-        static bool help = false;
-        static bool info = false;
-        static bool banner = false;
+        static bool help = true;
+        static bool info = true;
+        static bool banner = true;
         static byte currentScreen = 0;
         static List<string> imagePaths = new List<string>();
         static List<Image> images = new List<Image>();
-        static List<byte[]> test = new List<byte[]>();
         static string[] txt = { "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
             "Scale mode {Fill, Fit, Stretch, VanillaFit, VanillaFill, Center}","VanillaFit",  // config[4]
             "Window Location Window Location {Minimized, Normal, Maximized, Normal2, Maximized2}", "Normal",  // config[6]
@@ -78,7 +82,6 @@ namespace SakuraView
             catch
             {
                 // if the program doesn't have the rights to read, then load default config
-                upscaleMode = "vanillafit";
                 // this.WindowState = FormWindowState.Normal;
             }
             string[] args = Environment.GetCommandLineArgs();
@@ -86,10 +89,11 @@ namespace SakuraView
             if (args.Length > 1)
             {
                 LoadImage(args[1]);
+                imagePaths.Add(null);
             }
-            for (int i = 2; i < args.Length; i++)
+            for (z = 2; z < args.Length; z++)
             {
-                imagePaths.Add(args[i]);
+                imagePaths.Add(args[z]);
             }
         }
         private void SetBackgroundColour(string backgroundColour)
@@ -211,7 +215,7 @@ namespace SakuraView
                     break;
                 case "normal":
                     WindowState = FormWindowState.Normal;
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
+                    for (i = 0; i < Screen.AllScreens.Length; i++)
                     {
                         if (Screen.AllScreens[i].Bounds.X == 0)
                         {
@@ -223,7 +227,7 @@ namespace SakuraView
                     break;
                 case "normal2":
                     WindowState = FormWindowState.Normal;
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
+                    for (i = 0; i < Screen.AllScreens.Length; i++)
                     {
                         if (Screen.AllScreens[i].Bounds.X != 0)
                         {
@@ -235,7 +239,7 @@ namespace SakuraView
                     break;
                 case "maximized":
                     if (this.WindowState == FormWindowState.Maximized) { this.WindowState = FormWindowState.Normal; }
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
+                    for (i = 0; i < Screen.AllScreens.Length; i++)
                     {
                         if (Screen.AllScreens[i].Bounds.X == 0)
                         {
@@ -248,7 +252,7 @@ namespace SakuraView
                     break;
                 case "maximized2":
                     if (this.WindowState == FormWindowState.Maximized) { this.WindowState = FormWindowState.Normal; }
-                    for (byte i = 0; i < Screen.AllScreens.Length; i++)
+                    for (i = 0; i < Screen.AllScreens.Length; i++)
                     {
                         if (Screen.AllScreens[i].Bounds.X != 0)
                         {
@@ -366,11 +370,12 @@ namespace SakuraView
             widthSpan = 0;
             heightSpan = 0;
             windowFound = false;
-            for (byte i = 0; i < Screen.AllScreens.Length; i++)
+            for (i = 0; i < Screen.AllScreens.Length; i++)
             {
-                screenWidth = Screen.AllScreens[i].Bounds.Width;
-                screenHeight = Screen.AllScreens[i].Bounds.Height;
-                bannerHeight = screenHeight - this.ClientSize.Height;
+                screenWidth = this.ClientSize.Width;
+                screenHeight = this.ClientSize.Height;
+                if (this.WindowState == FormWindowState.Maximized)
+                    bannerHeight = Screen.AllScreens[i].Bounds.Height - this.ClientSize.Height;
                 x = Screen.AllScreens[i].Bounds.Location.X;
                 y = Screen.AllScreens[i].Bounds.Location.Y;
                 if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
@@ -381,11 +386,12 @@ namespace SakuraView
             }
             if (!windowFound)
             {
-                screenWidth = Screen.AllScreens[currentScreen].Bounds.Width;
-                screenHeight = Screen.AllScreens[currentScreen].Bounds.Height;
+                screenWidth = this.ClientSize.Width;
+                screenHeight = this.ClientSize.Height;
                 x = Screen.AllScreens[currentScreen].Bounds.Location.X;
                 y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
-                bannerHeight = screenHeight - this.ClientSize.Height;
+                if (this.WindowState == FormWindowState.Maximized)
+                    bannerHeight = Screen.AllScreens[currentScreen].Bounds.Height - this.ClientSize.Height;
             }
             if (upscaleMode == "fill")
             {
@@ -397,7 +403,7 @@ namespace SakuraView
                 setImageBounds();
                 Fit();
             }
-            else if (upscaleMode == "stretch")
+            else if (upscaleMode == "stretch" || upscaleMode == "center")
             {
                 setImageBounds();
                 height = screenHeight;
@@ -416,7 +422,7 @@ namespace SakuraView
                     Fit();
                 }
             }
-            SakuraBox.Location = new Point(widthSpan, heightSpan);
+            SakuraBox.Location = new Point(-widthSpan, -heightSpan);
             SakuraBox.Size = new System.Drawing.Size(width + 1, height + 1);  // for some reason there's a pixel of margin.
             Console.WriteLine(SakuraBox.Size);
             Console.WriteLine(SakuraBox.Location);
@@ -437,6 +443,9 @@ namespace SakuraView
             else
                 screenHeight -= bottomSpace;
             screenWidth -= rightSpace;
+
+            widthRatio = (decimal)screenWidth / (decimal)width;
+            heightRatio = (decimal)screenHeight / (decimal)height;
         }
         private void UpdateLayout()
         {
@@ -462,27 +471,51 @@ namespace SakuraView
         }
         private void Fill()
         {
-            decimal ratio = (decimal)screenHeight / (decimal)height;
-            height = screenHeight;
-            widthSpan = width;
-            width = (int)(width * ratio);
-            widthSpan = Math.Abs(widthSpan - width) >> 1;
+            if (widthRatio < heightRatio)
+            {
+                height = screenHeight;
+                widthSpan = width;
+                width = (int)(width * heightRatio);
+                widthSpan = Math.Abs(widthSpan - width) >> 1;
+            } else
+            {
+                width = screenWidth;
+                heightSpan = height;
+                height = (int)(height * widthRatio);
+                heightSpan = Math.Abs(heightSpan - height) >> 1;
+            }
         }
         private void Fit()
         {
-            decimal ratio = (decimal)screenHeight / (decimal)height;
-            height = screenHeight;
-            width = (int)(width * ratio);
+            if (widthRatio < heightRatio)
+            {
+                height = screenHeight;
+                width = (int)(width * widthRatio);
+            }
+            else
+            {
+                width = screenWidth;
+                height = (int)(height * heightRatio);
+            }
         }
         private void SakuraViewClass_DragDrop(object sender, DragEventArgs e)
         {
             string[] file = (string[])e.Data.GetData(DataFormats.FileDrop);  // gets all the files or folders name that were dragged in an array, but I'll only use the first
             if (file != null) // prevent crashes if it's for example a google chrome favourite that was dragged
             {
-                bool isFolder = System.IO.File.GetAttributes(file[0]).HasFlag(System.IO.FileAttributes.Directory);
-                if (!isFolder)  // that means it's a file.
+                if (!System.IO.File.GetAttributes(file[0]).HasFlag(System.IO.FileAttributes.Directory))
                 {
+                    if (images.Count > 0)
+                        currentImage++;
                     LoadImage(file[0]);
+                    imagePaths.Add(null);
+                }
+                for (z = 1; z < file.Length; z++)
+                {
+                    if (!System.IO.File.GetAttributes(file[z]).HasFlag(System.IO.FileAttributes.Directory))  // that means it's a file.
+                    {
+                        imagePaths.Add(file[z]);
+                    }
                 }
             }
         }
@@ -496,7 +529,7 @@ namespace SakuraView
         {
             if (imageNumber < 0)
             {
-                if (images.Count > 0)
+                if (images.Count > 0 && currentImage != 0)
                 {
                     currentImage = 0;
                     SakuraBox.Image = images[0];
@@ -514,6 +547,11 @@ namespace SakuraView
                     currentImage = imageNumber;
                     LoadImage(imagePaths[imageNumber]);
                 }
+            }
+            else if (imageNumber < imagePaths.Count)
+            {
+                currentImage = imageNumber;
+                LoadImage(imagePaths[imageNumber]);
             }
         }
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
@@ -732,13 +770,6 @@ namespace SakuraView
             else if (e.KeyCode == Keys.Enter)
             {
                 ScaleImage();
-            }
-            else if (e.KeyCode == Keys.Back)
-            {
-                for (int i = 0; i < 123456789; i++)
-                {
-                    test.Add(ImageToByteArray(SakuraBox.Image));
-                }
             }
         }
     }
