@@ -35,7 +35,6 @@ namespace SakuraView
         static int screenWidth;
         static int screenHeight;
         static int currentImage;
-        static int bannerHeight;
         static byte i;
         static byte j;
         static int x;
@@ -121,6 +120,8 @@ namespace SakuraView
         }
         private void SetBanner()
         {
+            if (this.WindowState == FormWindowState.Maximized) 
+                this.WindowState = FormWindowState.Normal; 
             if (banner)
             {
                 FormBorderStyle = FormBorderStyle.Sizable;
@@ -430,10 +431,6 @@ namespace SakuraView
             {
                 screenWidth = this.ClientSize.Width;
                 screenHeight = this.ClientSize.Height;
-                if (this.WindowState == FormWindowState.Maximized)
-                    bannerHeight = Screen.AllScreens[i].Bounds.Height - this.ClientSize.Height;
-                if (bannerHeight > this.Height - this.ClientSize.Height)
-                    bannerHeight = this.Height - this.ClientSize.Height;
                 x = Screen.AllScreens[i].Bounds.Location.X;
                 y = Screen.AllScreens[i].Bounds.Location.Y;
                 if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
@@ -448,10 +445,6 @@ namespace SakuraView
                 screenHeight = this.ClientSize.Height;
                 x = Screen.AllScreens[currentScreen].Bounds.Location.X;
                 y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
-                if (this.WindowState == FormWindowState.Maximized)
-                    bannerHeight = Screen.AllScreens[currentScreen].Bounds.Height - this.ClientSize.Height;
-                if (bannerHeight > this.Height - this.ClientSize.Height)
-                    bannerHeight = this.Height - this.ClientSize.Height;
             }
             if (upscaleMode == "fill")
             {
@@ -469,7 +462,7 @@ namespace SakuraView
                 height = screenHeight;
                 width = screenWidth;
             }
-            else if (upscaleMode != "none" && (width > screenWidth || height > screenHeight - bannerHeight - bottomSpace))
+            else if (upscaleMode != "none" && (width > screenWidth || height > screenHeight - bottomSpace))
             { // upscaleMode == "none" - we downscale the image to the "fit" algorithm
                 if (upscaleMode == "vanillafill")
                 {
@@ -497,10 +490,7 @@ namespace SakuraView
         }
         private void setImageBounds()
         {
-            if (banner)
-                screenHeight -= bannerHeight + bottomSpace;
-            else
-                screenHeight -= bottomSpace;
+            screenHeight -= bottomSpace;
             screenWidth -= rightSpace;
 
             widthRatio = (decimal)screenWidth / (decimal)width;
@@ -508,7 +498,6 @@ namespace SakuraView
         }
         private void UpdateLayout()
         {
-            // this.ClientSize = new System.Drawing.Size(width + rightSpace, height + bannerHeight + bottomSpace);
             SakuraSideHelp.Location = new Point(width, 0);
             SakuraHelp.Location = new Point(0, height);
             SakuraInfo.Location = new Point(0, height + bottomSpace - SakuraInfo.Height);
@@ -516,17 +505,9 @@ namespace SakuraView
         private void UpdateLayoutMaximized()
         {
             this.Location = Screen.AllScreens[currentScreen].Bounds.Location;
-            if (banner)
-            {
-                SakuraHelp.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height - 35 - SakuraHelp.Height - bannerHeight);
-                SakuraInfo.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height - bannerHeight);
-            }
-            else
-            {
-                SakuraHelp.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height - 35 - SakuraHelp.Height);
-                SakuraInfo.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height);
-            }
-            SakuraSideHelp.Location = new Point(Screen.AllScreens[currentScreen].Bounds.Width - SakuraSideHelp.Width, 0);
+            SakuraHelp.Location = new Point(0, this.ClientSize.Height - SakuraInfo.Height - 35 - SakuraHelp.Height);
+            SakuraInfo.Location = new Point(0, this.ClientSize.Height - SakuraInfo.Height);
+            SakuraSideHelp.Location = new Point(this.ClientSize.Width - SakuraSideHelp.Width, 0);
         }
         private void Fill()
         {
