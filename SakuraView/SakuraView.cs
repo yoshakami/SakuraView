@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Webp;  // Webp.cs
 using System.Threading.Tasks;
 using System.Net.NetworkInformation;
+using System.Globalization;
 
 /* vanilla usings:
 using System;
@@ -49,9 +50,11 @@ namespace SakuraView
         static byte currentScreen = 0;
         static string padding = "    ";
         string currentInfo;
+        string specifier = "F";
+        CultureInfo culture = CultureInfo.CreateSpecificCulture("en-CA");
         static List<Image> images = new List<Image>();
         static List<string> imagesPath = new List<string>();
-        static List<string> imagesInfo = new List<string>();
+        static List<string[]> imagesInfo = new List<string[]>();
 
         static string[] txt = { "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
             "Scale mode {Fill, Fit, Stretch, VanillaFit, VanillaFill, Center}","VanillaFit",  // config[4]
@@ -260,7 +263,6 @@ namespace SakuraView
                         if (Screen.AllScreens[i].Bounds.X == 0)
                         {
                             currentScreen = i;
-                            UpdateLayoutMaximized();
                             break;
                         }
                     }
@@ -278,7 +280,6 @@ namespace SakuraView
                         if (Screen.AllScreens[i].Bounds.X != 0)
                         {
                             currentScreen = i;
-                            UpdateLayoutMaximized();
                             break;
                         }
                     }
@@ -314,16 +315,8 @@ namespace SakuraView
                         images.Add(null);
                     }
                     images.Add(SakuraBox.Image);
-                    padding = "";
-                    SakuraInfo.Text = Path.GetFileName(filePath) + padding + fileSize + padding + SakuraBox.Image.PixelFormat + padding + SakuraBox.Image.Width + "x" + SakuraBox.Image.Height + padding + File.GetCreationTime(filePath) + padding + upscaleMode + padding + upscaleAlgorithm + padding + (currentImage + 1) + " / " + (imagesPath.Count + 1);
-
-                    while (SakuraInfo.Width < this.ClientSize.Width - 20)
-                    {
-                        padding += " ";
-                        SakuraInfo.Text = Path.GetFileName(filePath) + padding + fileSize + padding + SakuraBox.Image.PixelFormat + padding + SakuraBox.Image.Width + "x" + SakuraBox.Image.Height + padding + File.GetCreationTime(filePath) + padding + upscaleMode + padding + upscaleAlgorithm + padding + (currentImage + 1) + " / " + (imagesPath.Count + 1);
-                    }
-                    imagesInfo.Add(SakuraInfo.Text.ToString());
-                    Console.WriteLine(padding.Length);
+                    string[] pictureInfo = { Path.GetFileName(filePath), GetFileSize(), SakuraBox.Image.PixelFormat.ToString(), SakuraBox.Image.Width + "x" + SakuraBox.Image.Height, File.GetCreationTime(filePath).ToString(), upscaleMode, upscaleAlgorithm, (currentImage + 1) + " / " + (imagesPath.Count + 1) };
+                    imagesInfo.Add(pictureInfo);
                 }
                 catch (Exception e)
                 {
@@ -368,6 +361,37 @@ namespace SakuraView
             Console.WriteLine("hello");
             ScaleImage();
         }
+        private string GetFileSize()
+        {
+            if ((fileSize >> 10) == 0)
+                return fileSize + " b";
+            else if ((fileSize >> 20) == 0)
+                return ((double)fileSize / 1024.0).ToString(specifier, culture) + " KB";
+            else if ((fileSize >> 30) == 0)
+                return ((double)fileSize / 1048576.0).ToString(specifier, culture) + " MB";
+            else if ((fileSize >> 40) == 0)
+                return ((double)fileSize / 1073741824.0).ToString(specifier, culture) + " GB";
+            else
+                return ((double)fileSize / 1099511627776.0).ToString(specifier, culture) + " TB";
+        }
+        private void LoadInfo()
+        {
+            SakuraHidden.Text = "";
+            padding = "";
+
+            while (SakuraHidden.Width < this.ClientSize.Width - 20)
+            {
+                padding += " ";
+                SakuraHidden.Text = "";
+                for (int i = 0; i < imagesInfo[currentImage].Length - 1; i++)
+                {
+                    SakuraHidden.Text += imagesInfo[currentImage][i] + padding;
+                }
+                SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
+            }
+            Console.WriteLine(padding.Length);
+            SakuraInfo.Text = SakuraHidden.Text;
+        }
         private Image LoadImageFromFile(string path)  // allows the image not to be locked by the program
         {
             byte[] bytes = File.ReadAllBytes(path);
@@ -396,6 +420,7 @@ namespace SakuraView
         private void ScaleImage()
         {
             if (SakuraBox.Image == null) { return; }
+            LoadInfo();
             width = SakuraBox.Image.Size.Width;
             height = SakuraBox.Image.Size.Height;
             widthSpan = 0;
@@ -407,6 +432,8 @@ namespace SakuraView
                 screenHeight = this.ClientSize.Height;
                 if (this.WindowState == FormWindowState.Maximized)
                     bannerHeight = Screen.AllScreens[i].Bounds.Height - this.ClientSize.Height;
+                if (bannerHeight > this.Height - this.ClientSize.Height)
+                    bannerHeight = this.Height - this.ClientSize.Height;
                 x = Screen.AllScreens[i].Bounds.Location.X;
                 y = Screen.AllScreens[i].Bounds.Location.Y;
                 if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
@@ -423,6 +450,8 @@ namespace SakuraView
                 y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
                 if (this.WindowState == FormWindowState.Maximized)
                     bannerHeight = Screen.AllScreens[currentScreen].Bounds.Height - this.ClientSize.Height;
+                if (bannerHeight > this.Height - this.ClientSize.Height)
+                    bannerHeight = this.Height - this.ClientSize.Height;
             }
             if (upscaleMode == "fill")
             {
@@ -465,7 +494,6 @@ namespace SakuraView
             {
                 UpdateLayoutMaximized();
             }
-
         }
         private void setImageBounds()
         {
@@ -565,7 +593,7 @@ namespace SakuraView
                 {
                     currentImage = 0;
                     SakuraBox.Image = images[currentImage];
-                    SakuraInfo.Text = imagesInfo[currentImage];
+                    LoadInfo();
                 }
 
             }
@@ -575,7 +603,7 @@ namespace SakuraView
                 {
                     currentImage = imageNumber;
                     SakuraBox.Image = images[currentImage];
-                    SakuraInfo.Text = imagesInfo[currentImage];
+                    LoadInfo();
                 }
                 else if (imageNumber < imagesPath.Count)
                 {

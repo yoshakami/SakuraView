@@ -36,6 +36,7 @@ namespace SakuraView
             this.SakuraInfo = new System.Windows.Forms.Label();
             this.SakuraSideHelp = new System.Windows.Forms.Label();
             this.SakuraHelp = new System.Windows.Forms.Label();
+            this.SakuraHidden = new System.Windows.Forms.Label();
             this.SakuraBox = new PictureBoxWithInterpolationMode();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
@@ -86,6 +87,21 @@ namespace SakuraView
             this.SakuraHelp.TabIndex = 8;
             this.SakuraHelp.Text = resources.GetString("SakuraHelp.Text");
             // 
+            // SakuraHidden
+            // 
+            this.SakuraHidden.AllowDrop = true;
+            this.SakuraHidden.AutoSize = true;
+            this.SakuraHidden.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.SakuraHidden.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.SakuraHidden.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.SakuraHidden.Location = new System.Drawing.Point(0, 100);
+            this.SakuraHidden.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.SakuraHidden.Name = "SakuraHidden";
+            this.SakuraHidden.Size = new System.Drawing.Size(108, 21);
+            this.SakuraHidden.TabIndex = 9;
+            this.SakuraHidden.Text = "SakuraHidden";
+            this.SakuraHidden.Visible = false;
+            // 
             // SakuraBox
             // 
             this.SakuraBox.Enabled = false;
@@ -106,13 +122,14 @@ namespace SakuraView
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(1660, 554);
+            this.Controls.Add(this.SakuraHidden);
             this.Controls.Add(this.SakuraHelp);
             this.Controls.Add(this.SakuraSideHelp);
             this.Controls.Add(this.SakuraInfo);
             this.Controls.Add(this.SakuraBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MinimumSize = new System.Drawing.Size(1, 1);
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MinimumSize = new System.Drawing.Size(18, 47);
             this.Name = "SakuraView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SakuraView";
@@ -131,6 +148,7 @@ namespace SakuraView
         private Label SakuraInfo;
         private Label SakuraSideHelp;
         private Label SakuraHelp;
+        private Label SakuraHidden;
     }
 }
 
