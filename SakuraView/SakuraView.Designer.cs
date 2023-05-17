@@ -112,10 +112,11 @@ namespace SakuraView
             this.Controls.Add(this.SakuraBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MinimumSize = new System.Drawing.Size(1, 1);
             this.Name = "SakuraView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SakuraView";
-            this.Load += new System.EventHandler(this.SakuraView_Load);
+            this.ClientSizeChanged += new System.EventHandler(this.SakuraView_ClientSizeChanged);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
