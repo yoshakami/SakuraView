@@ -39,16 +39,16 @@ F11: Maximized
 F12: Maximized2
 
 Show Images :
-0 Middle
-1 First
-2 Second
-3 Third
-4 Fourth
-5 Fifth
-6 Sixth
-7 Seventh
-8 Heighth
-9 Ninth
+0 First
+1 10%
+2 20%
+3 30%
+4 40%
+5 Middle
+6 60%
+7 70%
+8 80%
+9 90%
 
 ← Previous
 → Next
@@ -65,6 +65,7 @@ L: Low
 N: NeareastNeighbor
 
 Escape: Quit
+Enter: Refresh
 S: Save config
 E: Empty List
 T: Toogle Banner

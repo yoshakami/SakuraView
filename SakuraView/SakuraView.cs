@@ -40,6 +40,7 @@ namespace SakuraView
         static byte currentScreen = 0;
         static List<string> imagePaths = new List<string>();
         static List<Image> images = new List<Image>();
+        static List<byte[]> test = new List<byte[]>();
         static string[] txt = { "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
             "Scale mode {Fill, Fit, Stretch, VanillaFit, VanillaFill, Center}","VanillaFit",  // config[4]
             "Window Location Window Location {Minimized, Normal, Maximized, Normal2, Maximized2}", "Normal",  // config[6]
@@ -86,7 +87,10 @@ namespace SakuraView
             {
                 LoadImage(args[1]);
             }
-
+            for (int i = 2; i < args.Length; i++)
+            {
+                imagePaths.Add(args[i]);
+            }
         }
         private void SetBackgroundColour(string backgroundColour)
         {
@@ -419,7 +423,11 @@ namespace SakuraView
             if (this.WindowState != FormWindowState.Maximized)
             {
                 UpdateLayout();
-            } else { UpdateLayoutMaximized(); }
+            }
+            else
+            {
+                UpdateLayoutMaximized();
+            }
 
         }
         private void setImageBounds()
@@ -486,22 +494,49 @@ namespace SakuraView
 
         private void ViewImage(int imageNumber)
         {
+            if (imageNumber < 0)
+            {
+                if (images.Count > 0)
+                {
+                    currentImage = 0;
+                    SakuraBox.Image = images[0];
+                }
 
+            }
+            else if (images.Count < imageNumber)
+            {
+                if (images[imageNumber] != null)
+                {
+                    SakuraBox.Image = images[imageNumber];
+                }
+                else if (imageNumber < imagePaths.Count)
+                {
+                    currentImage = imageNumber;
+                    LoadImage(imagePaths[imageNumber]);
+                }
+            }
         }
-
+        public byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        {
+            using (var ms = new MemoryStream())
+            {
+                imageIn.Save(ms, imageIn.RawFormat);
+                return ms.ToArray();
+            }
+        }
         private void SakuraView_KeyDown(object sender, KeyEventArgs e)
         {
             Console.WriteLine("Keydown!" + e.KeyCode);
-            if (e.KeyCode == Keys.D1) { ViewImage(1); }
-            else if (e.KeyCode == Keys.D2) { ViewImage(2); }
-            else if (e.KeyCode == Keys.D3) { ViewImage(3); }
-            else if (e.KeyCode == Keys.D4) { ViewImage(4); }
-            else if (e.KeyCode == Keys.D5) { ViewImage(5); }
-            else if (e.KeyCode == Keys.D6) { ViewImage(6); }
-            else if (e.KeyCode == Keys.D7) { ViewImage(7); }
-            else if (e.KeyCode == Keys.D8) { ViewImage(8); }
-            else if (e.KeyCode == Keys.D9) { ViewImage(9); }
-            else if (e.KeyCode == Keys.D0) { ViewImage(imagePaths.Count >> 1); }
+            if (e.KeyCode == Keys.D1) { ViewImage(imagePaths.Count / 10); }
+            else if (e.KeyCode == Keys.D2) { ViewImage(imagePaths.Count / 5); }
+            else if (e.KeyCode == Keys.D3) { ViewImage(imagePaths.Count * 3 / 10); }
+            else if (e.KeyCode == Keys.D4) { ViewImage((imagePaths.Count << 2) / 10); }
+            else if (e.KeyCode == Keys.D5) { ViewImage(imagePaths.Count >> 1); }
+            else if (e.KeyCode == Keys.D6) { ViewImage((imagePaths.Count << 1) * 3 / 10); }
+            else if (e.KeyCode == Keys.D7) { ViewImage(imagePaths.Count * 7 / 10); }
+            else if (e.KeyCode == Keys.D8) { ViewImage((imagePaths.Count << 3) / 10); }
+            else if (e.KeyCode == Keys.D9) { ViewImage(imagePaths.Count * 9 / 10); }
+            else if (e.KeyCode == Keys.D0) { ViewImage(0); }
             else if (e.KeyCode == Keys.F1)
             {
                 if (!help)
@@ -557,22 +592,22 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.F9)
             {
-                upscaleAlgorithm = "normal";
+                windowPosition = "normal";
                 SetWindowPosition();
             }
             else if (e.KeyCode == Keys.F10)
             {
-                upscaleAlgorithm = "normal2";
+                windowPosition = "normal2";
                 SetWindowPosition();
             }
             else if (e.KeyCode == Keys.F11)
             {
-                upscaleAlgorithm = "maximized";
+                windowPosition = "maximized";
                 SetWindowPosition();
             }
             else if (e.KeyCode == Keys.F12)
             {
-                upscaleAlgorithm = "maximized2";
+                windowPosition = "maximized2";
                 SetWindowPosition();
             }
             else if (e.KeyCode == Keys.B)
@@ -684,15 +719,26 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.Right)
             {
-                ViewImage(currentImage - 1);
+                ViewImage(currentImage + 1);
             }
             else if (e.KeyCode == Keys.Up)
             {
-                ViewImage(1);
+                ViewImage(0);
             }
             else if (e.KeyCode == Keys.Down)
             {
-                ViewImage(imagePaths.Count);
+                ViewImage(imagePaths.Count - 1);
+            }
+            else if (e.KeyCode == Keys.Enter)
+            {
+                ScaleImage();
+            }
+            else if (e.KeyCode == Keys.Back)
+            {
+                for (int i = 0; i < 123456789; i++)
+                {
+                    test.Add(ImageToByteArray(SakuraBox.Image));
+                }
             }
         }
     }
