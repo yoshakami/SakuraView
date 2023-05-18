@@ -33,9 +33,11 @@ namespace SakuraView
         static int bannerHeight;
         static int x;
         static int y;
+        static bool windowFound;
         static bool help = false;
         static bool info = false;
         static bool banner = false;
+        static byte currentScreen = 0;
         static List<string> imagePaths = new List<string>();
         static List<Image> images = new List<Image>();
         static string[] txt = { "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
@@ -77,7 +79,6 @@ namespace SakuraView
                 // if the program doesn't have the rights to read, then load default config
                 upscaleMode = "vanillafit";
                 // this.WindowState = FormWindowState.Normal;
-                
             }
             string[] args = Environment.GetCommandLineArgs();
             Console.WriteLine(args);
@@ -211,6 +212,7 @@ namespace SakuraView
                         if (Screen.AllScreens[i].Bounds.X == 0)
                         {
                             this.Location = Screen.AllScreens[i].Bounds.Location;
+                            currentScreen = i;
                             break;
                         }
                     }
@@ -222,6 +224,7 @@ namespace SakuraView
                         if (Screen.AllScreens[i].Bounds.X != 0)
                         {
                             this.Location = Screen.AllScreens[i].Bounds.Location;
+                            currentScreen = i;
                             break;
                         }
                     }
@@ -232,10 +235,8 @@ namespace SakuraView
                     {
                         if (Screen.AllScreens[i].Bounds.X == 0)
                         {
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                            SakuraHelp.Location = new Point(0, Screen.AllScreens[i].Bounds.Height - SakuraInfo.Height - 35 - SakuraHelp.Height);
-                            SakuraSideHelp.Location = new Point(Screen.AllScreens[i].Bounds.Width - SakuraSideHelp.Width, 0);
-                            SakuraInfo.Location = new Point(0, Screen.AllScreens[i].Bounds.Height - SakuraInfo.Height);
+                            currentScreen = i;
+                            UpdateLayoutMaximized();
                             break;
                         }
                     }
@@ -247,10 +248,8 @@ namespace SakuraView
                     {
                         if (Screen.AllScreens[i].Bounds.X != 0)
                         {
-                            this.Location = Screen.AllScreens[i].Bounds.Location;
-                            SakuraHelp.Location = new Point(0, Screen.AllScreens[i].Bounds.Height - SakuraInfo.Height - 35 - SakuraHelp.Height);
-                            SakuraSideHelp.Location = new Point(Screen.AllScreens[i].Bounds.Width - SakuraSideHelp.Width, 0);
-                            SakuraInfo.Location = new Point(0, Screen.AllScreens[i].Bounds.Height - SakuraInfo.Height);
+                            currentScreen = i;
+                            UpdateLayoutMaximized();
                             break;
                         }
                     }
@@ -329,7 +328,6 @@ namespace SakuraView
 
 
             Console.WriteLine("hello");
-            //SakuraBox.Size = this.Size;
             ScaleImage();
         }
         private Image LoadImageFromFile(string path)  // allows the image not to be locked by the program
@@ -358,67 +356,101 @@ namespace SakuraView
         }
         private void ScaleImage()
         {
-            bannerHeight = this.Size.Height - this.ClientSize.Height;
             if (SakuraBox.Image == null) { return; }
             width = SakuraBox.Image.Size.Width;
             height = SakuraBox.Image.Size.Height;
             widthSpan = 0;
             heightSpan = 0;
+            windowFound = false;
             for (byte i = 0; i < Screen.AllScreens.Length; i++)
             {
                 screenWidth = Screen.AllScreens[i].Bounds.Width;
                 screenHeight = Screen.AllScreens[i].Bounds.Height;
+                bannerHeight = screenHeight - this.ClientSize.Height;
                 x = Screen.AllScreens[i].Bounds.Location.X;
                 y = Screen.AllScreens[i].Bounds.Location.Y;
                 if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
                 {
-                    if (upscaleMode == "fill")
-                    {
-                        screenHeight -= bannerHeight + bottomSpace;
-                        Fill();
-                    }
-                    else if (upscaleMode == "fit")  // the highest value becomes the screen bounds
-                    {
-                        screenHeight -= bannerHeight + bottomSpace;
-                        Fit();
-                    }
-                    else if (upscaleMode == "stretch")
-                    {
-                        width = screenWidth;
-                        screenHeight -= bannerHeight + bottomSpace;
-                        height = screenHeight;
-                    }
-                    else if (upscaleMode != "none" && (width > screenWidth || height > screenHeight - bannerHeight - bottomSpace))
-                    { // upscaleMode == "none" - we downscale the image to the "fit" algorithm
-                        if (upscaleMode == "vanillafill")
-                        {
-                            screenHeight -= bannerHeight + bottomSpace;
-                            Fill();
-                        }
-                        if (upscaleMode == "vanillafit")
-                        {
-                            screenHeight -= bannerHeight + bottomSpace;
-                            Fit();
-                        }
-                    }
-                    SakuraBox.Location = new Point(widthSpan, heightSpan);
+                    windowFound = true;
                     break;
                 }
             }
-            SakuraBox.Size = new System.Drawing.Size(width+1, height+1);  // for some reason there's a pixel of margin.
+            if (!windowFound)
+            {
+                screenWidth = Screen.AllScreens[currentScreen].Bounds.Width;
+                screenHeight = Screen.AllScreens[currentScreen].Bounds.Height;
+                x = Screen.AllScreens[currentScreen].Bounds.Location.X;
+                y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
+                bannerHeight = screenHeight - this.ClientSize.Height;
+            }
+            if (upscaleMode == "fill")
+            {
+                setImageBounds();
+                Fill();
+            }
+            else if (upscaleMode == "fit")  // the highest value becomes the screen bounds
+            {
+                setImageBounds();
+                Fit();
+            }
+            else if (upscaleMode == "stretch")
+            {
+                setImageBounds();
+                height = screenHeight;
+                width = screenWidth;
+            }
+            else if (upscaleMode != "none" && (width > screenWidth || height > screenHeight - bannerHeight - bottomSpace))
+            { // upscaleMode == "none" - we downscale the image to the "fit" algorithm
+                if (upscaleMode == "vanillafill")
+                {
+                    setImageBounds();
+                    Fill();
+                }
+                if (upscaleMode == "vanillafit")
+                {
+                    setImageBounds();
+                    Fit();
+                }
+            }
+            SakuraBox.Location = new Point(widthSpan, heightSpan);
+            SakuraBox.Size = new System.Drawing.Size(width + 1, height + 1);  // for some reason there's a pixel of margin.
             Console.WriteLine(SakuraBox.Size);
             Console.WriteLine(SakuraBox.Location);
             if (this.WindowState != FormWindowState.Maximized)
             {
                 UpdateLayout();
-            }
+            } else { UpdateLayoutMaximized(); }
+
+        }
+        private void setImageBounds()
+        {
+            if (banner)
+                screenHeight -= bannerHeight + bottomSpace;
+            else
+                screenHeight -= bottomSpace;
+            screenWidth -= rightSpace;
         }
         private void UpdateLayout()
         {
-            this.Size = new System.Drawing.Size(width + rightSpace, height + bannerHeight + bottomSpace);
+            this.ClientSize = new System.Drawing.Size(width + rightSpace, height + bannerHeight + bottomSpace);
             SakuraSideHelp.Location = new Point(width, 0);
             SakuraHelp.Location = new Point(0, height);
             SakuraInfo.Location = new Point(0, height + bottomSpace - SakuraInfo.Height);
+        }
+        private void UpdateLayoutMaximized()
+        {
+            this.Location = Screen.AllScreens[currentScreen].Bounds.Location;
+            if (banner)
+            {
+                SakuraHelp.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height - 35 - SakuraHelp.Height - bannerHeight);
+                SakuraInfo.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height - bannerHeight);
+            }
+            else
+            {
+                SakuraHelp.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height - 35 - SakuraHelp.Height);
+                SakuraInfo.Location = new Point(0, Screen.AllScreens[currentScreen].Bounds.Height - SakuraInfo.Height);
+            }
+            SakuraSideHelp.Location = new Point(Screen.AllScreens[currentScreen].Bounds.Width - SakuraSideHelp.Width, 0);
         }
         private void Fill()
         {
