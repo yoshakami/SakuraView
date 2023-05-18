@@ -24,16 +24,6 @@ v0.5 tex0, tpl, bti, brres, bmd, and u8 support
 
 ## Keyboard Shortcuts
 press F1 to show them, then F1 again to hide them. The text below is also shown in the application for people too lazy to come here.
-old text:
-<pre>
-F1: Toogle Help     F2: Fill     F3: Fit     F4: Stretch     F5: VanillaFit     F6: VanillaFill     F7: Center     F8: Minimized     F9: Normal     F10: Normal2     F11: Maximized     F12: Maximized2
-
-B: Bicubic     F: Bilinear     D: Default     H: High     Q: HighQualityBicubic     J: HighQualityBilinear     I: Invalid     L: Low     N: NeareastNeighbor
-
-Escape: Quit     E: Empty List     T: Toogle Banner     S: Show/Stash Info     A: Toogle Always On Top     X: Swap Horizontally     Y: Swap Vertically     R: Rotate ↻     G: GitHub Releases
-
-Show Images :     0 Middle     1 First     2 Second     3 Third     4 Fourth     5 Fifth     6 Sixth     7 Seventh     8 Heighth     9 Ninth           ← Previous     → Next     ↑ First     ↓ Last
-</pre>
 <pre>
 F1: Toogle Help
 F2: Fill
@@ -75,6 +65,7 @@ L: Low
 N: NeareastNeighbor
 
 Escape: Quit
+S: Save config
 E: Empty List
 T: Toogle Banner
 I: Toogle Info
@@ -82,5 +73,5 @@ A: Toogle Always On Top
 X: Swap Horizontally
 Y: Swap Vertically
 R: Rotate ↻
-S: Save config
+G: Github Releases
 </pre>

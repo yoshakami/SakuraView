@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SakuraHelp.Text" xml:space="preserve">
+  <data name="SakuraSideHelp.Text" xml:space="preserve">
     <value>F1: Toogle Help
 F2: Fill
 F3: Fit
@@ -166,6 +166,10 @@ X: Swap Horizontally
 Y: Swap Vertically
 R: Rotate ↻
 S: Save config</value>
+  </data>
+  <data name="SakuraHelp.Text" xml:space="preserve">
+    <value>B: Bicubic    F: Bilinear    D: Default    H: High    Q: HighQualityBicubic    J: HighQualityBilinear    L: Low    N: NeareastNeighbor    Escape: Quit    S: Save config
+E: Empty List     T: Toogle Banner     I: Toogle Info     A: Toogle Always On Top     X: Swap Horizontally     Y: Swap Vertically     R: Rotate ↻     G: GitHub Releases</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
