@@ -55,22 +55,24 @@ Show Images :
 ↑ First
 ↓ Last
 
+Escape: Quit
+Enter: Refresh
+
 B: Bicubic
-F: Bilinear
-D: Default
+M: Bilinear
+Z: Default
 H: High
-Q: HighQualityBicubic
-J: HighQualityBilinear
+C: HighQualityBicubic
+V: HighQualityBilinear
 L: Low
 N: NeareastNeighbor
 
-Escape: Quit
-Enter: Refresh
 S: Save config
 E: Empty List
 T: Toogle Banner
 I: Toogle Info
 A: Toogle Always On Top
+D: Toogle Duplicates
 X: Swap Horizontally
 Y: Swap Vertically
 R: Rotate ↻

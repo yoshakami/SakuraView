@@ -67,7 +67,7 @@ namespace SakuraView
             this.SakuraSideHelp.Location = new System.Drawing.Point(1407, 0);
             this.SakuraSideHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.SakuraSideHelp.Name = "SakuraSideHelp";
-            this.SakuraSideHelp.Size = new System.Drawing.Size(178, 1008);
+            this.SakuraSideHelp.Size = new System.Drawing.Size(178, 1113);
             this.SakuraSideHelp.TabIndex = 7;
             this.SakuraSideHelp.Text = resources.GetString("SakuraSideHelp.Text");
             this.SakuraSideHelp.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
@@ -83,7 +83,7 @@ namespace SakuraView
             this.SakuraHelp.Location = new System.Drawing.Point(16, 446);
             this.SakuraHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.SakuraHelp.Name = "SakuraHelp";
-            this.SakuraHelp.Size = new System.Drawing.Size(1079, 42);
+            this.SakuraHelp.Size = new System.Drawing.Size(1064, 42);
             this.SakuraHelp.TabIndex = 8;
             this.SakuraHelp.Text = resources.GetString("SakuraHelp.Text");
             // 

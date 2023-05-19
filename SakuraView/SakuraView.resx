@@ -118,7 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SakuraSideHelp.Text" xml:space="preserve">
-    <value>F1: Toogle Help
+    <value>
+F1: Toogle Help
 F2: Fill
 F3: Fit
 F4: Stretch
@@ -132,44 +133,48 @@ F11: Maximized
 F12: Maximized2
 
 Show Images :
-0 Middle
-1 First
-2 Second
-3 Third
-4 Fourth
-5 Fifth
-6 Sixth
-7 Seventh
-8 Heighth
-9 Ninth
+0 First
+1 10%
+2 20%
+3 30%
+4 40%
+5 Middle
+6 60%
+7 70%
+8 80%
+9 90%
 
 ← Previous
 → Next
 ↑ First
 ↓ Last
 
+Escape: Quit
+Enter: Refresh
+
 B: Bicubic
-F: Bilinear
-D: Default
+M: Bilinear
+Z: Default
 H: High
-Q: HighQualityBicubic
-J: HighQualityBilinear
+C: HighQualityBicubic
+V: HighQualityBilinear
 L: Low
 N: NeareastNeighbor
 
-Escape: Quit
+S: Save config
 E: Empty List
 T: Toogle Banner
 I: Toogle Info
 A: Toogle Always On Top
+D: Toogle Duplicates
 X: Swap Horizontally
 Y: Swap Vertically
 R: Rotate ↻
-S: Save config</value>
+G: Github Releases</value>
   </data>
   <data name="SakuraHelp.Text" xml:space="preserve">
-    <value>B: Bicubic    F: Bilinear    D: Default    H: High    Q: HighQualityBicubic    J: HighQualityBilinear    L: Low    N: NeareastNeighbor    Escape: Quit    S: Save config
-E: Empty List     T: Toogle Banner     I: Toogle Info     A: Toogle Always On Top     X: Swap Horizontally     Y: Swap Vertically     R: Rotate ↻     G: GitHub Releases</value>
+    <value>B: Bicubic    M: Bilinear    Z: Default    H: High    C: HighQualityBicubic    V: HighQualityBilinear    L: Low    N: NeareastNeighbor     Esc: Quit     Enter: Refresh
+S: Save config     E: Empty List     T: Banner     I: Info     A: Always On Top   D: Duplicates    X: Swap X     Y: Swap Y     R: Rotate ↻     G: GitHub</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
