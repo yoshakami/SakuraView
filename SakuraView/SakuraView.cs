@@ -35,6 +35,7 @@ namespace SakuraView
         static int screenWidth;
         static int screenHeight;
         static int currentImage;
+        static byte layout = 1;  // 0 = Project Miku,  1 = SakuraView
         static byte i;
         static byte j;
         static int x;
@@ -884,6 +885,36 @@ namespace SakuraView
         public void endthis()
         {
             prevent_execution = false;
+        }
+        public void addPictureBox()
+        {
+            this.SuspendLayout();
+            PictureBoxWithInterpolationMode NewSakuraBox;
+            // 
+            // SakuraBox
+            //
+            NewSakuraBox = new PictureBoxWithInterpolationMode();
+            ((System.ComponentModel.ISupportInitialize)(NewSakuraBox)).BeginInit();
+
+            NewSakuraBox.Enabled = false;
+            NewSakuraBox.ErrorImage = null;
+            NewSakuraBox.InitialImage = null;
+            NewSakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+            NewSakuraBox.Location = new System.Drawing.Point(0, 0);
+            NewSakuraBox.Margin = new System.Windows.Forms.Padding(0);
+            NewSakuraBox.Name = "SakuraBox";
+            NewSakuraBox.Size = new System.Drawing.Size(67, 62);
+            NewSakuraBox.TabIndex = 0;
+            NewSakuraBox.TabStop = false;
+
+
+
+
+        ((System.ComponentModel.ISupportInitialize)(NewSakuraBox)).EndInit();
+
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
     }
 }
