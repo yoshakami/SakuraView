@@ -49,6 +49,7 @@ namespace SakuraView
         static bool loadImage;
         static bool prevent_execution;
         static bool duplicate = true;
+        static byte mode = 0; // 0 = ImageViewer; 1 = ImageExplorer; 2 = TextViewer; 3 = TextExplorer; 4 = TextEditor; 5 = Settings; 6 = SongExplorer
         static byte currentScreen = 0;
         static string padding = "    ";
         static string currentInfo;
@@ -57,7 +58,8 @@ namespace SakuraView
         static List<Image> images = new List<Image>();
         static List<string> imagesPath = new List<string>();
         static List<string[]> imagesInfo = new List<string[]>();
-
+        static List<Object> imageViewerComponents = new List<Object>();
+        static List<TextBox> file_browser_list = new List<TextBox>();
         static string[] txt;
         // when escape is pressed 
         // Environment.Exit(0);
@@ -65,6 +67,21 @@ namespace SakuraView
         {
             SetTxt();
             InitializeComponent();
+            imageViewerComponents.Add(SakuraBox);
+            imageViewerComponents.Add(SakuraHelp);
+            imageViewerComponents.Add(SakuraInfo);
+            imageViewerComponents.Add(SakuraSideHelp);
+            imageViewerComponents.Add(SakuraBox);
+            imageViewerComponents.Add(SakuraBox);
+            imageViewerComponents.Add(SakuraBox);
+            file_browser_list.Add(textBox1);
+            file_browser_list.Add(textBox2);
+            file_browser_list.Add(textBox3);
+            file_browser_list.Add(textBox4);
+            foreach (TextBox e in file_browser_list)
+            {
+                e.Visible = false;
+            }
             try
             {
                 // read the config file
@@ -85,6 +102,7 @@ namespace SakuraView
                 SetWindowPosition();
                 this.TopMost = txt[18].ToLower() == "true";
                 duplicate = txt[20].ToLower() == "true";
+                mode = byte.Parse(txt[22]);
             }
             catch
             {
@@ -115,6 +133,14 @@ namespace SakuraView
                     imagesPath.Add(args[z]);
                 }
             }
+            SetMode();
+        }
+        private void SetMode()
+        {
+            if (mode == 0) // ImageViewer
+            {
+
+            }
         }
         private void SetTxt()
         {
@@ -128,7 +154,8 @@ namespace SakuraView
             "Help {View, Hide}", "View",  // config[14]
             "Info {View, Hide}", "View",  // config[16]
             "Always On Top {True, False}", "False", // config[18]
-            "Allow Duplicates {True, False}", "True" // config[20]
+            "Allow Duplicates {True, False}", "True", // config[20]
+            "Mode {0, 1, 2, 3, 4, 5, 6}", "0" // config[22]
                 };
         }
         private void SetBackgroundColour(string backgroundColour)
