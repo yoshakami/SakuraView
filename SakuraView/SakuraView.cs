@@ -602,10 +602,12 @@ namespace SakuraView
             if (file != null) // prevent crashes if it's for example a google chrome favourite that was dragged
             {
                 loadImage = false;
-                if (!System.IO.File.GetAttributes(file[0]).HasFlag(System.IO.FileAttributes.Directory))
+                if (System.IO.File.GetAttributes(file[0]).HasFlag(System.IO.FileAttributes.Directory))
                 {
-                    loadImage = true;
+                    LoadFolder(file[0]);
+                    return;
                 }
+                loadImage = true;
                 for (z = 0; z < file.Length; z++)
                 {
                     if (!System.IO.File.GetAttributes(file[z]).HasFlag(System.IO.FileAttributes.Directory))  // that means it's a file.
@@ -670,7 +672,19 @@ namespace SakuraView
                 currentImage = imageNumber;
                 LoadImage(imagesPath[imageNumber]);
             }
+            else
+            {
+                LoadFolder(Environment.CurrentDirectory);
+            }
         }
+
+        private void LoadFolder(string currentDirectory)
+        {
+            string[] file = Directory.GetFiles(currentDirectory);
+            foreach (string fileItem in file) { 
+                }
+        }
+
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
         {
             using (var ms = new MemoryStream())
