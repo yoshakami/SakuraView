@@ -370,8 +370,15 @@ namespace SakuraView
                 catch (Exception e)
                 {
                     Console.WriteLine("Invalid input Image");
+                    imagesPath.Remove(filePath);
+                    return;
                     // throw e;
                 }
+            }
+            else
+            {
+                imagesPath.Remove(filePath);
+                return;
             }
             //string extension = Path.GetExtension(filePath).ToLower();
             //string baseName = Path.GetFileNameWithoutExtension(filePath);
