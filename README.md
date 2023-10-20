@@ -62,13 +62,17 @@ B: Bicubic
 M: Bilinear
 Z: Default
 H: High
-C: HighQualityBicubic
+J: HighQualityBicubic
 V: HighQualityBilinear
 L: Low
 N: NeareastNeighbor
 
 S: Save config
 E: Empty List
+O: Open Directory
+F: Open Folder
+K: Clear Console Output
+C: Toogle Console
 T: Toogle Banner
 I: Toogle Info
 A: Toogle Always On Top
@@ -78,3 +82,4 @@ Y: Swap Vertically
 R: Rotate ↻
 G: Github Releases
 </pre>
+letters that won't do anything: J,P,Q,U,W

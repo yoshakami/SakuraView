@@ -118,8 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SakuraSideHelp.Text" xml:space="preserve">
-    <value>
-F1: Toogle Help
+    <value>F1: Toogle Help
 F2: Fill
 F3: Fit
 F4: Stretch
@@ -156,13 +155,15 @@ B: Bicubic
 M: Bilinear
 Z: Default
 H: High
-C: HighQualityBicubic
+F: HighQualityBicubic
 V: HighQualityBilinear
 L: Low
 N: NeareastNeighbor
 
 S: Save config
 E: Empty List
+K: Clear Console Output
+C: Toogle Console
 T: Toogle Banner
 I: Toogle Info
 A: Toogle Always On Top
@@ -173,8 +174,8 @@ R: Rotate ↻
 G: Github Releases</value>
   </data>
   <data name="SakuraHelp.Text" xml:space="preserve">
-    <value>B: Bicubic    M: Bilinear    Z: Default    H: High    C: HighQualityBicubic    V: HighQualityBilinear    L: Low    N: NeareastNeighbor     Esc: Quit     Enter: Refresh
-S: Save config     E: Empty List     T: Banner     I: Info     A: Always On Top   D: Duplicates    X: Swap X     Y: Swap Y     R: Rotate ↻     G: GitHub</value>
+    <value>B: Bicubic    M: Bilinear    Z: Default    H: High    J: HighQualityBicubic    V: HighQualityBilinear    L: Low    N: NeareastNeighbor     Esc: Quit     Enter: Refresh
+S: Save config     E: Empty List     K: Clear     C: Console     T: Banner     I: Info     A: Always On Top   D: Duplicates    X: Swap X     Y: Swap Y     R: Rotate ↻     G: GitHub</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

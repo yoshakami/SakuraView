@@ -41,13 +41,8 @@ namespace SakuraView
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.pictureBoxWithInterpolationMode3 = new PictureBoxWithInterpolationMode();
-            this.pictureBoxWithInterpolationMode2 = new PictureBoxWithInterpolationMode();
-            this.pictureBoxWithInterpolationMode1 = new PictureBoxWithInterpolationMode();
+            this.SakuraConsole = new System.Windows.Forms.Label();
             this.SakuraBox = new PictureBoxWithInterpolationMode();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWithInterpolationMode3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWithInterpolationMode2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWithInterpolationMode1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -77,7 +72,7 @@ namespace SakuraView
             this.SakuraSideHelp.Location = new System.Drawing.Point(1407, 0);
             this.SakuraSideHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.SakuraSideHelp.Name = "SakuraSideHelp";
-            this.SakuraSideHelp.Size = new System.Drawing.Size(178, 1113);
+            this.SakuraSideHelp.Size = new System.Drawing.Size(178, 1134);
             this.SakuraSideHelp.TabIndex = 7;
             this.SakuraSideHelp.Text = resources.GetString("SakuraSideHelp.Text");
             this.SakuraSideHelp.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
@@ -93,7 +88,7 @@ namespace SakuraView
             this.SakuraHelp.Location = new System.Drawing.Point(16, 446);
             this.SakuraHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.SakuraHelp.Name = "SakuraHelp";
-            this.SakuraHelp.Size = new System.Drawing.Size(1064, 42);
+            this.SakuraHelp.Size = new System.Drawing.Size(1118, 42);
             this.SakuraHelp.TabIndex = 8;
             this.SakuraHelp.Text = resources.GetString("SakuraHelp.Text");
             this.SakuraHelp.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
@@ -166,44 +161,19 @@ namespace SakuraView
             this.textBox4.Text = "Search All";
             this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // pictureBoxWithInterpolationMode3
+            // SakuraConsole
             // 
-            this.pictureBoxWithInterpolationMode3.Enabled = false;
-            this.pictureBoxWithInterpolationMode3.ErrorImage = null;
-            this.pictureBoxWithInterpolationMode3.InitialImage = null;
-            this.pictureBoxWithInterpolationMode3.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            this.pictureBoxWithInterpolationMode3.Location = new System.Drawing.Point(260, 0);
-            this.pictureBoxWithInterpolationMode3.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBoxWithInterpolationMode3.Name = "pictureBoxWithInterpolationMode3";
-            this.pictureBoxWithInterpolationMode3.Size = new System.Drawing.Size(67, 62);
-            this.pictureBoxWithInterpolationMode3.TabIndex = 16;
-            this.pictureBoxWithInterpolationMode3.TabStop = false;
-            // 
-            // pictureBoxWithInterpolationMode2
-            // 
-            this.pictureBoxWithInterpolationMode2.Enabled = false;
-            this.pictureBoxWithInterpolationMode2.ErrorImage = null;
-            this.pictureBoxWithInterpolationMode2.InitialImage = null;
-            this.pictureBoxWithInterpolationMode2.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            this.pictureBoxWithInterpolationMode2.Location = new System.Drawing.Point(170, 0);
-            this.pictureBoxWithInterpolationMode2.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBoxWithInterpolationMode2.Name = "pictureBoxWithInterpolationMode2";
-            this.pictureBoxWithInterpolationMode2.Size = new System.Drawing.Size(67, 62);
-            this.pictureBoxWithInterpolationMode2.TabIndex = 15;
-            this.pictureBoxWithInterpolationMode2.TabStop = false;
-            // 
-            // pictureBoxWithInterpolationMode1
-            // 
-            this.pictureBoxWithInterpolationMode1.Enabled = false;
-            this.pictureBoxWithInterpolationMode1.ErrorImage = null;
-            this.pictureBoxWithInterpolationMode1.InitialImage = null;
-            this.pictureBoxWithInterpolationMode1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            this.pictureBoxWithInterpolationMode1.Location = new System.Drawing.Point(84, 0);
-            this.pictureBoxWithInterpolationMode1.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBoxWithInterpolationMode1.Name = "pictureBoxWithInterpolationMode1";
-            this.pictureBoxWithInterpolationMode1.Size = new System.Drawing.Size(67, 62);
-            this.pictureBoxWithInterpolationMode1.TabIndex = 14;
-            this.pictureBoxWithInterpolationMode1.TabStop = false;
+            this.SakuraConsole.AllowDrop = true;
+            this.SakuraConsole.AutoSize = true;
+            this.SakuraConsole.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.SakuraConsole.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.SakuraConsole.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.SakuraConsole.Location = new System.Drawing.Point(56, 74);
+            this.SakuraConsole.Margin = new System.Windows.Forms.Padding(0);
+            this.SakuraConsole.Name = "SakuraConsole";
+            this.SakuraConsole.Size = new System.Drawing.Size(119, 21);
+            this.SakuraConsole.TabIndex = 14;
+            this.SakuraConsole.Text = "Console output:";
             // 
             // SakuraBox
             // 
@@ -225,9 +195,7 @@ namespace SakuraView
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Purple;
             this.ClientSize = new System.Drawing.Size(1660, 554);
-            this.Controls.Add(this.pictureBoxWithInterpolationMode3);
-            this.Controls.Add(this.pictureBoxWithInterpolationMode2);
-            this.Controls.Add(this.pictureBoxWithInterpolationMode1);
+            this.Controls.Add(this.SakuraConsole);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
@@ -247,9 +215,6 @@ namespace SakuraView
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWithInterpolationMode3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWithInterpolationMode2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWithInterpolationMode1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -266,9 +231,7 @@ namespace SakuraView
         private TextBox textBox2;
         private TextBox textBox3;
         private TextBox textBox4;
-        private PictureBoxWithInterpolationMode pictureBoxWithInterpolationMode1;
-        private PictureBoxWithInterpolationMode pictureBoxWithInterpolationMode2;
-        private PictureBoxWithInterpolationMode pictureBoxWithInterpolationMode3;
+        private Label SakuraConsole;
     }
 }
 
