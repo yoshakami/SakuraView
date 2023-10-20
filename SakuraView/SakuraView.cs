@@ -5,8 +5,8 @@ using System.IO;
 using System.Collections.Generic;
 using Webp;  // Webp.cs
 using System.Threading.Tasks;
-using System.Net.NetworkInformation;
 using System.Globalization;
+using System.Linq;
 
 /* vanilla usings:
 using System;
@@ -14,7 +14,10 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
-using WebPWrapper; */
+using Webp;  // Webp.cs
+using System.Threading.Tasks;
+using System.Globalization;
+using System.Linq; */
 
 namespace SakuraView
 {
@@ -370,7 +373,7 @@ namespace SakuraView
                         imagesInfo.Add(pictureInfo);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //Console.WriteLine("Invalid input Image -> " + filePath);
                     SakuraConsole.Text += "\nInvalid input Image -> " + filePath;
@@ -488,7 +491,7 @@ namespace SakuraView
         }
         private void ScaleImage()
         {
-            if (SakuraBox.Image == null) { return; }
+            if (SakuraBox.Image == null || imagesPath.Count == 0) { return; }
             LoadInfo();
             width = SakuraBox.Image.Size.Width;
             height = SakuraBox.Image.Size.Height;
@@ -692,7 +695,6 @@ namespace SakuraView
         {
             foreach (string fileItem in files)
             {
-
                 if (!duplicate)
                 {
                     if (!imagesPath.Contains(fileItem))
@@ -915,6 +917,24 @@ namespace SakuraView
             {
                 this.SakuraConsole.Text = "";
             }
+            else if (e.KeyCode == Keys.P)
+            {
+                string[] lines = this.SakuraConsole.Text.Split('\n');
+
+                // Check if there are at least 10 lines
+                if (lines.Length > 10)
+                {
+                    // Join lines starting from the 11th line
+                    this.SakuraConsole.Text = string.Join("\n", lines.Skip(10));
+
+                    // Now, textAfter10thLine contains the text after the 10th line separator
+                }
+                else
+                {
+                    // Handle the case where there are not enough lines
+                    this.SakuraConsole.Text = "";
+                }
+            }
             else if (e.KeyCode == Keys.O)
             {
                 using (var fbd = new FolderBrowserDialog())
@@ -940,13 +960,17 @@ namespace SakuraView
                 {
                     Title = "Select some pictures",
                     Filter = "Picture|*.bmp;*.png;*.jfif;*.jpg;*.jpeg;*.jpg;*.ico;*.gif;*.tif;*.tiff;*.rle;*.dib|Texture|*.bti;*.tex0;*.tpl|All files (*.*)|*.*",
-                    RestoreDirectory = true
+                    RestoreDirectory = true,
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    InitialDirectory = Environment.CurrentDirectory,
+                    Multiselect = true
                 };
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     LoadFiles(dialog.FileNames);
                     //LoadFolder(dialog.FileName.Replace("\\", "/"));
-                    Environment.CurrentDirectory = dialog.FileName.Replace("\\", "/");
+                    // Environment.CurrentDirectory = dialog.FileName.Replace("\\", "/");
                 }
 
             }

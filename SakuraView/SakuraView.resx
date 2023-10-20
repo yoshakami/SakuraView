@@ -155,13 +155,15 @@ B: Bicubic
 M: Bilinear
 Z: Default
 H: High
-F: HighQualityBicubic
+J: HighQualityBicubic
 V: HighQualityBilinear
 L: Low
 N: NeareastNeighbor
 
 S: Save config
 E: Empty List
+O: Open Directory
+F: Open Files
 K: Clear Console Output
 C: Toogle Console
 T: Toogle Banner
