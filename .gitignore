@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /SakuraView/Image.dll
+/SakuraView.exe
+/SakuraView.exe.config
+/SakuraView.txt
