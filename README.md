@@ -70,7 +70,7 @@ N: NeareastNeighbor
 S: Save config
 E: Empty List
 O: Open Directory
-F: Open Folder
+F: Open Files
 K: Clear Console Output
 C: Toogle Console
 T: Toogle Banner
@@ -81,5 +81,6 @@ X: Swap Horizontally
 Y: Swap Vertically
 R: Rotate ↻
 G: Github Releases
+P: Remove the last 10 lines of the console
 </pre>
-letters that won't do anything: J,P,Q,U,W
+letters that won't do anything: Q,U,W

@@ -5,8 +5,8 @@ using System.IO;
 using System.Collections.Generic;
 using Webp;  // Webp.cs
 using System.Threading.Tasks;
-using System.Net.NetworkInformation;
 using System.Globalization;
+using System.Linq;
 
 /* vanilla usings:
 using System;
@@ -14,7 +14,10 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
-using WebPWrapper; */
+using Webp;  // Webp.cs
+using System.Threading.Tasks;
+using System.Globalization;
+using System.Linq; */
 
 namespace SakuraView
 {
@@ -95,15 +98,16 @@ namespace SakuraView
                 SetTextColour(txt[8]);
                 SetBackgroundColour(txt[10]);
                 banner = txt[12].ToLower() == "view";
-                help = txt[14].ToLower() == "view";
-                info = txt[16].ToLower() == "view";
+                this.SakuraConsole.Visible = txt[14].ToLower() == "view";
+                help = txt[16].ToLower() == "view";
+                info = txt[18].ToLower() == "view";
                 SetBanner();
                 SetHelp(true);
                 SetInfo(true);
                 SetWindowPosition();
-                this.TopMost = txt[18].ToLower() == "true";
-                duplicate = txt[20].ToLower() == "true";
-                mode = byte.Parse(txt[22]);
+                this.TopMost = txt[20].ToLower() == "true";
+                duplicate = txt[22].ToLower() == "true";
+                mode = byte.Parse(txt[24]);
             }
             catch
             {
@@ -155,11 +159,12 @@ namespace SakuraView
             "Text Colour (System.Drawing.Color)", "White",  // config[8]
             "Background Colour", "Black",  // config[10]
             "Banner {View, Hide}", "View",  // config[12]
-            "Help {View, Hide}", "View",  // config[14]
-            "Info {View, Hide}", "View",  // config[16]
-            "Always On Top {True, False}", "False", // config[18]
-            "Allow Duplicates {True, False}", "True", // config[20]
-            "Mode {0, 1, 2, 3, 4, 5, 6}", "0" // config[22]
+            "Console {View, Hide}", "View",  // config[14]
+            "Help {View, Hide}", "View",  // config[16]
+            "Info {View, Hide}", "View",  // config[18]
+            "Always On Top {True, False}", "False", // config[20]
+            "Allow Duplicates {True, False}", "False", // config[22]
+            "Mode {0, 1, 2, 3, 4, 5, 6}", "0" // config[24]
                 };
         }
         private void SetBackgroundColour(string backgroundColour)
@@ -371,7 +376,7 @@ namespace SakuraView
                         imagesInfo.Add(pictureInfo);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //Console.WriteLine("Invalid input Image -> " + filePath);
                     SakuraConsole.Text += "\nInvalid input Image -> " + filePath;
@@ -441,6 +446,8 @@ namespace SakuraView
         }
         private void LoadInfo()
         {
+            if (currentImage > imagesInfo.Count)
+                currentImage = imagesInfo.Count - 1;
             SakuraHidden.Text = "";
             padding = "";
 
@@ -489,7 +496,7 @@ namespace SakuraView
         }
         private void ScaleImage()
         {
-            if (SakuraBox.Image == null) { return; }
+            if (SakuraBox.Image == null || imagesPath.Count == 0) { return; }
             LoadInfo();
             width = SakuraBox.Image.Size.Width;
             height = SakuraBox.Image.Size.Height;
@@ -608,6 +615,50 @@ namespace SakuraView
                 height = (int)(height * heightRatio);
             }
         }
+        private void AddImage(string filepath)
+        {
+            byte[] id = new byte[12];
+            try
+            {
+                using (System.IO.FileStream file = System.IO.File.Open(filepath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                {
+                    file.Read(id, 0, 12);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Substring(0, 34) == "The process cannot access the file")  // because it is being used by another process
+                {
+                    Console.WriteLine(filepath + " is used by another process.\ntherefore this program can't read that file.");
+                }
+                return;
+            }
+            if (id[0] == 0x89 && id[1] == 0x50 && id[2] == 0x4E && id[3] == 0x47) // ‰PNG
+            { }
+            else if (id[0] == 0x47 && id[1] == 0x49 && id[2] == 0x46 && id[3] == 0x38) // GIF8
+            { }
+            else if (id[0] == 0xff && id[1] == 0xd8 && id[2] == 0xff) // jpeg
+            { }
+            else if (id[0] == 0x42 && id[1] == 0x4D) // BM => bmp
+            { }
+            else if (id[0] == 0x49 && id[1] == 0x49 && id[2] == 0x2a && id[3] == 0x00) // tiff
+            { }
+            else if (id[0] == 0x4d && id[1] == 0x4d && id[2] == 0x00 && id[3] == 0x2a) // tiff <- another header
+            { }
+            else if (id[0] == 0x52 && id[1] == 0x49 && id[2] == 0x46 && id[3] == 0x46 && id[8] == 0x57 && id[9] == 0x45 && id[10] == 0x42 && id[11] == 0x50) // RIFF WEBP
+            { }
+            else if (id[0] == 0 && id[1] == 0 && id[2] == 1 && id[3] == 0) // ico
+            { }
+            else if (id[0] == 84 && id[1] == 69 && id[2] == 88 && id[3] == 48) // TEX0
+            { }
+            else if (id[0] == 0 && id[1] == 32 && id[2] == 0xaf && id[3] == 48)  // tpl file header
+            { }
+            else if (id[0] < 15 && id[6] < 3 && id[7] < 3)  // rough bti check
+            { }
+            else
+            { return; }
+            imagesPath.Add(filepath);
+        }
         private void SakuraViewClass_DragDrop(object sender, DragEventArgs e)
         {
             bool done = false;
@@ -697,7 +748,6 @@ namespace SakuraView
         {
             foreach (string fileItem in files)
             {
-
                 if (!duplicate)
                 {
                     if (!imagesPath.Contains(fileItem))
@@ -925,6 +975,24 @@ namespace SakuraView
             {
                 this.SakuraConsole.Text = "";
             }
+            else if (e.KeyCode == Keys.P)
+            {
+                string[] lines = this.SakuraConsole.Text.Split('\n');
+
+                // Check if there are at least 10 lines
+                if (lines.Length > 10)
+                {
+                    // Join lines starting from the 11th line
+                    this.SakuraConsole.Text = string.Join("\n", lines.Skip(10));
+
+                    // Now, textAfter10thLine contains the text after the 10th line separator
+                }
+                else
+                {
+                    // Handle the case where there are not enough lines
+                    this.SakuraConsole.Text = "";
+                }
+            }
             else if (e.KeyCode == Keys.O)
             {
                 using (var fbd = new FolderBrowserDialog())
@@ -939,24 +1007,22 @@ namespace SakuraView
                 }
             }
             else if (e.KeyCode == Keys.F)
-            { /*
-                var dlg = new FolderPicker();
-                dlg.InputPath = @"c:\windows\system32";
-                if (dlg.ShowDialog() == true)
-                {
-                    MessageBox.Show(dlg.ResultPath);
-                } */
+            {
                 FileDialog dialog = new OpenFileDialog
                 {
                     Title = "Select some pictures",
                     Filter = "Picture|*.bmp;*.png;*.jfif;*.jpg;*.jpeg;*.jpg;*.ico;*.gif;*.tif;*.tiff;*.rle;*.dib|Texture|*.bti;*.tex0;*.tpl|All files (*.*)|*.*",
-                    RestoreDirectory = true
+                    RestoreDirectory = true,
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    InitialDirectory = Environment.CurrentDirectory,
+                    Multiselect = true
                 };
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     LoadFiles(dialog.FileNames);
                     //LoadFolder(dialog.FileName.Replace("\\", "/"));
-                    Environment.CurrentDirectory = dialog.FileName.Replace("\\", "/");
+                    Environment.CurrentDirectory = Path.GetDirectoryName(dialog.FileName.Replace("\\", "/"));
                 }
 
             }
@@ -977,7 +1043,7 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.G)
             {
-                System.Diagnostics.Process.Start("https://www.github.com/yoshi2999/SakuraView/releases/latest");
+                System.Diagnostics.Process.Start("https://www.github.com/yoshkami/SakuraView/releases/latest");
             }
             else if (e.KeyCode == Keys.S)
             {
@@ -987,10 +1053,11 @@ namespace SakuraView
                 // txt[8] is only edited through the config
                 // txt[10] is only edited through the config
                 if (banner) { txt[12] = "view"; } else { txt[12] = "hide"; }
-                if (help) { txt[14] = "view"; } else { txt[14] = "hide"; }
-                if (info) { txt[16] = "view"; } else { txt[16] = "hide"; }
-                if (this.TopMost) { txt[18] = "true"; } else { txt[18] = "false"; }
-                if (duplicate) { txt[20] = "true"; } else { txt[20] = "false"; }
+                if (this.SakuraConsole.Visible) { txt[14] = "view"; } else { txt[14] = "hide"; }
+                if (help) { txt[16] = "view"; } else { txt[16] = "hide"; }
+                if (info) { txt[18] = "view"; } else { txt[18] = "hide"; }
+                if (this.TopMost) { txt[20] = "true"; } else { txt[20] = "false"; }
+                if (duplicate) { txt[22] = "true"; } else { txt[22] = "false"; }
                 try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
                 catch { } // continue execution without saving
             }
