@@ -46,6 +46,7 @@ namespace SakuraView
         static bool help = true;
         static bool info = true;
         static bool banner = true;
+        static bool loadSubFolders = true;
         static bool loadImage;
         static bool prevent_execution;
         static bool duplicate = true;
@@ -649,6 +650,10 @@ namespace SakuraView
         {
             e.Effect = DragDropEffects.Move;
         }
+        private void UpscaleImage()
+        {
+
+        }
 
         private void ViewImage(int imageNumber)
         {
@@ -713,6 +718,11 @@ namespace SakuraView
         private void LoadFolder(string currentDirectory)
         {
             string[] file = Directory.GetFiles(currentDirectory);
+            string[] folders = Directory.GetDirectories(currentDirectory);
+            foreach (string folder in folders)
+            {
+                LoadFolder(folder);
+            }
             foreach (string fileItem in file)
             {
 
@@ -1003,6 +1013,10 @@ namespace SakuraView
             else if (e.KeyCode == Keys.Enter)
             {
                 ScaleImage();
+            }
+            else if (e.KeyCode == Keys.Oemplus || e.KeyCode == Keys.Add)
+            {
+                UpscaleImage();
             }
         }
 
