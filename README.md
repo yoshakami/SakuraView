@@ -72,15 +72,16 @@ E: Empty List
 O: Open Directory
 F: Open Files
 K: Clear Console Output
-C: Toogle Console
-T: Toogle Banner
-I: Toogle Info
-A: Toogle Always On Top
-D: Toogle Duplicates
+C: Toggle Console
+T: Toggle Banner
+I: Toggle Info
+A: Toggle Always On Top
+D: Toggle Duplicates
+Q: Toggle Sub-folders processing
 X: Swap Horizontally
 Y: Swap Vertically
 R: Rotate ↻
 G: Github Releases
 P: Remove the last 10 lines of the console
 </pre>
-letters that won't do anything: Q,U,W
+letters that won't do anything: U,W

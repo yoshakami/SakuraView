@@ -959,6 +959,10 @@ namespace SakuraView
                 info = info != true;
                 SetInfo();
             }
+            else if (e.KeyCode == Keys.Q)
+            {
+                loadSubFolders = loadSubFolders != true;
+            }
             else if (e.KeyCode == Keys.D)
             {
                 duplicate = duplicate != true;
