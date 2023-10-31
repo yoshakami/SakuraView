@@ -51,12 +51,12 @@ namespace SakuraView
             this.SakuraInfo.AllowDrop = true;
             this.SakuraInfo.AutoSize = true;
             this.SakuraInfo.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.SakuraInfo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.SakuraInfo.Font = new System.Drawing.Font("Cascadia Code", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SakuraInfo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraInfo.Location = new System.Drawing.Point(16, 517);
+            this.SakuraInfo.Location = new System.Drawing.Point(12, 420);
             this.SakuraInfo.Margin = new System.Windows.Forms.Padding(0);
             this.SakuraInfo.Name = "SakuraInfo";
-            this.SakuraInfo.Size = new System.Drawing.Size(93, 21);
+            this.SakuraInfo.Size = new System.Drawing.Size(100, 21);
             this.SakuraInfo.TabIndex = 1;
             this.SakuraInfo.Text = "Sakura.bmp";
             this.SakuraInfo.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
@@ -69,10 +69,9 @@ namespace SakuraView
             this.SakuraSideHelp.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraSideHelp.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraSideHelp.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraSideHelp.Location = new System.Drawing.Point(1407, 0);
-            this.SakuraSideHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.SakuraSideHelp.Location = new System.Drawing.Point(1055, 0);
             this.SakuraSideHelp.Name = "SakuraSideHelp";
-            this.SakuraSideHelp.Size = new System.Drawing.Size(178, 1176);
+            this.SakuraSideHelp.Size = new System.Drawing.Size(296, 1239);
             this.SakuraSideHelp.TabIndex = 7;
             this.SakuraSideHelp.Text = resources.GetString("SakuraSideHelp.Text");
             this.SakuraSideHelp.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
@@ -85,8 +84,7 @@ namespace SakuraView
             this.SakuraHelp.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraHelp.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraHelp.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraHelp.Location = new System.Drawing.Point(16, 446);
-            this.SakuraHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.SakuraHelp.Location = new System.Drawing.Point(12, 362);
             this.SakuraHelp.Name = "SakuraHelp";
             this.SakuraHelp.Size = new System.Drawing.Size(1118, 42);
             this.SakuraHelp.TabIndex = 8;
@@ -101,8 +99,7 @@ namespace SakuraView
             this.SakuraHidden.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraHidden.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraHidden.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraHidden.Location = new System.Drawing.Point(365, 41);
-            this.SakuraHidden.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.SakuraHidden.Location = new System.Drawing.Point(274, 33);
             this.SakuraHidden.Name = "SakuraHidden";
             this.SakuraHidden.Size = new System.Drawing.Size(108, 21);
             this.SakuraHidden.TabIndex = 9;
@@ -115,9 +112,10 @@ namespace SakuraView
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox1.ForeColor = System.Drawing.Color.Silver;
-            this.textBox1.Location = new System.Drawing.Point(355, 12);
+            this.textBox1.Location = new System.Drawing.Point(266, 10);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(241, 22);
+            this.textBox1.Size = new System.Drawing.Size(181, 22);
             this.textBox1.TabIndex = 10;
             this.textBox1.Text = "Search Current Directory";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -128,9 +126,10 @@ namespace SakuraView
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox2.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox2.ForeColor = System.Drawing.Color.Silver;
-            this.textBox2.Location = new System.Drawing.Point(633, 12);
+            this.textBox2.Location = new System.Drawing.Point(475, 10);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(158, 22);
+            this.textBox2.Size = new System.Drawing.Size(118, 22);
             this.textBox2.TabIndex = 11;
             this.textBox2.Text = "Search Files";
             this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -141,9 +140,10 @@ namespace SakuraView
             this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox3.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox3.ForeColor = System.Drawing.Color.Silver;
-            this.textBox3.Location = new System.Drawing.Point(844, 12);
+            this.textBox3.Location = new System.Drawing.Point(633, 10);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(169, 22);
+            this.textBox3.Size = new System.Drawing.Size(127, 22);
             this.textBox3.TabIndex = 12;
             this.textBox3.Text = "Search Folders";
             this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -154,9 +154,10 @@ namespace SakuraView
             this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox4.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox4.ForeColor = System.Drawing.Color.Silver;
-            this.textBox4.Location = new System.Drawing.Point(1046, 12);
+            this.textBox4.Location = new System.Drawing.Point(784, 10);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(202, 22);
+            this.textBox4.Size = new System.Drawing.Size(152, 22);
             this.textBox4.TabIndex = 13;
             this.textBox4.Text = "Search All";
             this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -168,7 +169,7 @@ namespace SakuraView
             this.SakuraConsole.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraConsole.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraConsole.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraConsole.Location = new System.Drawing.Point(56, 74);
+            this.SakuraConsole.Location = new System.Drawing.Point(42, 60);
             this.SakuraConsole.Margin = new System.Windows.Forms.Padding(0);
             this.SakuraConsole.Name = "SakuraConsole";
             this.SakuraConsole.Size = new System.Drawing.Size(119, 21);
@@ -184,17 +185,17 @@ namespace SakuraView
             this.SakuraBox.Location = new System.Drawing.Point(0, 0);
             this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
             this.SakuraBox.Name = "SakuraBox";
-            this.SakuraBox.Size = new System.Drawing.Size(67, 62);
+            this.SakuraBox.Size = new System.Drawing.Size(50, 50);
             this.SakuraBox.TabIndex = 0;
             this.SakuraBox.TabStop = false;
             // 
             // SakuraView
             // 
             this.AllowDrop = true;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Purple;
-            this.ClientSize = new System.Drawing.Size(1660, 554);
+            this.ClientSize = new System.Drawing.Size(1245, 450);
             this.Controls.Add(this.SakuraConsole);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
@@ -206,8 +207,7 @@ namespace SakuraView
             this.Controls.Add(this.SakuraInfo);
             this.Controls.Add(this.SakuraBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.MinimumSize = new System.Drawing.Size(18, 47);
+            this.MinimumSize = new System.Drawing.Size(18, 45);
             this.Name = "SakuraView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "SakuraView";

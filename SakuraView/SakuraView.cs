@@ -7,6 +7,7 @@ using Webp;  // Webp.cs
 using System.Threading.Tasks;
 using System.Globalization;
 using System.Linq;
+using System.Diagnostics.Eventing.Reader;
 
 /* vanilla usings:
 using System;
@@ -49,14 +50,17 @@ namespace SakuraView
         static bool help = true;
         static bool info = true;
         static bool banner = true;
-        static bool loadSubFolders = true;
         static bool loadImage;
         static bool prevent_execution;
-        static bool duplicate = true;
+        static bool duplicate = false;
+        static bool loadSubFolders = true;
+        static bool counter = true;
+        static bool loop = true;
         static byte mode = 0; // 0 = ImageViewer; 1 = ImageExplorer; 2 = TextViewer; 3 = TextExplorer; 4 = TextEditor; 5 = Settings; 6 = SongExplorer
         static byte currentScreen = 0;
         static string padding = "    ";
         static string currentInfo;
+        static string text;
         static string specifier = "F";
         static CultureInfo culture = CultureInfo.CreateSpecificCulture("en-CA");
         static List<Image> images = new List<Image>();
@@ -107,7 +111,11 @@ namespace SakuraView
                 SetWindowPosition();
                 this.TopMost = txt[20].ToLower() == "true";
                 duplicate = txt[22].ToLower() == "true";
-                mode = byte.Parse(txt[24]);
+                counter = txt[24].ToLower() == "true";
+                loadSubFolders = txt[26].ToLower() == "true";
+                loop = txt[28].ToLower() == "true";
+                mode = byte.Parse(txt[30]);
+
             }
             catch
             {
@@ -124,8 +132,11 @@ namespace SakuraView
             }
             if (args.Length > 1)
             {
-                imagesPath.Add(args[1]);  // arg 1 is never a duplicate
-                LoadImage(args[1]);
+                if (AddImage(args[1]))
+                {
+                    LoadImage(args[1]); // arg 1 is never a duplicate
+                }
+
             }
             for (z = 2; z < args.Length; z++)
             {
@@ -133,12 +144,12 @@ namespace SakuraView
                 {
                     if (!imagesPath.Contains(args[z]))
                     {
-                        imagesPath.Add(args[z]);
+                        AddImage(args[z]);
                     }
                 }
                 else
                 {
-                    imagesPath.Add(args[z]);
+                    AddImage(args[z]);
                 }
             }
             SetMode();
@@ -164,8 +175,11 @@ namespace SakuraView
             "Info {View, Hide}", "View",  // config[18]
             "Always On Top {True, False}", "False", // config[20]
             "Allow Duplicates {True, False}", "False", // config[22]
-            "Mode {0, 1, 2, 3, 4, 5, 6}", "0" // config[24]
-                };
+            "Counter {True, False}", "True", // config[24]
+            "Load sub-folders {True, False}", "True", // config[26]
+            "Loop {True, False}", "True", // config[28]
+            "Mode {0, 1, 2, 3, 4, 5, 6}", "0" // config[30]
+             };
         }
         private void SetBackgroundColour(string backgroundColour)
         {
@@ -364,7 +378,12 @@ namespace SakuraView
                         images.Add(null);
                         imagesInfo.Add(null);
                     }
-                    string[] pictureInfo = { Path.GetFileName(filePath), GetFileSize(), GetPixelFormat(), SakuraBox.Image.Width + "x" + SakuraBox.Image.Height, File.GetCreationTime(filePath).ToString(), upscaleMode, upscaleAlgorithm, (currentImage + 1) + " / " + imagesPath.Count };
+                    string[] pictureInfo = { "" + (currentImage + 1), GetFileSize(), GetPixelFormat(), SakuraBox.Image.Width + "x" + SakuraBox.Image.Height, File.GetCreationTime(filePath).ToString(), upscaleMode, upscaleAlgorithm, Path.GetFileName(filePath) };
+                    if (counter)
+                    {
+                        pictureInfo[0] += " / " + imagesPath.Count;
+                    }
+
                     if (currentImage < images.Count)
                     {
                         images[currentImage] = SakuraBox.Image;
@@ -444,13 +463,28 @@ namespace SakuraView
             else
                 return ((double)fileSize / 1099511627776.0).ToString(specifier, culture) + " TB";
         }
+        private string Fill(string word, byte number)
+        {
+            z = (number - word.Length) >> 1;
+            text = "";
+            for (i = 0; i < z; i++)
+            {
+                text += " ";
+            }
+            y = number - word.Length - text.Length;
+            word = text + word;
+            for (i = 0; i < y; i++)
+            {
+                word += " ";
+            }
+            return word;
+        }
         private void LoadInfo()
         {
             if (currentImage > imagesInfo.Count)
                 currentImage = imagesInfo.Count - 1;
             SakuraHidden.Text = "";
-            padding = "";
-
+            /*
             while (SakuraHidden.Width < this.ClientSize.Width - 20)
             {
                 padding += " ";
@@ -460,8 +494,14 @@ namespace SakuraView
                     SakuraHidden.Text += imagesInfo[currentImage][i] + padding;
                 }
                 SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
-            }
+            }*/
             // Console.WriteLine(padding.Length);
+            SakuraHidden.Text = "";
+            for (int i = 0; i < imagesInfo[currentImage].Length - 1; i++)
+            {
+                SakuraHidden.Text += Fill(imagesInfo[currentImage][i], 20);
+            }
+            SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
             SakuraInfo.Text = SakuraHidden.Text;
         }
         private Image LoadImageFromFile(string path)  // allows the image not to be locked by the program
@@ -496,7 +536,23 @@ namespace SakuraView
         }
         private void ScaleImage()
         {
-            if (SakuraBox.Image == null || imagesPath.Count == 0) { return; }
+            if (SakuraBox.Image == null || imagesPath.Count == 0)
+            {
+                if (this.WindowState == FormWindowState.Maximized)
+                {
+                    width = Screen.AllScreens[currentScreen].Bounds.Width - SakuraSideHelp.Width;
+                    height = Screen.AllScreens[currentScreen].Bounds.Height - SakuraHelp.Height;
+                }
+                else
+                {
+                    width = this.ClientSize.Width - SakuraSideHelp.Width;
+                    height = this.ClientSize.Height - SakuraHelp.Height;
+                }
+                SakuraSideHelp.Location = new Point(width, 0);
+                SakuraHelp.Location = new Point(0, height);
+                SakuraInfo.Location = new Point(0, height + bottomSpace - SakuraInfo.Height);
+                return;
+            }
             LoadInfo();
             width = SakuraBox.Image.Size.Width;
             height = SakuraBox.Image.Size.Height;
@@ -615,8 +671,13 @@ namespace SakuraView
                 height = (int)(height * heightRatio);
             }
         }
-        private void AddImage(string filepath)
+        private bool AddImage(string filepath)
         {
+            if (!counter)
+            {
+                imagesPath.Add(filepath);
+                return true;
+            }
             byte[] id = new byte[12];
             try
             {
@@ -629,9 +690,9 @@ namespace SakuraView
             {
                 if (ex.Message.Substring(0, 34) == "The process cannot access the file")  // because it is being used by another process
                 {
-                    Console.WriteLine(filepath + " is used by another process.\ntherefore this program can't read that file.");
+                    SakuraConsole.Text += "\n" + filepath + " is used by another process.\ntherefore this program can't read that file.";
                 }
-                return;
+                return false;
             }
             if (id[0] == 0x89 && id[1] == 0x50 && id[2] == 0x4E && id[3] == 0x47) // ‰PNG
             { }
@@ -656,8 +717,9 @@ namespace SakuraView
             else if (id[0] < 15 && id[6] < 3 && id[7] < 3)  // rough bti check
             { }
             else
-            { return; }
+            { return false; }
             imagesPath.Add(filepath);
+            return true;
         }
         private void SakuraViewClass_DragDrop(object sender, DragEventArgs e)
         {
@@ -678,21 +740,20 @@ namespace SakuraView
                         {
                             if (!imagesPath.Contains(file[z]))
                             {
-
-                                imagesPath.Add(file[z]);
+                                AddImage(file[z]);
                             }
                         }
                         else
                         {
-                            imagesPath.Add(file[z]);
-                        }
-                        if (!done)
-                        {
-                            done = true;
-                            currentImage = imagesPath.IndexOf(file[0]);
-                            LoadImage(file[0]);
+                            AddImage(file[z]);
                         }
                     }
+                }
+                if (!done)
+                {
+                    done = true;
+                    currentImage = imagesPath.IndexOf(file[0]);
+                    LoadImage(file[0]);
                 }
             }
         }
@@ -705,19 +766,43 @@ namespace SakuraView
         {
 
         }
+        private void DownscaleImage()
+        {
 
+        }
         private void ViewImage(int imageNumber)
         {
             if (imageNumber < 0)
             {
-                if (images.Count > 0 && currentImage != 0)
+                if (images.Count > 0)
                 {
-                    currentImage = 0;
-                    SakuraBox.Image = images[currentImage];
-                    imagesInfo[0][7] = "1 / " + imagesPath.Count;
-                    LoadInfo();
+                    if (loop)
+                    {
+                        currentImage = imagesPath.Count - 1;
+                        imageNumber = currentImage;
+                        if (images[imageNumber] != null)
+                        {
+                            currentImage = imageNumber;
+                            SakuraBox.Image = images[currentImage];
+                            imagesInfo[imageNumber][0] = (imageNumber + 1) + " / " + imagesPath.Count;
+                            imagesInfo[imageNumber][5] = upscaleMode;
+                            LoadInfo();
+                        }
+                        else if (imageNumber < imagesPath.Count)
+                        {
+                            currentImage = imageNumber;
+                            LoadImage(imagesPath[imageNumber]);
+                        }
+                    }
+                    else if (currentImage != 0)
+                    {
+                        currentImage = 0;
+                        SakuraBox.Image = images[currentImage];
+                        imagesInfo[0][0] = "1 / " + imagesPath.Count;
+                        imagesInfo[0][5] = upscaleMode;
+                        LoadInfo();
+                    }
                 }
-
             }
             else if (imageNumber < images.Count)
             {
@@ -725,7 +810,8 @@ namespace SakuraView
                 {
                     currentImage = imageNumber;
                     SakuraBox.Image = images[currentImage];
-                    imagesInfo[imageNumber][7] = (imageNumber + 1) + " / " + imagesPath.Count;
+                    imagesInfo[imageNumber][0] = (imageNumber + 1) + " / " + imagesPath.Count;
+                    imagesInfo[imageNumber][5] = upscaleMode;
                     LoadInfo();
                 }
                 else if (imageNumber < imagesPath.Count)
@@ -741,7 +827,25 @@ namespace SakuraView
             }
             else
             {
-                LoadFolder(Environment.CurrentDirectory);
+                if (loop)
+                {
+                    if (images.Count > 1 && currentImage != 0)
+                    {
+                        currentImage = 0;
+                        SakuraBox.Image = images[currentImage];
+                        imagesInfo[0][0] = "1 / " + imagesPath.Count;
+                        imagesInfo[0][5] = upscaleMode;
+                        LoadInfo();
+                    }
+                }
+                else
+                {
+                    LoadFolder(Environment.CurrentDirectory);
+                }
+            }
+            if (upscaleMode != "fit" && upscaleMode != "stretch" && upscaleMode != "center")
+            {
+                ScaleImage();
             }
         }
         private void LoadFiles(string[] files)
@@ -753,12 +857,12 @@ namespace SakuraView
                     if (!imagesPath.Contains(fileItem))
                     {
 
-                        imagesPath.Add(fileItem);
+                        AddImage(fileItem);
                     }
                 }
                 else
                 {
-                    imagesPath.Add(fileItem);
+                    AddImage(fileItem);
                 }
             }
             currentImage = imagesPath.IndexOf(files[0]);
@@ -768,10 +872,13 @@ namespace SakuraView
         private void LoadFolder(string currentDirectory)
         {
             string[] file = Directory.GetFiles(currentDirectory);
-            string[] folders = Directory.GetDirectories(currentDirectory);
-            foreach (string folder in folders)
+            if (loadSubFolders)
             {
-                LoadFolder(folder);
+                string[] folders = Directory.GetDirectories(currentDirectory);
+                foreach (string folder in folders)
+                {
+                    LoadFolder(folder);
+                }
             }
             foreach (string fileItem in file)
             {
@@ -781,12 +888,12 @@ namespace SakuraView
                     if (!imagesPath.Contains(fileItem))
                     {
 
-                        imagesPath.Add(fileItem);
+                        AddImage(fileItem);
                     }
                 }
                 else
                 {
-                    imagesPath.Add(fileItem);
+                    AddImage(fileItem);
                 }
             }
             currentImage = imagesPath.IndexOf(file[0]);
@@ -900,7 +1007,7 @@ namespace SakuraView
                 SetAlgorithm();
                 SakuraBox.Refresh();
             }
-            else if (e.KeyCode == Keys.Z)
+            else if (e.KeyCode == Keys.W)
             {
                 upscaleAlgorithm = "default";
                 SetAlgorithm();
@@ -962,14 +1069,27 @@ namespace SakuraView
             else if (e.KeyCode == Keys.Q)
             {
                 loadSubFolders = loadSubFolders != true;
+                SakuraConsole.Text += "\nloadSubFolders = " + loadSubFolders;
+            }
+            else if (e.KeyCode == Keys.U)
+            {
+                counter = counter != true;
+                SakuraConsole.Text += "\ncounter = " + counter;
             }
             else if (e.KeyCode == Keys.D)
             {
                 duplicate = duplicate != true;
+                SakuraConsole.Text += "\nduplicate = " + duplicate;
             }
             else if (e.KeyCode == Keys.A)
             {
                 this.TopMost = this.TopMost != true;
+                SakuraConsole.Text += "\nthis.TopMost = " + this.TopMost;
+            }
+            else if (e.KeyCode == Keys.OemBackslash)
+            {
+                loop = loop != true;
+                SakuraConsole.Text += "\nloop = " + loop;
             }
             else if (e.KeyCode == Keys.C)
             {
@@ -1062,6 +1182,10 @@ namespace SakuraView
                 if (info) { txt[18] = "view"; } else { txt[18] = "hide"; }
                 if (this.TopMost) { txt[20] = "true"; } else { txt[20] = "false"; }
                 if (duplicate) { txt[22] = "true"; } else { txt[22] = "false"; }
+                if (counter) { txt[24] = "true"; } else { txt[24] = "false"; }
+                if (loadSubFolders) { txt[26] = "true"; } else { txt[26] = "false"; }
+                if (loop) { txt[28] = "true"; } else { txt[28] = "false"; }
+                txt[30] = mode.ToString();
                 try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
                 catch { } // continue execution without saving
             }
@@ -1088,6 +1212,14 @@ namespace SakuraView
             else if (e.KeyCode == Keys.Oemplus || e.KeyCode == Keys.Add)
             {
                 UpscaleImage();
+            }
+            else if (e.KeyCode == Keys.OemMinus || e.KeyCode == Keys.Subtract)
+            {
+                DownscaleImage();
+            }
+            else if (e.KeyCode == Keys.Z)
+            {
+                ScaleImage(); // TODO
             }
         }
 

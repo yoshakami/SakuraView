@@ -38,6 +38,45 @@ F10: Normal2
 F11: Maximized
 F12: Maximized2
 
+Escape: Quit
+Enter: Refresh
+
+B: Bicubic
+M: Bilinear
+W: Default
+H: High
+J: HighQualityBicubic
+V: HighQualityBilinear
+L: Low
+N: NeareastNeighbor
+
+A: Toggle Always On Top
+C: Toggle Console
+D: Toggle Duplicates
+E: Empty List
+F: Open Files
+G: Github Releases
+I: Toggle Info
+K: Clear Console Output
+O: Open Directory
+P: Remove the last 10 lines of the console
+Q: Toggle Sub-folders processing
+R: Rotate ↻
+S: Save config
+T: Toggle Banner
+U: Toggle Counter
+X: Swap Horizontally
+Y: Swap Vertically
+Z: Reset Zoom
++: Increase Zoom
+-: Decrease Zoom
+<: Toggle Loop (or load images in current folder)
+
+← Previous
+→ Next
+↑ First
+↓ Last
+
 Show Images :
 0 First
 1 10%
@@ -49,39 +88,4 @@ Show Images :
 7 70%
 8 80%
 9 90%
-
-← Previous
-→ Next
-↑ First
-↓ Last
-
-Escape: Quit
-Enter: Refresh
-
-B: Bicubic
-M: Bilinear
-Z: Default
-H: High
-J: HighQualityBicubic
-V: HighQualityBilinear
-L: Low
-N: NeareastNeighbor
-
-S: Save config
-E: Empty List
-O: Open Directory
-F: Open Files
-K: Clear Console Output
-C: Toggle Console
-T: Toggle Banner
-I: Toggle Info
-A: Toggle Always On Top
-D: Toggle Duplicates
-Q: Toggle Sub-folders processing
-X: Swap Horizontally
-Y: Swap Vertically
-R: Rotate ↻
-G: Github Releases
-P: Remove the last 10 lines of the console
 </pre>
-letters that won't do anything: U,W

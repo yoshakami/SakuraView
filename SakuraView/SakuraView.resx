@@ -153,7 +153,7 @@ Enter: Refresh
 
 B: Bicubic
 M: Bilinear
-Z: Default
+W: Default
 H: High
 J: HighQualityBicubic
 V: HighQualityBilinear
@@ -165,18 +165,21 @@ E: Empty List
 O: Open Directory
 F: Open Files
 K: Clear Console Output
-C: Toogle Console
-T: Toogle Banner
-I: Toogle Info
-A: Toogle Always On Top
-D: Toogle Duplicates
+C: Toggle Console
+T: Toggle Banner
+I: Toggle Info
+A: Toggle Always On Top
+D: Toggle Duplicates
+Q: Toggle Sub-folders processing
 X: Swap Horizontally
 Y: Swap Vertically
 R: Rotate ↻
-G: Github Releases</value>
+G: Github Releases
+P: Remove the last 10 lines of the console
+Z: Zoom</value>
   </data>
   <data name="SakuraHelp.Text" xml:space="preserve">
-    <value>B: Bicubic    M: Bilinear    Z: Default    H: High    J: HighQualityBicubic    V: HighQualityBilinear    L: Low    N: NeareastNeighbor     Esc: Quit     Enter: Refresh
+    <value>B: Bicubic    M: Bilinear    W: Default    H: High    J: HighQualityBicubic    V: HighQualityBilinear    L: Low    N: NeareastNeighbor     Esc: Quit     Enter: Refresh
 S: Save config     E: Empty List     K: Clear     C: Console     T: Banner     I: Info     A: Always On Top   D: Duplicates    X: Swap X     Y: Swap Y     R: Rotate ↻     G: GitHub</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
