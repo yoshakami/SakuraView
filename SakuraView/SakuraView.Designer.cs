@@ -176,6 +176,8 @@ namespace SakuraView
             this.SakuraConsole.Size = new System.Drawing.Size(119, 21);
             this.SakuraConsole.TabIndex = 14;
             this.SakuraConsole.Text = "Console output:";
+            this.SakuraConsole.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SakuraConsole_MouseDown);
+            this.SakuraConsole.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SakuraConsole_MouseMove);
             // 
             // SakuraBox
             // 
@@ -203,6 +205,8 @@ namespace SakuraView
             this.SakuraMetadata.Size = new System.Drawing.Size(123, 21);
             this.SakuraMetadata.TabIndex = 15;
             this.SakuraMetadata.Text = "SakuraMetadata";
+            this.SakuraMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SakuraMetadata_MouseDown);
+            this.SakuraMetadata.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SakuraMetadata_MouseMove);
             // 
             // SakuraView
             // 
