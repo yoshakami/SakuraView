@@ -43,7 +43,7 @@ namespace SakuraView
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.SakuraConsole = new System.Windows.Forms.Label();
             this.SakuraBox = new PictureBoxWithInterpolationMode();
-            this.label1 = new System.Windows.Forms.Label();
+            this.SakuraMetadata = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -190,19 +190,19 @@ namespace SakuraView
             this.SakuraBox.TabIndex = 0;
             this.SakuraBox.TabStop = false;
             // 
-            // label1
+            // SakuraMetadata
             // 
-            this.label1.AllowDrop = true;
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(12, 166);
-            this.label1.Margin = new System.Windows.Forms.Padding(0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(119, 21);
-            this.label1.TabIndex = 15;
-            this.label1.Text = "Console output:";
+            this.SakuraMetadata.AllowDrop = true;
+            this.SakuraMetadata.AutoSize = true;
+            this.SakuraMetadata.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.SakuraMetadata.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.SakuraMetadata.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.SakuraMetadata.Location = new System.Drawing.Point(12, 166);
+            this.SakuraMetadata.Margin = new System.Windows.Forms.Padding(0);
+            this.SakuraMetadata.Name = "SakuraMetadata";
+            this.SakuraMetadata.Size = new System.Drawing.Size(123, 21);
+            this.SakuraMetadata.TabIndex = 15;
+            this.SakuraMetadata.Text = "SakuraMetadata";
             // 
             // SakuraView
             // 
@@ -211,7 +211,7 @@ namespace SakuraView
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Purple;
             this.ClientSize = new System.Drawing.Size(1245, 450);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.SakuraMetadata);
             this.Controls.Add(this.SakuraConsole);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
@@ -248,7 +248,7 @@ namespace SakuraView
         private TextBox textBox3;
         private TextBox textBox4;
         private Label SakuraConsole;
-        private Label label1;
+        private Label SakuraMetadata;
     }
 }
 

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System.Linq;
 using System.Diagnostics.Eventing.Reader;
+using System.Text;
+using System.Text.RegularExpressions;
 
 /* vanilla usings:
 using System;
@@ -63,6 +65,7 @@ namespace SakuraView
         static string currentInfo;
         static string text;
         static string specifier = "F";
+        static string[] pngMetadata = { "Prompt: ", "Negative Prompt: ", "Steps: ", "Sampler: ", "CFG Scale: ", "Seed: ", "Width: ", "Height: ", "Subseed: ", "Subseed Strength: ", "Model: ", "Lora: " };
         static CultureInfo culture = CultureInfo.CreateSpecificCulture("en-CA");
         static List<Image> images = new List<Image>();
         static List<string> imagesPath = new List<string>();
@@ -361,7 +364,127 @@ namespace SakuraView
         }
         private void LoadMetadata(int imageNumber)
         {
+            SakuraMetadata.Text = "";
+            if (imagesType[imageNumber] == 0 || !counter) // png
+            {
+                string[] output = new string[13];
 
+                try
+                {
+                    using (FileStream png = new FileStream(imagesPath[imageNumber], FileMode.Open, FileAccess.Read))
+                    {
+                        byte[] textBytes = new byte[8192];
+                        int bytesRead = png.Read(textBytes, 0, 8192);
+                        if (!ByteArrayEquals(textBytes.Take(4).ToArray(), new byte[] { 0x89, 0x50, 0x4E, 0x47 }))
+                        {
+                            SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a PNG file";
+                            imagesMetadata.Add(null);
+                            return;
+                        }
+                        x = (textBytes[0x21] << 24) | (textBytes[0x22] << 16) | (textBytes[0x23] << 8) | textBytes[0x24];
+
+                        if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), Encoding.ASCII.GetBytes("tEXtparameters")))
+                        {
+                            if (!ByteArrayEquals(textBytes.Skip(0x25).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
+                            {
+                                SakuraConsole.Text += $"\n{imagesPath[imageNumber]} has no png metadata";
+                                imagesMetadata.Add(null);
+                                return;
+                            }
+                            SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
+                            SakuraMetadata.Text = SakuraMetadata.Text = Encoding.UTF8.GetString(textBytes, 0x29, x).Replace('\0', '\n');
+                            return;
+                        }
+                        string text = Encoding.UTF8.GetString(textBytes, 0x34, x).Trim();
+                        text = text.Split('\x00')[0].Trim();
+                        string[] textLines = text.Split('\n');
+                        j = 0;
+                        if (textLines.Length == 2)
+                        {
+                            if (textLines[0].StartsWith("Negative prompt: "))
+                            {
+                                output[1] = textLines[0].Substring(17);  // negative prompt
+                            }
+                            else
+                            {
+                                output[0] = textLines[0];  // prompt
+                            }
+                            textLines = new string[] { "", textLines[0] };
+                            j = 1;
+                        }
+                        else if (textLines.Length == 3)
+                        {
+                            output[0] = textLines[0].TrimEnd();  // prompt
+                            output[1] = textLines[1].Substring(17);  // negative prompt
+                            j = 2;
+                        }
+                        output[1] = textLines[1].Split(new string[] { "Negative prompt: " }, StringSplitOptions.None)[1].Split(new string[] { "\\n" }, StringSplitOptions.None)[0].TrimEnd();  // negative prompt
+                        output[2] = GetParamValue(textLines[j], "Steps:");
+                        output[3] = GetParamValue(textLines[1], "Sampler:");
+                        output[4] = GetParamValue(textLines[1], "CFG scale:");
+                        output[5] = GetParamValue(textLines[1], "Seed:");
+
+                        text = GetParamValue(textLines[1], "Size:");
+                        if (text.Contains("x"))
+                        {
+                            string[] dimensions = text.Split('x');
+                            output[6] = dimensions[0];  // width
+                            output[7] = dimensions[1];  // height
+                        }
+                        text = GetParamValue(textLines[1], "Variation seed:");
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            output[8] = text;  // subseed
+                        }
+                        text = GetParamValue(textLines[1], "Variation seed strength:");
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            output[9] = text;  // subseed strength between 0.0 and 1.0
+                        }
+                        output[10] = GetParamValue(textLines[1], "Model:");
+                        string[] loraSplit = textLines[1].Split(new string[] { "Lora hashes: \"" }, StringSplitOptions.None);
+                        if (loraSplit.Length > 1)
+                        {
+                            text = loraSplit[1].Split(':')[0].Trim();
+                            output[11] = text;  // lora
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SakuraConsole.Text += $"\nError parsing PNG file: {ex.Message}";
+                    imagesMetadata.Add(null);
+                    return;
+                }
+                for (i = 0; i < output.Length - 1; i++)
+                {
+                    if (!string.IsNullOrEmpty(output[i]))
+                        SakuraMetadata.Text = pngMetadata[i] + output[i] + "\n";
+                }
+                if (!string.IsNullOrEmpty(output[i]))
+                    SakuraMetadata.Text = pngMetadata[i] + output[i] + "\n"; // for the last one I won't put a new line at the end
+            }
+        }
+        private bool ByteArrayEquals(byte[] a1, byte[] a2)
+        {
+            if (a1.Length != a2.Length)
+                return false;
+
+            for (int i = 0; i < a1.Length; i++)
+            {
+                if (a1[i] != a2[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        private string GetParamValue(string text, string paramName)
+        {
+            string pattern = $"{paramName}([^,]+)";
+            Match match = Regex.Match(text, pattern);
+
+            return match.Success ? $" {paramName.ToLower()}:{match.Groups[1].Value.Trim()}" : "";
         }
         private void LoadImage(String filePath)
         {
@@ -399,7 +522,9 @@ namespace SakuraView
                     }
                     if (metadata)
                     {
-                        if (imagesMetadata[currentImage] == null)
+                        if (imagesMetadata.Count == currentImage)
+                            LoadMetadata(currentImage);
+                        else if (imagesMetadata[currentImage] == null)
                             LoadMetadata(currentImage);
                     }
 
@@ -414,7 +539,7 @@ namespace SakuraView
                         imagesInfo.Add(pictureInfo);
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     //Console.WriteLine("Invalid input Image -> " + filePath);
                     SakuraConsole.Text += "\nInvalid input Image -> " + filePath;
@@ -722,15 +847,15 @@ namespace SakuraView
             else if (id[0] == 0x4d && id[1] == 0x4d && id[2] == 0x00 && id[3] == 0x2a) // tiff <- another header
             { imagesType.Add(4); }
             else if (id[0] == 0x52 && id[1] == 0x49 && id[2] == 0x46 && id[3] == 0x46 && id[8] == 0x57 && id[9] == 0x45 && id[10] == 0x42 && id[11] == 0x50) // RIFF WEBP
-            { imagesType.Add(0); }
+            { imagesType.Add(2); }
             else if (id[0] == 0 && id[1] == 0 && id[2] == 1 && id[3] == 0) // ico
-            { }
+            { imagesType.Add(3); }
             else if (id[0] == 84 && id[1] == 69 && id[2] == 88 && id[3] == 48) // TEX0
-            { }
+            { imagesType.Add(9); }
             else if (id[0] == 0 && id[1] == 32 && id[2] == 0xaf && id[3] == 48)  // tpl file header
-            { }
+            { imagesType.Add(8); }
             else if (id[0] < 15 && id[6] < 3 && id[7] < 3)  // rough bti check
-            { }
+            { imagesType.Add(7); }
             else
             { return false; }
             imagesPath.Add(filepath);
@@ -911,7 +1036,7 @@ namespace SakuraView
                     AddImage(fileItem);
                 }
             }
-            foreach(string fileItem in file)
+            foreach (string fileItem in file)
             {
                 currentImage = imagesPath.IndexOf(file[0]);
                 if (currentImage != -1)
