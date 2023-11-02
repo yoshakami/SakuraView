@@ -18,9 +18,11 @@ this topic will need more research toward available plugins\
 \
 v0.1 Standalone\
 v0.2 webp support\
-v0.3 pdf support\
-v0.4 dds, eps, iff, pic, pix, rgb, rla, tga, tim, xpm, and yuv support\
-v0.5 tex0, tpl, bti, brres, bmd, and u8 support
+v0.3 tex0, tpl, bti\
+v0.4 pix, dds, cin, iff, eps, yuv, rgb, pic, tim, tga, rla, xpm, and hdr support\
+v0.5 heic support\
+v0.6 pdf support\
+v0.7 brres, bmd, and u8 support\
 
 ## Keyboard Shortcuts
 press F1 to show them, then F1 again to hide them. The text below is also shown in the application for people too lazy to come here.
@@ -71,6 +73,7 @@ Z: Reset Zoom
 +: Increase Zoom
 -: Decrease Zoom
 <: Toggle Loop (or load images in current folder)
+²: Toggle Image Metadata
 
 ← Previous
 → Next

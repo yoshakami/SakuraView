@@ -56,9 +56,10 @@ namespace SakuraView
         static bool loadSubFolders = true;
         static bool counter = true;
         static bool loop = true;
+        static bool metadata = true;
         static byte mode = 0; // 0 = ImageViewer; 1 = ImageExplorer; 2 = TextViewer; 3 = TextExplorer; 4 = TextEditor; 5 = Settings; 6 = SongExplorer
         static byte currentScreen = 0;
-        static string padding = "    ";
+        static byte padding = 30;
         static string currentInfo;
         static string text;
         static string specifier = "F";
@@ -66,6 +67,13 @@ namespace SakuraView
         static List<Image> images = new List<Image>();
         static List<string> imagesPath = new List<string>();
         static List<string[]> imagesInfo = new List<string[]>();
+        static List<string[]> imagesMetadata = new List<string[]>();
+        static List<byte> imagesType = new List<byte>();
+        /* 0 png  -  1 jpeg  -  2 webp  -  3 ico  -  4 tiff  -  5 bmp
+           6 gif  -  7 bti   -  8 tpl   -  9 tex0 - 10 heic  - 11 pdf
+          12 bmd  - 13 brres - 14 u8    - 15 pix  - 16 dds   - 17 cin
+          18 iff  - 19 eps   - 20 yuv   - 21 rgb  - 22 pic   - 23 tim
+          24 tga  - 25 rla   - 26 xpm   - 27 hdr  - 28 apng  - 29 rgb565 */
         static List<Object> imageViewerComponents = new List<Object>();
         static List<TextBox> file_browser_list = new List<TextBox>();
         static string[] txt;
@@ -153,6 +161,7 @@ namespace SakuraView
                 }
             }
             SetMode();
+            SakuraView_ClientSizeChanged(null, null);
         }
         private void SetMode()
         {
@@ -350,6 +359,10 @@ namespace SakuraView
                     break;
             }
         }
+        private void LoadMetadata(int imageNumber)
+        {
+
+        }
         private void LoadImage(String filePath)
         {
             if (System.IO.File.Exists(filePath))
@@ -377,11 +390,17 @@ namespace SakuraView
                     {
                         images.Add(null);
                         imagesInfo.Add(null);
+                        imagesMetadata.Add(null);
                     }
                     string[] pictureInfo = { "" + (currentImage + 1), GetFileSize(), GetPixelFormat(), SakuraBox.Image.Width + "x" + SakuraBox.Image.Height, File.GetCreationTime(filePath).ToString(), upscaleMode, upscaleAlgorithm, Path.GetFileName(filePath) };
                     if (counter)
                     {
                         pictureInfo[0] += " / " + imagesPath.Count;
+                    }
+                    if (metadata)
+                    {
+                        if (imagesMetadata[currentImage] == null)
+                            LoadMetadata(currentImage);
                     }
 
                     if (currentImage < images.Count)
@@ -479,29 +498,25 @@ namespace SakuraView
             }
             return word;
         }
-        private void LoadInfo()
+        private void ScaleInfo()
         {
             if (currentImage > imagesInfo.Count)
                 currentImage = imagesInfo.Count - 1;
             SakuraHidden.Text = "";
-            /*
-            while (SakuraHidden.Width < this.ClientSize.Width - 20)
-            {
-                padding += " ";
-                SakuraHidden.Text = "";
-                for (int i = 0; i < imagesInfo[currentImage].Length - 1; i++)
-                {
-                    SakuraHidden.Text += imagesInfo[currentImage][i] + padding;
-                }
-                SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
-            }*/
-            // Console.WriteLine(padding.Length);
-            SakuraHidden.Text = "";
             for (int i = 0; i < imagesInfo[currentImage].Length - 1; i++)
             {
-                SakuraHidden.Text += Fill(imagesInfo[currentImage][i], 20);
+                SakuraHidden.Text += Fill(imagesInfo[currentImage][i], padding);
             }
             SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
+            if (SakuraHidden.Width > ClientSize.Width && padding != 1)
+            {
+                padding--;
+                ScaleInfo();
+            }
+        }
+        private void LoadInfo()
+        {
+            ScaleInfo();
             SakuraInfo.Text = SakuraHidden.Text;
         }
         private Image LoadImageFromFile(string path)  // allows the image not to be locked by the program
@@ -690,24 +705,24 @@ namespace SakuraView
             {
                 if (ex.Message.Substring(0, 34) == "The process cannot access the file")  // because it is being used by another process
                 {
-                    SakuraConsole.Text += "\n" + filepath + " is used by another process.\ntherefore this program can't read that file.";
+                    SakuraConsole.Text += "\n" + filepath + " is used by another process. therefore this program can't read that file.";
                 }
                 return false;
             }
             if (id[0] == 0x89 && id[1] == 0x50 && id[2] == 0x4E && id[3] == 0x47) // ‰PNG
-            { }
+            { imagesType.Add(0); }
             else if (id[0] == 0x47 && id[1] == 0x49 && id[2] == 0x46 && id[3] == 0x38) // GIF8
-            { }
+            { imagesType.Add(6); }
             else if (id[0] == 0xff && id[1] == 0xd8 && id[2] == 0xff) // jpeg
-            { }
+            { imagesType.Add(1); }
             else if (id[0] == 0x42 && id[1] == 0x4D) // BM => bmp
-            { }
+            { imagesType.Add(5); }
             else if (id[0] == 0x49 && id[1] == 0x49 && id[2] == 0x2a && id[3] == 0x00) // tiff
-            { }
+            { imagesType.Add(4); }
             else if (id[0] == 0x4d && id[1] == 0x4d && id[2] == 0x00 && id[3] == 0x2a) // tiff <- another header
-            { }
+            { imagesType.Add(4); }
             else if (id[0] == 0x52 && id[1] == 0x49 && id[2] == 0x46 && id[3] == 0x46 && id[8] == 0x57 && id[9] == 0x45 && id[10] == 0x42 && id[11] == 0x50) // RIFF WEBP
-            { }
+            { imagesType.Add(0); }
             else if (id[0] == 0 && id[1] == 0 && id[2] == 1 && id[3] == 0) // ico
             { }
             else if (id[0] == 84 && id[1] == 69 && id[2] == 88 && id[3] == 48) // TEX0
@@ -896,8 +911,15 @@ namespace SakuraView
                     AddImage(fileItem);
                 }
             }
-            currentImage = imagesPath.IndexOf(file[0]);
-            LoadImage(file[0]);
+            foreach(string fileItem in file)
+            {
+                currentImage = imagesPath.IndexOf(file[0]);
+                if (currentImage != -1)
+                    break;
+            }
+            if (currentImage == -1)
+                currentImage = 0;
+            ViewImage(currentImage);
         }
 
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
@@ -1229,6 +1251,17 @@ namespace SakuraView
                 return;
             prevent_execution = true;
             ScaleImage();
+            if (SakuraInfo.Width > ClientSize.Width)
+            {
+                ScaleInfo();
+                SakuraInfo.Text = SakuraHidden.Text;
+            }
+            else if (SakuraInfo.Width > ClientSize.Width >> 1)
+            {
+                padding = 30;
+                ScaleInfo();
+                SakuraInfo.Text = SakuraHidden.Text;
+            }
             Task.Delay(20).ContinueWith(t => endthis());
         }
 

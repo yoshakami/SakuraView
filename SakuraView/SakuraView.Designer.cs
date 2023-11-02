@@ -43,6 +43,7 @@ namespace SakuraView
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.SakuraConsole = new System.Windows.Forms.Label();
             this.SakuraBox = new PictureBoxWithInterpolationMode();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -97,11 +98,11 @@ namespace SakuraView
             this.SakuraHidden.AllowDrop = true;
             this.SakuraHidden.AutoSize = true;
             this.SakuraHidden.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.SakuraHidden.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.SakuraHidden.Font = new System.Drawing.Font("Cascadia Code", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SakuraHidden.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.SakuraHidden.Location = new System.Drawing.Point(274, 33);
             this.SakuraHidden.Name = "SakuraHidden";
-            this.SakuraHidden.Size = new System.Drawing.Size(108, 21);
+            this.SakuraHidden.Size = new System.Drawing.Size(118, 21);
             this.SakuraHidden.TabIndex = 9;
             this.SakuraHidden.Text = "SakuraHidden";
             this.SakuraHidden.Visible = false;
@@ -113,7 +114,7 @@ namespace SakuraView
             this.textBox1.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox1.ForeColor = System.Drawing.Color.Silver;
             this.textBox1.Location = new System.Drawing.Point(266, 10);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(181, 22);
             this.textBox1.TabIndex = 10;
@@ -127,7 +128,7 @@ namespace SakuraView
             this.textBox2.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox2.ForeColor = System.Drawing.Color.Silver;
             this.textBox2.Location = new System.Drawing.Point(475, 10);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(118, 22);
             this.textBox2.TabIndex = 11;
@@ -141,7 +142,7 @@ namespace SakuraView
             this.textBox3.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox3.ForeColor = System.Drawing.Color.Silver;
             this.textBox3.Location = new System.Drawing.Point(633, 10);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(2);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(127, 22);
             this.textBox3.TabIndex = 12;
@@ -155,7 +156,7 @@ namespace SakuraView
             this.textBox4.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.textBox4.ForeColor = System.Drawing.Color.Silver;
             this.textBox4.Location = new System.Drawing.Point(784, 10);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(2);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(152, 22);
             this.textBox4.TabIndex = 13;
@@ -169,7 +170,7 @@ namespace SakuraView
             this.SakuraConsole.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.SakuraConsole.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.SakuraConsole.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.SakuraConsole.Location = new System.Drawing.Point(42, 60);
+            this.SakuraConsole.Location = new System.Drawing.Point(12, 64);
             this.SakuraConsole.Margin = new System.Windows.Forms.Padding(0);
             this.SakuraConsole.Name = "SakuraConsole";
             this.SakuraConsole.Size = new System.Drawing.Size(119, 21);
@@ -189,6 +190,20 @@ namespace SakuraView
             this.SakuraBox.TabIndex = 0;
             this.SakuraBox.TabStop = false;
             // 
+            // label1
+            // 
+            this.label1.AllowDrop = true;
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label1.Location = new System.Drawing.Point(12, 166);
+            this.label1.Margin = new System.Windows.Forms.Padding(0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(119, 21);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Console output:";
+            // 
             // SakuraView
             // 
             this.AllowDrop = true;
@@ -196,6 +211,7 @@ namespace SakuraView
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Purple;
             this.ClientSize = new System.Drawing.Size(1245, 450);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.SakuraConsole);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
@@ -232,6 +248,7 @@ namespace SakuraView
         private TextBox textBox3;
         private TextBox textBox4;
         private Label SakuraConsole;
+        private Label label1;
     }
 }
 
