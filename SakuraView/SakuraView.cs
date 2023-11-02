@@ -48,6 +48,7 @@ namespace SakuraView
         static int y;
         static int z;
         static long fileSize;
+        static ushort metadataLength = 200;
         static bool windowFound;
         static bool help = true;
         static bool info = true;
@@ -70,7 +71,7 @@ namespace SakuraView
         static List<Image> images = new List<Image>();
         static List<string> imagesPath = new List<string>();
         static List<string[]> imagesInfo = new List<string[]>();
-        static List<string[]> imagesMetadata = new List<string[]>();
+        static List<string> imagesMetadata = new List<string>();
         static List<byte> imagesType = new List<byte>();
         /* 0 png  -  1 jpeg  -  2 webp  -  3 ico  -  4 tiff  -  5 bmp
            6 gif  -  7 bti   -  8 tpl   -  9 tex0 - 10 heic  - 11 pdf
@@ -126,6 +127,7 @@ namespace SakuraView
                 loadSubFolders = txt[26].ToLower() == "true";
                 loop = txt[28].ToLower() == "true";
                 mode = byte.Parse(txt[30]);
+                metadataLength = ushort.Parse(txt[32]);
 
             }
             catch
@@ -177,7 +179,7 @@ namespace SakuraView
         {
             txt = new string[] {
                 "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
-            "Scale mode {Fill, Fit, Stretch, VanillaFit, VanillaFill, Center}","Fit",  // config[4]
+            "Scale mode {Fill, Fit, Stretch, VanillaFit, LeftFit, Center}","Fit",  // config[4]
             "Window Location Window Location {Minimized, Normal, Maximized, Normal2, Maximized2}", "Normal",  // config[6]
             "Text Colour (System.Drawing.Color)", "White",  // config[8]
             "Background Colour", "Black",  // config[10]
@@ -190,7 +192,9 @@ namespace SakuraView
             "Counter {True, False}", "True", // config[24]
             "Load sub-folders {True, False}", "True", // config[26]
             "Loop {True, False}", "True", // config[28]
-            "Mode {0, 1, 2, 3, 4, 5, 6}", "0" // config[30]
+            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // config[30]
+            "Metadata Length (in character count per line)", "200", // config[32]
+            "Metadata Position {Left, Right}", "Right", // config[34]
              };
         }
         private void SetBackgroundColour(string backgroundColour)
@@ -399,7 +403,7 @@ namespace SakuraView
                         text = text.Split('\x00')[0].Trim();
                         string[] textLines = text.Split('\n');
                         j = 0;
-                        if (textLines.Length == 2)
+                        if (textLines.Length == 2)  // either the prompt or the negative is not there
                         {
                             if (textLines[0].StartsWith("Negative prompt: "))
                             {
@@ -412,37 +416,36 @@ namespace SakuraView
                             textLines = new string[] { "", textLines[0] };
                             j = 1;
                         }
-                        else if (textLines.Length == 3)
+                        else if (textLines.Length == 3)  // both are there
                         {
                             output[0] = textLines[0].TrimEnd();  // prompt
                             output[1] = textLines[1].Substring(17);  // negative prompt
                             j = 2;
                         }
-                        output[1] = textLines[1].Split(new string[] { "Negative prompt: " }, StringSplitOptions.None)[1].Split(new string[] { "\\n" }, StringSplitOptions.None)[0].TrimEnd();  // negative prompt
                         output[2] = GetParamValue(textLines[j], "Steps:");
-                        output[3] = GetParamValue(textLines[1], "Sampler:");
-                        output[4] = GetParamValue(textLines[1], "CFG scale:");
-                        output[5] = GetParamValue(textLines[1], "Seed:");
+                        output[3] = GetParamValue(textLines[j], "Sampler:");
+                        output[4] = GetParamValue(textLines[j], "CFG scale:");
+                        output[5] = GetParamValue(textLines[j], "Seed:");
 
-                        text = GetParamValue(textLines[1], "Size:");
+                        text = GetParamValue(textLines[j], "Size:");
                         if (text.Contains("x"))
                         {
                             string[] dimensions = text.Split('x');
                             output[6] = dimensions[0];  // width
                             output[7] = dimensions[1];  // height
                         }
-                        text = GetParamValue(textLines[1], "Variation seed:");
+                        text = GetParamValue(textLines[j], "Variation seed:");
                         if (!string.IsNullOrEmpty(text))
                         {
                             output[8] = text;  // subseed
                         }
-                        text = GetParamValue(textLines[1], "Variation seed strength:");
+                        text = GetParamValue(textLines[j], "Variation seed strength:");
                         if (!string.IsNullOrEmpty(text))
                         {
                             output[9] = text;  // subseed strength between 0.0 and 1.0
                         }
-                        output[10] = GetParamValue(textLines[1], "Model:");
-                        string[] loraSplit = textLines[1].Split(new string[] { "Lora hashes: \"" }, StringSplitOptions.None);
+                        output[10] = GetParamValue(textLines[j], "Model:");
+                        string[] loraSplit = textLines[j].Split(new string[] { "Lora hashes: \"" }, StringSplitOptions.None);
                         if (loraSplit.Length > 1)
                         {
                             text = loraSplit[1].Split(':')[0].Trim();
@@ -456,15 +459,48 @@ namespace SakuraView
                     imagesMetadata.Add(null);
                     return;
                 }
-                for (i = 0; i < output.Length - 1; i++)
+                for (i = 0; i < 2; i++)
                 {
                     if (!string.IsNullOrEmpty(output[i]))
-                        SakuraMetadata.Text = pngMetadata[i] + output[i] + "\n";
+                        SakuraMetadata.Text += pngMetadata[i] + "\n" + WrapText(output[i], metadataLength) + "\n\n";
+                }
+                for (; i < output.Length - 1; i++)
+                {
+                    if (!string.IsNullOrEmpty(output[i]))
+                        SakuraMetadata.Text += pngMetadata[i] + output[i] + "\n";
                 }
                 if (!string.IsNullOrEmpty(output[i]))
-                    SakuraMetadata.Text = pngMetadata[i] + output[i] + "\n"; // for the last one I won't put a new line at the end
+                    SakuraMetadata.Text += pngMetadata[i] + output[i] + "\n"; // for the last one I won't put a new line at the end
+                imagesMetadata.Add(SakuraMetadata.Text);
             }
+            else { imagesMetadata.Add(null); }
         }
+        public static string WrapText(string input, int maxLength)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            while (input.Length > maxLength)
+            {
+                int spaceIndex = input.LastIndexOf(' ', maxLength);
+
+                if (spaceIndex == -1)
+                {
+                    // No space found, just break at the maxLength
+                    sb.AppendLine(input.Substring(0, maxLength));
+                    input = input.Substring(maxLength);
+                }
+                else
+                {
+                    // Break at the last space before maxLength
+                    sb.AppendLine(input.Substring(0, spaceIndex));
+                    input = input.Substring(spaceIndex + 1);
+                }
+            }
+
+            sb.Append(input); // Append the remaining text
+            return sb.ToString();
+        }
+
         private bool ByteArrayEquals(byte[] a1, byte[] a2)
         {
             if (a1.Length != a2.Length)
@@ -484,7 +520,7 @@ namespace SakuraView
             string pattern = $"{paramName}([^,]+)";
             Match match = Regex.Match(text, pattern);
 
-            return match.Success ? $" {paramName.ToLower()}:{match.Groups[1].Value.Trim()}" : "";
+            return match.Success ? $"{match.Groups[1].Value.Trim()}" : "";
         }
         private void LoadImage(String filePath)
         {
@@ -744,7 +780,7 @@ namespace SakuraView
                 if (upscaleMode == "vanillafit")
                 {
                     setImageBounds();
-                    Fit();
+                    VanillaFit();
                 }
             }
             SakuraBox.Location = new Point(-widthSpan, -heightSpan);
@@ -808,6 +844,19 @@ namespace SakuraView
             else
             {
                 width = screenWidth;
+                height = (int)(height * heightRatio);
+            }
+        }
+        private void VanillaFit()
+        {
+            if (widthRatio < heightRatio)
+            {
+                height = (int)(height * widthRatio);
+                width = (int)(width * widthRatio);
+            }
+            else
+            {
+                width = (int)(width * heightRatio);
                 height = (int)(height * heightRatio);
             }
         }
