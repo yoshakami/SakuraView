@@ -44,6 +44,7 @@ namespace SakuraView
             this.SakuraConsole = new System.Windows.Forms.Label();
             this.SakuraBox = new PictureBoxWithInterpolationMode();
             this.SakuraMetadata = new System.Windows.Forms.Label();
+            this.SakuraUnseen = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -208,6 +209,21 @@ namespace SakuraView
             this.SakuraMetadata.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SakuraMetadata_MouseDown);
             this.SakuraMetadata.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SakuraMetadata_MouseMove);
             // 
+            // SakuraUnseen
+            // 
+            this.SakuraUnseen.AllowDrop = true;
+            this.SakuraUnseen.AutoSize = true;
+            this.SakuraUnseen.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.SakuraUnseen.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.SakuraUnseen.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.SakuraUnseen.Location = new System.Drawing.Point(274, 74);
+            this.SakuraUnseen.Margin = new System.Windows.Forms.Padding(0);
+            this.SakuraUnseen.Name = "SakuraUnseen";
+            this.SakuraUnseen.Size = new System.Drawing.Size(110, 21);
+            this.SakuraUnseen.TabIndex = 16;
+            this.SakuraUnseen.Text = "SakuraUnseen";
+            this.SakuraUnseen.Visible = false;
+            // 
             // SakuraView
             // 
             this.AllowDrop = true;
@@ -215,6 +231,7 @@ namespace SakuraView
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Purple;
             this.ClientSize = new System.Drawing.Size(1245, 450);
+            this.Controls.Add(this.SakuraUnseen);
             this.Controls.Add(this.SakuraMetadata);
             this.Controls.Add(this.SakuraConsole);
             this.Controls.Add(this.textBox4);
@@ -253,6 +270,7 @@ namespace SakuraView
         private TextBox textBox4;
         private Label SakuraConsole;
         private Label SakuraMetadata;
+        private Label SakuraUnseen;
     }
 }
 

@@ -401,32 +401,31 @@ namespace SakuraView
                         }
                         string text = Encoding.UTF8.GetString(textBytes, 0x34, x).Trim();
                         text = text.Split('\x00')[0].Trim();
-                        /*
-                        string[] textParts = text.Split(new[] { "Negative prompt: " }, StringSplitOptions.RemoveEmptyEntries);
+                        
+                        string[] textLines = text.Split(new[] { "Negative prompt: " }, StringSplitOptions.None);
 
-                        if (textParts.Length == 1)
+                        if (textLines.Length == 1)  // there's no negative prompt
                         {
-                            string[] promptParts = textParts[0].Split(new[] { "Steps: " }, StringSplitOptions.RemoveEmptyEntries);
+                            string[] promptParts = textLines[0].Split(new[] { "Steps: " }, StringSplitOptions.RemoveEmptyEntries);
 
-                            if (promptParts.Length > 0 && promptParts[0] != "")
+                            if (promptParts.Length == 2)  // if there's a prompt
                             {
-                                output += " prompt:" + promptParts[0].Substring(0, promptParts[0].Length - 2).Replace("\\n", "\n");
+                                output[0] += promptParts[0].Substring(0, promptParts[0].Length - 1);  //  prompt
                             }
                         }
-                        else
+                        else if (textLines.Length == 2)  // there's a negative prompt
                         {
-                            if (textParts[0] != "")
+                            if (textLines[0] != "")  // if there's a prompt
                             {
-                                output += " prompt:" + textParts[0].Substring(0, textParts[0].Length - 2).Replace("\\n", "\n");
+                                output[0] += textLines[0].Substring(0, textLines[0].Length - 1);  // prompt
                             }
-
-                            string[] stepsParts = textParts[1].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                            output += " negative_prompt:" + stepsParts[0].Substring(0, stepsParts[0].Length - 2).Replace("\\n", "\n");
-                            string steps = stepsParts[0];
-                            output += " steps:" + steps;
-                        }  */
-
-                        string[] textLines = text.Split('\n');
+                            string[] stepsParts = textLines[1].Split(new[] { "Steps: " }, StringSplitOptions.None);
+                            output[1] += stepsParts[0].Substring(0, stepsParts[0].Length - 1).Replace("\\n", "\n");  // negative prompt
+                        }
+                        textLines = text.Split('\n');
+                        y = textLines.Length - 1;
+                        /*
+                        
                         j = 0;
                         if (textLines.Length == 2)  // either the prompt or the negative is not there
                         {
@@ -446,31 +445,31 @@ namespace SakuraView
                             output[0] = textLines[0].TrimEnd();  // prompt
                             output[1] = textLines[1].Substring(17);  // negative prompt
                             j = 2;
-                        }
-                        output[2] = GetParamValue(textLines[j], "Steps:");
-                        output[3] = GetParamValue(textLines[j], "Sampler:");
-                        output[4] = GetParamValue(textLines[j], "CFG scale:");
-                        output[5] = GetParamValue(textLines[j], "Seed:");
+                        }*/
+                        output[2] = GetParamValue(textLines[y], "Steps:");
+                        output[3] = GetParamValue(textLines[y], "Sampler:");
+                        output[4] = GetParamValue(textLines[y], "CFG scale:");
+                        output[5] = GetParamValue(textLines[y], "Seed:");
 
-                        text = GetParamValue(textLines[j], "Size:");
+                        text = GetParamValue(textLines[y], "Size:");
                         if (text.Contains("x"))
                         {
                             string[] dimensions = text.Split('x');
                             output[6] = dimensions[0];  // width
                             output[7] = dimensions[1];  // height
                         }
-                        text = GetParamValue(textLines[j], "Variation seed:");
+                        text = GetParamValue(textLines[y], "Variation seed:");
                         if (!string.IsNullOrEmpty(text))
                         {
                             output[8] = text;  // subseed
                         }
-                        text = GetParamValue(textLines[j], "Variation seed strength:");
+                        text = GetParamValue(textLines[y], "Variation seed strength:");
                         if (!string.IsNullOrEmpty(text))
                         {
                             output[9] = text;  // subseed strength between 0.0 and 1.0
                         }
-                        output[10] = GetParamValue(textLines[j], "Model:");
-                        string[] loraSplit = textLines[j].Split(new string[] { "Lora hashes: \"" }, StringSplitOptions.None);
+                        output[10] = GetParamValue(textLines[y], "Model:");
+                        string[] loraSplit = textLines[y].Split(new string[] { "Lora hashes: \"" }, StringSplitOptions.None);
                         if (loraSplit.Length > 1)
                         {
                             text = loraSplit[1].Split(':')[0].Trim();
@@ -489,34 +488,41 @@ namespace SakuraView
             }
             else { imagesMetadata.Add(null); }
         }
-        private void PlaceMetadata()
+        private void UpPlaceMetadata()
         {
+            if (imagesMetadata.Count <= currentImage)
+                return;
             SakuraMetadata.Text = "";
             if (imagesMetadata[currentImage] == null)
                 return;
             FillMetadata();
-            while (SakuraMetadata.Location.X + SakuraHidden.Width > screenWidth && metadataLength > 20)
+            while (SakuraMetadata.Location.X + SakuraUnseen.Width > screenWidth && metadataLength > 20)
             {
                 metadataLength -= 5;
                 FillMetadata();
             }
-            SakuraMetadata.Text = SakuraHidden.Text;
+            SakuraMetadata.Text = SakuraUnseen.Text;
+        }
+        private void PlaceMetadata()
+        {
+            metadataLength = ushort.Parse(txt[32]);
+            UpPlaceMetadata();
         }
         private void FillMetadata()
         {
-            SakuraHidden.Text = "";
+            SakuraUnseen.Text = "";
             for (i = 0; i < 2; i++)
             {
                 if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
-                    SakuraHidden.Text += pngMetadata[i] + "\n" + WrapText(imagesMetadata[currentImage][i], metadataLength) + "\n\n";
+                    SakuraUnseen.Text += pngMetadata[i] + "\n" + WrapText(imagesMetadata[currentImage][i], metadataLength) + "\n\n";
             }
             for (; i < imagesMetadata[currentImage].Length - 1; i++)
             {
                 if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
-                    SakuraHidden.Text += pngMetadata[i] + imagesMetadata[currentImage][i] + "\n";
+                    SakuraUnseen.Text += pngMetadata[i] + imagesMetadata[currentImage][i] + "\n";
             }
             if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
-                SakuraHidden.Text += pngMetadata[i] + imagesMetadata[currentImage][i] + "\n"; // for the last one I won't put a new line at the end
+                SakuraUnseen.Text += pngMetadata[i] + imagesMetadata[currentImage][i] + "\n"; // for the last one I won't put a new line at the end
         }
         public static string WrapText(string input, int maxLength)
         {
@@ -759,6 +765,51 @@ namespace SakuraView
         }
         private void ScaleImage()
         {
+            windowFound = false;
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+
+                for (i = 0; i < Screen.AllScreens.Length; i++)
+                {
+                    screenWidth = Screen.AllScreens[i].Bounds.Width;
+                    screenHeight = Screen.AllScreens[i].Bounds.Height;
+                    x = Screen.AllScreens[i].Bounds.Location.X;
+                    y = Screen.AllScreens[i].Bounds.Location.Y;
+                    if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
+                    {
+                        currentScreen = i;
+                        windowFound = true;
+                        break;
+                    }
+                }
+                if (!windowFound)
+                {
+                    screenWidth = this.ClientSize.Width;
+                    screenHeight = this.ClientSize.Height;
+                    // x = Screen.AllScreens[currentScreen].Bounds.Location.X;
+                    // y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
+                }
+            }
+                for (i = 0; i < Screen.AllScreens.Length; i++)
+            {
+                screenWidth = this.ClientSize.Width;
+                screenHeight = this.ClientSize.Height;
+                x = Screen.AllScreens[i].Bounds.Location.X;
+                y = Screen.AllScreens[i].Bounds.Location.Y;
+                if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
+                {
+                    currentScreen = i;
+                    windowFound = true;
+                    break;
+                }
+            }
+            if (!windowFound)
+            {
+                screenWidth = this.ClientSize.Width;
+                screenHeight = this.ClientSize.Height;
+                // x = Screen.AllScreens[currentScreen].Bounds.Location.X;
+                // y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
+            }
             if (SakuraBox.Image == null || imagesPath.Count == 0)
             {
                 if (this.WindowState == FormWindowState.Maximized)
@@ -781,26 +832,6 @@ namespace SakuraView
             height = SakuraBox.Image.Size.Height;
             widthSpan = 0;
             heightSpan = 0;
-            windowFound = false;
-            for (i = 0; i < Screen.AllScreens.Length; i++)
-            {
-                screenWidth = this.ClientSize.Width;
-                screenHeight = this.ClientSize.Height;
-                x = Screen.AllScreens[i].Bounds.Location.X;
-                y = Screen.AllScreens[i].Bounds.Location.Y;
-                if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
-                {
-                    windowFound = true;
-                    break;
-                }
-            }
-            if (!windowFound)
-            {
-                screenWidth = this.ClientSize.Width;
-                screenHeight = this.ClientSize.Height;
-                x = Screen.AllScreens[currentScreen].Bounds.Location.X;
-                y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
-            }
             if (upscaleMode == "fill")
             {
                 setImageBounds();
@@ -1296,6 +1327,8 @@ namespace SakuraView
                 images.Clear();
                 imagesPath.Clear();
                 imagesInfo.Clear();
+                imagesType.Clear();
+                imagesMetadata.Clear();
                 SakuraInfo.Text = "";
                 GC.Collect(2, GCCollectionMode.Forced, false, false);
             }
@@ -1534,7 +1567,24 @@ namespace SakuraView
                 metadataLocation.X += e.X - mouse_x;
                 metadataLocation.Y += e.Y - mouse_y;
                 SakuraMetadata.Location = metadataLocation;
+                if (prevent_execution || this.WindowState == FormWindowState.Minimized)
+                    return;
+                prevent_execution = true;
+                PlaceMetadata();
+                Task.Delay(500).ContinueWith(t => endthis());
             }
+            else if (e.Button == MouseButtons.Right)
+            {
+                metadataLocation.X += e.X - mouse_x;
+                metadataLocation.Y += e.Y - mouse_y;
+                SakuraMetadata.Location = metadataLocation;
+                if (prevent_execution || this.WindowState == FormWindowState.Minimized)
+                    return;
+                prevent_execution = true;
+                UpPlaceMetadata();
+                Task.Delay(500).ContinueWith(t => endthis());
+            }
+            
         }
 
         private void SakuraConsole_MouseMove(object sender, MouseEventArgs e)
