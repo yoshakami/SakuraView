@@ -42,9 +42,9 @@ namespace SakuraView
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.SakuraConsole = new System.Windows.Forms.Label();
-            this.SakuraBox = new PictureBoxWithInterpolationMode();
             this.SakuraMetadata = new System.Windows.Forms.Label();
             this.SakuraUnseen = new System.Windows.Forms.Label();
+            this.SakuraBox = new PictureBoxWithInterpolationMode();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -180,19 +180,6 @@ namespace SakuraView
             this.SakuraConsole.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SakuraConsole_MouseDown);
             this.SakuraConsole.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SakuraConsole_MouseMove);
             // 
-            // SakuraBox
-            // 
-            this.SakuraBox.Enabled = false;
-            this.SakuraBox.ErrorImage = null;
-            this.SakuraBox.InitialImage = null;
-            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
-            this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
-            this.SakuraBox.Name = "SakuraBox";
-            this.SakuraBox.Size = new System.Drawing.Size(50, 50);
-            this.SakuraBox.TabIndex = 0;
-            this.SakuraBox.TabStop = false;
-            // 
             // SakuraMetadata
             // 
             this.SakuraMetadata.AllowDrop = true;
@@ -223,6 +210,19 @@ namespace SakuraView
             this.SakuraUnseen.TabIndex = 16;
             this.SakuraUnseen.Text = "SakuraUnseen";
             this.SakuraUnseen.Visible = false;
+            // 
+            // SakuraBox
+            // 
+            this.SakuraBox.Enabled = false;
+            this.SakuraBox.ErrorImage = null;
+            this.SakuraBox.InitialImage = null;
+            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
+            this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
+            this.SakuraBox.Name = "SakuraBox";
+            this.SakuraBox.Size = new System.Drawing.Size(50, 50);
+            this.SakuraBox.TabIndex = 0;
+            this.SakuraBox.TabStop = false;
             // 
             // SakuraView
             // 

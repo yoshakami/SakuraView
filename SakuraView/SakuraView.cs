@@ -612,7 +612,10 @@ namespace SakuraView
                         else if (imagesMetadata[currentImage] == null)
                             LoadMetadata(currentImage);
                     }
-
+                    else
+                    {
+                        imagesMetadata.Add(null);
+                    }
                     if (currentImage < images.Count)
                     {
                         images[currentImage] = SakuraBox.Image;
@@ -1138,7 +1141,9 @@ namespace SakuraView
 
         private void LoadFolder(string currentDirectory)
         {
-            string[] file = Directory.GetFiles(currentDirectory);
+            string[] file;
+            try { file = Directory.GetFiles(currentDirectory); }
+            catch { return; }
             if (loadSubFolders)
             {
                 string[] folders = Directory.GetDirectories(currentDirectory);
@@ -1185,7 +1190,7 @@ namespace SakuraView
         private void SakuraView_KeyDown(object sender, KeyEventArgs e)
         {
             //Console.WriteLine("Keydown!" + e.KeyCode);
-            SakuraConsole.Text += "\nKeydown!" + e.KeyCode;
+            // SakuraConsole.Text += "\nKeydown!" + e.KeyCode;
             if (e.KeyCode == Keys.D1) { ViewImage(imagesPath.Count / 10); }
             else if (e.KeyCode == Keys.D2) { ViewImage(imagesPath.Count / 5); }
             else if (e.KeyCode == Keys.D3) { ViewImage(imagesPath.Count * 3 / 10); }
