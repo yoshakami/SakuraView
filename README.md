@@ -32,7 +32,7 @@ F2: Fill
 F3: Fit
 F4: Stretch
 F5: VanillaFit
-F6: VanillaFill
+F6: LeftFit
 F7: Center
 F8: Minimized
 F9: Normal

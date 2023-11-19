@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using System.IO;
 using System.Collections.Generic;
-using Webp;  // Webp.cs
-using System.Threading.Tasks;
+using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Webp;  // Webp.cs
 
 /* vanilla usings:
 using System;
@@ -60,6 +60,7 @@ namespace SakuraView
         static bool loadSubFolders = true;
         static bool counter = true;
         static bool loop = true;
+        static byte fixed_padding = 0;
         static byte mode = 0; // 0 = ImageViewer; 1 = ImageExplorer; 2 = TextViewer; 3 = TextExplorer; 4 = TextEditor; 5 = Settings; 6 = SongExplorer
         static byte currentScreen = 0;
         static byte padding = 30;
@@ -128,8 +129,9 @@ namespace SakuraView
                 counter = txt[24].ToLower() == "true";
                 loadSubFolders = txt[26].ToLower() == "true";
                 loop = txt[28].ToLower() == "true";
-                mode = byte.Parse(txt[30]);
-                metadataLength = ushort.Parse(txt[32]);
+                fixed_padding = padding = byte.Parse(txt[30]);
+                mode = byte.Parse(txt[32]);
+                metadataLength = ushort.Parse(txt[34]);
             }
             catch
             {
@@ -169,13 +171,6 @@ namespace SakuraView
             SetMode();
             SakuraView_ClientSizeChanged(null, null);
         }
-        private void SetMode()
-        {
-            if (mode == 0) // ImageViewer
-            {
-
-            }
-        }
         private void SetTxt()
         {
             txt = new string[] {
@@ -193,9 +188,17 @@ namespace SakuraView
             "Counter {True, False}", "True", // config[24]
             "Load sub-folders {True, False}", "True", // config[26]
             "Loop {True, False}", "True", // config[28]
-            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // config[30]
-            "Metadata Length (in character count per line)", "200", // config[32]
+            "Fixed Padding (0 = disable)", "0", // config[30]
+            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // config[32]
+            "Metadata Length (in character count per line)", "200", // config[34]
              };
+        }
+        private void SetMode()
+        {
+            if (mode == 0) // ImageViewer
+            {
+
+            }
         }
         private void SetBackgroundColour(string backgroundColour)
         {
@@ -369,7 +372,7 @@ namespace SakuraView
         private void LoadMetadata(int imageNumber)
         {
             SakuraMetadata.Text = "";
-            if (imagesType[imageNumber] == 0 || !counter) // png
+            if (!counter || imagesType[imageNumber] == 0) // png
             {
                 string[] output = new string[13];
 
@@ -401,7 +404,7 @@ namespace SakuraView
                         }
                         string text = Encoding.UTF8.GetString(textBytes, 0x34, x).Trim();
                         text = text.Split('\x00')[0].Trim();
-                        
+
                         string[] textLines = text.Split(new[] { "Negative prompt: " }, StringSplitOptions.None);
 
                         if (textLines.Length == 1)  // there's no negative prompt
@@ -721,7 +724,7 @@ namespace SakuraView
                 SakuraHidden.Text += Fill(imagesInfo[currentImage][i], padding);
             }
             SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
-            if (SakuraHidden.Width > ClientSize.Width && padding != 1)
+            if (SakuraHidden.Width > ClientSize.Width && padding != 1 && fixed_padding != 0)
             {
                 padding--;
                 ScaleInfo();
@@ -793,7 +796,7 @@ namespace SakuraView
                     // y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
                 }
             }
-                for (i = 0; i < Screen.AllScreens.Length; i++)
+            for (i = 0; i < Screen.AllScreens.Length; i++)
             {
                 screenWidth = this.ClientSize.Width;
                 screenHeight = this.ClientSize.Height;
@@ -1203,16 +1206,7 @@ namespace SakuraView
             else if (e.KeyCode == Keys.D0) { ViewImage(0); }
             else if (e.KeyCode == Keys.F1)
             {
-                if (!help)
-                {
-                    help = true;
-                    SetHelp();
-                }
-                else
-                {
-                    help = false;
-                    SetHelp();
-                }
+                SakuraCkHelp_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.F2)
             {
@@ -1329,152 +1323,79 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.E)
             {
-                images.Clear();
-                imagesPath.Clear();
-                imagesInfo.Clear();
-                imagesType.Clear();
-                imagesMetadata.Clear();
-                SakuraInfo.Text = "";
-                GC.Collect(2, GCCollectionMode.Forced, false, false);
+                SakuraButtonEmpty_Click(null, null);
             }
             else if (e.KeyCode == Keys.T)
             {
-                banner = banner != true;
-                SetBanner();
+                SakuraCkBanner_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.I)
             {
-                info = info != true;
-                SetInfo();
+                SakuraCkInfo_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.Q)
             {
-                loadSubFolders = loadSubFolders != true;
-                SakuraConsole.Text += "\nloadSubFolders = " + loadSubFolders;
+                SakuraCkSubFolders_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.U)
             {
-                counter = counter != true;
-                SakuraConsole.Text += "\ncounter = " + counter;
+                SakuraCkCounter_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.D)
             {
-                duplicate = duplicate != true;
-                SakuraConsole.Text += "\nduplicate = " + duplicate;
+                SakuraCkDuplicates_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.A)
             {
-                this.TopMost = this.TopMost != true;
-                SakuraConsole.Text += "\nthis.TopMost = " + this.TopMost;
+                SakuraCkAlwaysOnTop_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.OemBackslash)
             {
-                loop = loop != true;
-                SakuraConsole.Text += "\nloop = " + loop;
+                SakuraCkLoop_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.Oem7)
             {
-                SakuraMetadata.Visible = SakuraMetadata.Visible != true;
-                SakuraConsole.Text += "\nmetadata = " + SakuraMetadata.Visible;
+                SakuraCkMetadata_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.C)
             {
-                this.SakuraConsole.Visible = this.SakuraConsole.Visible != true;
+                SakuraCkConsole_CheckedChanged(null, null);
             }
             else if (e.KeyCode == Keys.K)
             {
-                this.SakuraConsole.Text = "";
+                SakuraButtonClearConsole_Click(null, null);
             }
             else if (e.KeyCode == Keys.P)
             {
-                string[] lines = this.SakuraConsole.Text.Split('\n');
-
-                // Check if there are at least 10 lines
-                if (lines.Length > 10)
-                {
-                    // Join lines starting from the 11th line
-                    this.SakuraConsole.Text = string.Join("\n", lines.Skip(10));
-
-                    // Now, textAfter10thLine contains the text after the 10th line separator
-                }
-                else
-                {
-                    // Handle the case where there are not enough lines
-                    this.SakuraConsole.Text = "";
-                }
+                SakuraButton10Lines_Click(null, null);
             }
             else if (e.KeyCode == Keys.O)
             {
-                using (var fbd = new FolderBrowserDialog())
-                {
-                    DialogResult result = fbd.ShowDialog();
-
-                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-                    {
-                        LoadFolder(fbd.SelectedPath);
-                        Environment.CurrentDirectory = fbd.SelectedPath;
-                    }
-                }
+                SakuraButtonDirectory_Click(null, null);
             }
             else if (e.KeyCode == Keys.F)
             {
-                FileDialog dialog = new OpenFileDialog
-                {
-                    Title = "Select some pictures",
-                    Filter = "Picture|*.bmp;*.png;*.jfif;*.jpg;*.jpeg;*.jpg;*.ico;*.gif;*.tif;*.tiff;*.rle;*.dib|Texture|*.bti;*.tex0;*.tpl|All files (*.*)|*.*",
-                    RestoreDirectory = true,
-                    CheckFileExists = true,
-                    CheckPathExists = true,
-                    InitialDirectory = Environment.CurrentDirectory,
-                    Multiselect = true
-                };
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    LoadFiles(dialog.FileNames);
-                    //LoadFolder(dialog.FileName.Replace("\\", "/"));
-                    Environment.CurrentDirectory = Path.GetDirectoryName(dialog.FileName.Replace("\\", "/"));
-                }
-
+                SakuraButtonOpenFiles_Click(null, null);
             }
             else if (e.KeyCode == Keys.X)
             {
-                SakuraBox.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                SakuraBox.Refresh();
+                SakuraButtonSwapH_Click(null,null);
             }
             else if (e.KeyCode == Keys.Y)
             {
-                SakuraBox.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                SakuraBox.Refresh();
+                SakuraButtonSwapV_Click(null, null);
             }
             else if (e.KeyCode == Keys.R)
             {
-                SakuraBox.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                SakuraBox.Refresh();
+                SakuraButtonRotate_Click(null, null);
             }
             else if (e.KeyCode == Keys.G)
             {
-                System.Diagnostics.Process.Start("https://www.github.com/yoshkami/SakuraView/releases/latest");
+                SakuraButtonGithub_Click(null, null);
             }
             else if (e.KeyCode == Keys.S)
             {
-                txt[2] = upscaleAlgorithm;
-                txt[4] = upscaleMode;
-                txt[6] = windowPosition;
-                // txt[8] is only edited through the config
-                // txt[10] is only edited through the config
-                if (banner) { txt[12] = "view"; } else { txt[12] = "hide"; }
-                if (this.SakuraConsole.Visible) { txt[14] = "view"; } else { txt[14] = "hide"; }
-                if (help) { txt[16] = "view"; } else { txt[16] = "hide"; }
-                if (info) { txt[18] = "view"; } else { txt[18] = "hide"; }
-                if (this.TopMost) { txt[20] = "true"; } else { txt[20] = "false"; }
-                if (duplicate) { txt[22] = "true"; } else { txt[22] = "false"; }
-                if (counter) { txt[24] = "true"; } else { txt[24] = "false"; }
-                if (loadSubFolders) { txt[26] = "true"; } else { txt[26] = "false"; }
-                if (loop) { txt[28] = "true"; } else { txt[28] = "false"; }
-                txt[30] = mode.ToString();
-                txt[32] = metadataLength.ToString();
-                try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
-                catch { } // continue execution without saving
+                SakuraButtonSave_Click(null, null);
             }
             else if (e.KeyCode == Keys.Left)
             {
@@ -1521,7 +1442,7 @@ namespace SakuraView
                 ScaleInfo();
                 SakuraInfo.Text = SakuraHidden.Text;
             }
-            else if (SakuraInfo.Width > ClientSize.Width >> 1)
+            else if (fixed_padding != 0 && SakuraInfo.Width > ClientSize.Width >> 1)
             {
                 padding = 30;
                 ScaleInfo();
@@ -1589,7 +1510,7 @@ namespace SakuraView
                 UpPlaceMetadata();
                 Task.Delay(500).ContinueWith(t => endthis());
             }
-            
+
         }
 
         private void SakuraConsole_MouseMove(object sender, MouseEventArgs e)
@@ -1612,6 +1533,190 @@ namespace SakuraView
         {
             mouse_x = e.X;
             mouse_y = e.Y;
+        }
+
+        private void SakuraButtonEmpty_Click(object sender, EventArgs e)
+        {
+            images.Clear();
+            imagesPath.Clear();
+            imagesInfo.Clear();
+            imagesType.Clear();
+            imagesMetadata.Clear();
+            SakuraInfo.Text = "";
+            GC.Collect(2, GCCollectionMode.Forced, false, false);
+        }
+
+        private void SakuraButtonOpenFiles_Click(object sender, EventArgs e)
+        {
+            FileDialog dialog = new OpenFileDialog
+            {
+                Title = "Select some pictures",
+                Filter = "Picture|*.bmp;*.png;*.jfif;*.jpg;*.jpeg;*.jpg;*.ico;*.gif;*.tif;*.tiff;*.rle;*.dib|Texture|*.bti;*.tex0;*.tpl|All files (*.*)|*.*",
+                RestoreDirectory = true,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                InitialDirectory = Environment.CurrentDirectory,
+                Multiselect = true
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                LoadFiles(dialog.FileNames);
+                //LoadFolder(dialog.FileName.Replace("\\", "/"));
+                Environment.CurrentDirectory = Path.GetDirectoryName(dialog.FileName.Replace("\\", "/"));
+            }
+        }
+
+        private void SakuraButtonGithub_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.github.com/yoshkami/SakuraView/releases/latest");
+        }
+
+        private void SakuraButtonClearConsole_Click(object sender, EventArgs e)
+        {
+            this.SakuraConsole.Text = "";
+        }
+
+        private void SakuraButtonDirectory_Click(object sender, EventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    LoadFolder(fbd.SelectedPath);
+                    Environment.CurrentDirectory = fbd.SelectedPath;
+                }
+            }
+        }
+
+        private void SakuraButton10Lines_Click(object sender, EventArgs e)
+        {
+            string[] lines = this.SakuraConsole.Text.Split('\n');
+
+            // Check if there are at least 10 lines
+            if (lines.Length > 10)
+            {
+                // Join lines starting from the 11th line
+                this.SakuraConsole.Text = string.Join("\n", lines.Skip(10));
+
+                // Now, textAfter10thLine contains the text after the 10th line separator
+            }
+            else
+            {
+                // Handle the case where there are not enough lines
+                this.SakuraConsole.Text = "";
+            }
+        }
+
+        private void SakuraButtonRotate_Click(object sender, EventArgs e)
+        {
+            SakuraBox.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            SakuraBox.Refresh();
+        }
+
+        private void SakuraButtonSwapV_Click(object sender, EventArgs e)
+        {
+            SakuraBox.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            SakuraBox.Refresh();
+        }
+
+        private void SakuraButtonSwapH_Click(object sender, EventArgs e)
+        {
+            SakuraBox.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            SakuraBox.Refresh();
+        }
+
+        private void SakuraButtonSave_Click(object sender, EventArgs e)
+        {
+            txt[2] = upscaleAlgorithm;
+            txt[4] = upscaleMode;
+            txt[6] = windowPosition;
+            // txt[8] is only edited through the config
+            // txt[10] is only edited through the config
+            if (banner) { txt[12] = "view"; } else { txt[12] = "hide"; }
+            if (this.SakuraConsole.Visible) { txt[14] = "view"; } else { txt[14] = "hide"; }
+            if (help) { txt[16] = "view"; } else { txt[16] = "hide"; }
+            if (info) { txt[18] = "view"; } else { txt[18] = "hide"; }
+            if (this.TopMost) { txt[20] = "true"; } else { txt[20] = "false"; }
+            if (duplicate) { txt[22] = "true"; } else { txt[22] = "false"; }
+            if (counter) { txt[24] = "true"; } else { txt[24] = "false"; }
+            if (loadSubFolders) { txt[26] = "true"; } else { txt[26] = "false"; }
+            if (loop) { txt[28] = "true"; } else { txt[28] = "false"; }
+            txt[30] = fixed_padding.ToString();
+            txt[32] = mode.ToString();
+            txt[34] = metadataLength.ToString();
+            try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
+            catch { } // continue execution without saving
+        }
+
+        private void SakuraCkAlwaysOnTop_CheckedChanged(object sender, EventArgs e)
+        {
+            this.TopMost = this.TopMost != true;
+            SakuraConsole.Text += "\nthis.TopMost = " + this.TopMost;
+        }
+
+        private void SakuraCkBanner_CheckedChanged(object sender, EventArgs e)
+        {
+            banner = banner != true;
+            SetBanner();
+        }
+
+        private void SakuraCkConsole_CheckedChanged(object sender, EventArgs e)
+        {
+            this.SakuraConsole.Visible = this.SakuraConsole.Visible != true;
+        }
+
+        private void SakuraCkDuplicates_CheckedChanged(object sender, EventArgs e)
+        {
+            duplicate = duplicate != true;
+            SakuraConsole.Text += "\nduplicate = " + duplicate;
+        }
+
+        private void SakuraCkHelp_CheckedChanged(object sender, EventArgs e)
+        {
+            help = help != true;
+            SetHelp();
+        }
+
+        private void SakuraCkInfo_CheckedChanged(object sender, EventArgs e)
+        {
+            info = info != true;
+            SetInfo();
+        }
+
+        private void SakuraCkLoop_CheckedChanged(object sender, EventArgs e)
+        {
+            loop = loop != true;
+            SakuraConsole.Text += "\nloop = " + loop;
+        }
+
+        private void SakuraCkMetadata_CheckedChanged(object sender, EventArgs e)
+        {
+            SakuraMetadata.Visible = SakuraMetadata.Visible != true;
+            SakuraConsole.Text += "\nmetadata = " + SakuraMetadata.Visible;
+        }
+
+        private void SakuraCkSubFolders_CheckedChanged(object sender, EventArgs e)
+        {
+            loadSubFolders = loadSubFolders != true;
+            SakuraConsole.Text += "\nloadSubFolders = " + loadSubFolders;
+        }
+
+        private void SakuraCkCounter_CheckedChanged(object sender, EventArgs e)
+        {
+            counter = counter != true;
+            SakuraConsole.Text += "\ncounter = " + counter;
+        }
+
+        private void SakuraZoomTrackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SakuraZoomNumeric_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
