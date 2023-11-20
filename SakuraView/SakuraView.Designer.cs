@@ -44,7 +44,6 @@ namespace SakuraView
             this.SakuraConsole = new System.Windows.Forms.Label();
             this.SakuraMetadata = new System.Windows.Forms.Label();
             this.SakuraUnseen = new System.Windows.Forms.Label();
-            this.SakuraBox = new PictureBoxWithInterpolationMode();
             this.SakuraCkLoop = new System.Windows.Forms.CheckBox();
             this.SakuraCkCounter = new System.Windows.Forms.CheckBox();
             this.SakuraCkAlwaysOnTop = new System.Windows.Forms.CheckBox();
@@ -68,9 +67,10 @@ namespace SakuraView
             this.SakuraZoomNumeric = new System.Windows.Forms.NumericUpDown();
             this.SakuraZoomTrackBar = new System.Windows.Forms.TrackBar();
             this.SakuraZoomLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
+            this.SakuraBox = new PictureBoxWithInterpolationMode();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
             // 
             // SakuraInfo
@@ -99,7 +99,7 @@ namespace SakuraView
             this.SakuraSideHelp.Location = new System.Drawing.Point(1407, 0);
             this.SakuraSideHelp.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.SakuraSideHelp.Name = "SakuraSideHelp";
-            this.SakuraSideHelp.Size = new System.Drawing.Size(296, 1239);
+            this.SakuraSideHelp.Size = new System.Drawing.Size(345, 1365);
             this.SakuraSideHelp.TabIndex = 7;
             this.SakuraSideHelp.Text = resources.GetString("SakuraSideHelp.Text");
             this.SakuraSideHelp.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
@@ -239,19 +239,6 @@ namespace SakuraView
             this.SakuraUnseen.Text = "SakuraUnseen";
             this.SakuraUnseen.Visible = false;
             // 
-            // SakuraBox
-            // 
-            this.SakuraBox.Enabled = false;
-            this.SakuraBox.ErrorImage = null;
-            this.SakuraBox.InitialImage = null;
-            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
-            this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
-            this.SakuraBox.Name = "SakuraBox";
-            this.SakuraBox.Size = new System.Drawing.Size(48, 48);
-            this.SakuraBox.TabIndex = 0;
-            this.SakuraBox.TabStop = false;
-            // 
             // SakuraCkLoop
             // 
             this.SakuraCkLoop.AutoSize = true;
@@ -264,6 +251,7 @@ namespace SakuraView
             this.SakuraCkLoop.Text = "loop";
             this.SakuraCkLoop.UseVisualStyleBackColor = true;
             this.SakuraCkLoop.CheckedChanged += new System.EventHandler(this.SakuraCkLoop_CheckedChanged);
+            this.SakuraCkLoop.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkCounter
             // 
@@ -277,6 +265,7 @@ namespace SakuraView
             this.SakuraCkCounter.Text = "counter";
             this.SakuraCkCounter.UseVisualStyleBackColor = true;
             this.SakuraCkCounter.CheckedChanged += new System.EventHandler(this.SakuraCkCounter_CheckedChanged);
+            this.SakuraCkCounter.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkAlwaysOnTop
             // 
@@ -290,6 +279,7 @@ namespace SakuraView
             this.SakuraCkAlwaysOnTop.Text = "always on top";
             this.SakuraCkAlwaysOnTop.UseVisualStyleBackColor = true;
             this.SakuraCkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.SakuraCkAlwaysOnTop_CheckedChanged);
+            this.SakuraCkAlwaysOnTop.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkBanner
             // 
@@ -303,6 +293,7 @@ namespace SakuraView
             this.SakuraCkBanner.Text = "banner";
             this.SakuraCkBanner.UseVisualStyleBackColor = true;
             this.SakuraCkBanner.CheckedChanged += new System.EventHandler(this.SakuraCkBanner_CheckedChanged);
+            this.SakuraCkBanner.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkConsole
             // 
@@ -316,6 +307,7 @@ namespace SakuraView
             this.SakuraCkConsole.Text = "console";
             this.SakuraCkConsole.UseVisualStyleBackColor = true;
             this.SakuraCkConsole.CheckedChanged += new System.EventHandler(this.SakuraCkConsole_CheckedChanged);
+            this.SakuraCkConsole.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkMetadata
             // 
@@ -329,6 +321,7 @@ namespace SakuraView
             this.SakuraCkMetadata.Text = "metadata";
             this.SakuraCkMetadata.UseVisualStyleBackColor = true;
             this.SakuraCkMetadata.CheckedChanged += new System.EventHandler(this.SakuraCkMetadata_CheckedChanged);
+            this.SakuraCkMetadata.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkInfo
             // 
@@ -342,6 +335,7 @@ namespace SakuraView
             this.SakuraCkInfo.Text = "info";
             this.SakuraCkInfo.UseVisualStyleBackColor = true;
             this.SakuraCkInfo.CheckedChanged += new System.EventHandler(this.SakuraCkInfo_CheckedChanged);
+            this.SakuraCkInfo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkHelp
             // 
@@ -355,6 +349,7 @@ namespace SakuraView
             this.SakuraCkHelp.Text = "help";
             this.SakuraCkHelp.UseVisualStyleBackColor = true;
             this.SakuraCkHelp.CheckedChanged += new System.EventHandler(this.SakuraCkHelp_CheckedChanged);
+            this.SakuraCkHelp.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkSubFolders
             // 
@@ -368,6 +363,7 @@ namespace SakuraView
             this.SakuraCkSubFolders.Text = "sub-folders processing";
             this.SakuraCkSubFolders.UseVisualStyleBackColor = true;
             this.SakuraCkSubFolders.CheckedChanged += new System.EventHandler(this.SakuraCkSubFolders_CheckedChanged);
+            this.SakuraCkSubFolders.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraCkDuplicates
             // 
@@ -381,6 +377,7 @@ namespace SakuraView
             this.SakuraCkDuplicates.Text = "duplicates";
             this.SakuraCkDuplicates.UseVisualStyleBackColor = true;
             this.SakuraCkDuplicates.CheckedChanged += new System.EventHandler(this.SakuraCkDuplicates_CheckedChanged);
+            this.SakuraCkDuplicates.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonEmpty
             // 
@@ -393,6 +390,7 @@ namespace SakuraView
             this.SakuraButtonEmpty.Text = "Empty List";
             this.SakuraButtonEmpty.UseVisualStyleBackColor = true;
             this.SakuraButtonEmpty.Click += new System.EventHandler(this.SakuraButtonEmpty_Click);
+            this.SakuraButtonEmpty.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonOpenFiles
             // 
@@ -405,6 +403,7 @@ namespace SakuraView
             this.SakuraButtonOpenFiles.Text = "Open Files";
             this.SakuraButtonOpenFiles.UseVisualStyleBackColor = true;
             this.SakuraButtonOpenFiles.Click += new System.EventHandler(this.SakuraButtonOpenFiles_Click);
+            this.SakuraButtonOpenFiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonGithub
             // 
@@ -417,6 +416,7 @@ namespace SakuraView
             this.SakuraButtonGithub.Text = "Github Releases";
             this.SakuraButtonGithub.UseVisualStyleBackColor = true;
             this.SakuraButtonGithub.Click += new System.EventHandler(this.SakuraButtonGithub_Click);
+            this.SakuraButtonGithub.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonClearConsole
             // 
@@ -429,6 +429,7 @@ namespace SakuraView
             this.SakuraButtonClearConsole.Text = "Clear Console";
             this.SakuraButtonClearConsole.UseVisualStyleBackColor = true;
             this.SakuraButtonClearConsole.Click += new System.EventHandler(this.SakuraButtonClearConsole_Click);
+            this.SakuraButtonClearConsole.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonDirectory
             // 
@@ -441,6 +442,7 @@ namespace SakuraView
             this.SakuraButtonDirectory.Text = "Open Directory";
             this.SakuraButtonDirectory.UseVisualStyleBackColor = true;
             this.SakuraButtonDirectory.Click += new System.EventHandler(this.SakuraButtonDirectory_Click);
+            this.SakuraButtonDirectory.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButton10Lines
             // 
@@ -453,6 +455,7 @@ namespace SakuraView
             this.SakuraButton10Lines.Text = "Remove 10 lines off the console";
             this.SakuraButton10Lines.UseVisualStyleBackColor = true;
             this.SakuraButton10Lines.Click += new System.EventHandler(this.SakuraButton10Lines_Click);
+            this.SakuraButton10Lines.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonRotate
             // 
@@ -465,6 +468,7 @@ namespace SakuraView
             this.SakuraButtonRotate.Text = "Rotate";
             this.SakuraButtonRotate.UseVisualStyleBackColor = true;
             this.SakuraButtonRotate.Click += new System.EventHandler(this.SakuraButtonRotate_Click);
+            this.SakuraButtonRotate.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonSave
             // 
@@ -477,6 +481,7 @@ namespace SakuraView
             this.SakuraButtonSave.Text = "Save Config";
             this.SakuraButtonSave.UseVisualStyleBackColor = true;
             this.SakuraButtonSave.Click += new System.EventHandler(this.SakuraButtonSave_Click);
+            this.SakuraButtonSave.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonSwapV
             // 
@@ -489,6 +494,7 @@ namespace SakuraView
             this.SakuraButtonSwapV.Text = "Swap Vertically";
             this.SakuraButtonSwapV.UseVisualStyleBackColor = true;
             this.SakuraButtonSwapV.Click += new System.EventHandler(this.SakuraButtonSwapV_Click);
+            this.SakuraButtonSwapV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraButtonSwapH
             // 
@@ -501,6 +507,7 @@ namespace SakuraView
             this.SakuraButtonSwapH.Text = "Swap Horizontally";
             this.SakuraButtonSwapH.UseVisualStyleBackColor = true;
             this.SakuraButtonSwapH.Click += new System.EventHandler(this.SakuraButtonSwapH_Click);
+            this.SakuraButtonSwapH.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraZoomNumeric
             // 
@@ -509,6 +516,7 @@ namespace SakuraView
             this.SakuraZoomNumeric.Size = new System.Drawing.Size(120, 22);
             this.SakuraZoomNumeric.TabIndex = 38;
             this.SakuraZoomNumeric.ValueChanged += new System.EventHandler(this.SakuraZoomNumeric_ValueChanged);
+            this.SakuraZoomNumeric.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraZoomTrackBar
             // 
@@ -517,6 +525,7 @@ namespace SakuraView
             this.SakuraZoomTrackBar.Size = new System.Drawing.Size(349, 56);
             this.SakuraZoomTrackBar.TabIndex = 39;
             this.SakuraZoomTrackBar.Scroll += new System.EventHandler(this.SakuraZoomTrackBar_Scroll);
+            this.SakuraZoomTrackBar.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
             // 
             // SakuraZoomLabel
             // 
@@ -531,6 +540,19 @@ namespace SakuraView
             this.SakuraZoomLabel.Size = new System.Drawing.Size(100, 21);
             this.SakuraZoomLabel.TabIndex = 40;
             this.SakuraZoomLabel.Text = "<-- zoom --v";
+            // 
+            // SakuraBox
+            // 
+            this.SakuraBox.Enabled = false;
+            this.SakuraBox.ErrorImage = null;
+            this.SakuraBox.InitialImage = null;
+            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
+            this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
+            this.SakuraBox.Name = "SakuraBox";
+            this.SakuraBox.Size = new System.Drawing.Size(48, 48);
+            this.SakuraBox.TabIndex = 0;
+            this.SakuraBox.TabStop = false;
             // 
             // SakuraView
             // 
@@ -575,7 +597,7 @@ namespace SakuraView
             this.Controls.Add(this.SakuraInfo);
             this.Controls.Add(this.SakuraBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(18, 47);
             this.Name = "SakuraView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
@@ -584,9 +606,9 @@ namespace SakuraView
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

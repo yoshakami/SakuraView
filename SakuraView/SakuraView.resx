@@ -123,30 +123,13 @@ F2: Fill
 F3: Fit
 F4: Stretch
 F5: VanillaFit
-F6: VanillaFill
+F6: LeftFit
 F7: Center
 F8: Minimized
 F9: Normal
 F10: Normal2
 F11: Maximized
 F12: Maximized2
-
-Show Images :
-0 First
-1 10%
-2 20%
-3 30%
-4 40%
-5 Middle
-6 60%
-7 70%
-8 80%
-9 90%
-
-← Previous
-→ Next
-↑ First
-↓ Last
 
 Escape: Quit
 Enter: Refresh
@@ -160,23 +143,46 @@ V: HighQualityBilinear
 L: Low
 N: NeareastNeighbor
 
-S: Save config
-E: Empty List
-O: Open Directory
-F: Open Files
-K: Clear Console Output
-C: Toggle Console
-T: Toggle Banner
-I: Toggle Info
 A: Toggle Always On Top
+C: Toggle Console
 D: Toggle Duplicates
+E: Empty List
+F: Open Files
+G: Github Releases
+I: Toggle Info
+K: Clear Console Output
+O: Open Directory
+P: Remove the last 10 lines of the console
 Q: Toggle Sub-folders processing
+R: Rotate ↻
+S: Save config
+T: Toggle Banner
+U: Toggle Counter
 X: Swap Horizontally
 Y: Swap Vertically
-R: Rotate ↻
-G: Github Releases
-P: Remove the last 10 lines of the console
-Z: Zoom</value>
+Z: Reset Zoom
++: Increase Zoom
+-: Decrease Zoom
+&lt;: Toggle Loop (or load images in current folder)
+²: Toggle Image Metadata
+,: Toggle Settings
+
+← Previous
+→ Next
+↑ First
+↓ Last
+
+Show Images :
+0 First
+1 10%
+2 20%
+3 30%
+4 40%
+5 Middle
+6 60%
+7 70%
+8 80%
+9 90%</value>
   </data>
   <data name="SakuraHelp.Text" xml:space="preserve">
     <value>B: Bicubic    M: Bilinear    W: Default    H: High    J: HighQualityBicubic    V: HighQualityBilinear    L: Low    N: NeareastNeighbor     Esc: Quit     Enter: Refresh

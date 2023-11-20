@@ -170,6 +170,39 @@ namespace SakuraView
             }
             SetMode();
             SakuraView_ClientSizeChanged(null, null);
+            SakuraCkSubFolders.Checked = loadSubFolders;
+            SakuraCkMetadata.Checked = SakuraMetadata.Visible;
+            SakuraCkLoop.Checked = loop;
+            SakuraCkInfo.Checked = info;
+            SakuraCkHelp.Checked = help;
+            SakuraCkDuplicates.Checked = duplicate;
+            SakuraCkCounter.Checked = counter;
+            SakuraCkConsole.Checked = SakuraConsole.Visible;
+            SakuraCkBanner.Checked = banner;
+            SakuraCkAlwaysOnTop.Checked = this.TopMost;
+            SakuraButton10Lines.Visible = false;
+            SakuraButtonClearConsole.Visible = false;
+            SakuraButtonDirectory.Visible = false;
+            SakuraButtonEmpty.Visible = false;
+            SakuraButtonGithub.Visible = false;
+            SakuraButtonOpenFiles.Visible = false;
+            SakuraButtonRotate.Visible = false;
+            SakuraButtonSave.Visible = false;
+            SakuraButtonSwapH.Visible = false;
+            SakuraButtonSwapV.Visible = false;
+            SakuraCkAlwaysOnTop.Visible = false;
+            SakuraCkBanner.Visible = false;
+            SakuraCkConsole.Visible = false;
+            SakuraCkCounter.Visible = false;
+            SakuraCkDuplicates.Visible = false;
+            SakuraCkHelp.Visible = false;
+            SakuraCkInfo.Visible = false;
+            SakuraCkLoop.Visible = false;
+            SakuraCkMetadata.Visible = false;
+            SakuraCkSubFolders.Visible = false;
+            SakuraZoomLabel.Visible = false;
+            SakuraZoomNumeric.Visible = false;
+            SakuraZoomTrackBar.Visible = false;
         }
         private void SetTxt()
         {
@@ -1349,6 +1382,10 @@ namespace SakuraView
             {
                 SakuraCkAlwaysOnTop_CheckedChanged(null, null);
             }
+            else if (e.KeyCode == Keys.Oemcomma)
+            {
+                ToggleSettings();
+            }
             else if (e.KeyCode == Keys.OemBackslash)
             {
                 SakuraCkLoop_CheckedChanged(null, null);
@@ -1533,6 +1570,33 @@ namespace SakuraView
         {
             mouse_x = e.X;
             mouse_y = e.Y;
+        }
+
+        private void ToggleSettings()
+        {
+            SakuraZoomLabel.Visible = !SakuraZoomLabel.Visible;
+            SakuraZoomNumeric.Visible = !SakuraZoomNumeric.Visible;
+            SakuraZoomTrackBar.Visible = !SakuraZoomTrackBar.Visible;
+            SakuraButton10Lines.Visible = !SakuraButton10Lines.Visible;
+            SakuraButtonClearConsole.Visible = !SakuraButtonClearConsole.Visible;
+            SakuraButtonDirectory.Visible = !SakuraButtonDirectory.Visible;
+            SakuraButtonEmpty.Visible = !SakuraButtonEmpty.Visible;
+            SakuraButtonGithub.Visible = !SakuraButtonGithub.Visible;
+            SakuraButtonOpenFiles.Visible = !SakuraButtonOpenFiles.Visible;
+            SakuraButtonRotate.Visible = !SakuraButtonRotate.Visible;
+            SakuraButtonSave.Visible = !SakuraButtonSave.Visible;
+            SakuraButtonSwapH.Visible = !SakuraButtonSwapH.Visible;
+            SakuraButtonSwapV.Visible = !SakuraButtonSwapV.Visible;
+            SakuraCkAlwaysOnTop.Visible = !SakuraCkAlwaysOnTop.Visible;
+            SakuraCkBanner.Visible = !SakuraCkBanner.Visible;
+            SakuraCkConsole.Visible = !SakuraCkConsole.Visible;
+            SakuraCkCounter.Visible = !SakuraCkCounter.Visible;
+            SakuraCkDuplicates.Visible = !SakuraCkDuplicates.Visible;
+            SakuraCkHelp.Visible = !SakuraCkHelp.Visible;
+            SakuraCkInfo.Visible = !SakuraCkInfo.Visible;
+            SakuraCkLoop.Visible = !SakuraCkLoop.Visible;
+            SakuraCkMetadata.Visible = !SakuraCkMetadata.Visible;
+            SakuraCkSubFolders.Visible = !SakuraCkSubFolders.Visible;
         }
 
         private void SakuraButtonEmpty_Click(object sender, EventArgs e)

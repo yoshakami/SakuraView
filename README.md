@@ -74,6 +74,7 @@ Z: Reset Zoom
 -: Decrease Zoom
 <: Toggle Loop (or load images in current folder)
 ²: Toggle Image Metadata
+,: Toggle Settings
 
 ← Previous
 → Next
