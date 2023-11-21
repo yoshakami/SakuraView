@@ -68,6 +68,7 @@ namespace SakuraView
         static byte padding = 30;
         static string currentInfo;
         static string text;
+        static Color color;
         static string specifier = "F";
         static string[] pngMetadata = { "Prompt: ", "Negative Prompt: ", "Steps: ", "Sampler: ", "CFG Scale: ", "Seed: ", "Width: ", "Height: ", "Subseed: ", "Subseed Strength: ", "Model: ", "Lora: " };
         static CultureInfo culture = CultureInfo.CreateSpecificCulture("en-CA");
@@ -118,22 +119,26 @@ namespace SakuraView
                 SetSizeMode();
                 SetTextColour(txt[8]);
                 SetBackgroundColour(txt[10]);
-                banner = txt[12].ToLower() == "view";
-                this.SakuraConsole.Visible = txt[14].ToLower() == "view";
-                help = txt[16].ToLower() == "view";
-                info = txt[18].ToLower() == "view";
+                SakuraTextColor.Text = txt[8];
+                SakuraBgColor.Text = txt[10];
+                fixed_padding = padding = byte.Parse(txt[12]);
+                mode = byte.Parse(txt[14]);
+                metadataLength = ushort.Parse(txt[16]);
+                SakuraImgcvt.Text = txt[18];
+                this.TopMost = txt[20].ToLower() == "true";
+                banner = txt[22].ToLower() == "view";
+                this.SakuraConsole.Visible = txt[24].ToLower() == "view";
+                duplicate = txt[26].ToLower() == "true";
+                help = txt[28].ToLower() == "view";
+                info = txt[30].ToLower() == "view";
+                loop = txt[32].ToLower() == "true";
+                metadata = txt[34].ToLower() == "view";
+                loadSubFolders = txt[36].ToLower() == "true";
+                counter = txt[38].ToLower() == "true";
                 SetBanner();
                 SetHelp(true);
                 SetInfo(true);
                 SetWindowPosition();
-                this.TopMost = txt[20].ToLower() == "true";
-                duplicate = txt[22].ToLower() == "true";
-                counter = txt[24].ToLower() == "true";
-                loadSubFolders = txt[26].ToLower() == "true";
-                loop = txt[28].ToLower() == "true";
-                fixed_padding = padding = byte.Parse(txt[30]);
-                mode = byte.Parse(txt[32]);
-                metadataLength = ushort.Parse(txt[34]);
             }
             catch
             {
@@ -172,16 +177,64 @@ namespace SakuraView
             }
             SetMode();
             SakuraView_ClientSizeChanged(null, null);
-            SakuraCkSubFolders.Checked = loadSubFolders;
-            SakuraCkMetadata.Checked = metadata;
-            SakuraCkLoop.Checked = loop;
-            SakuraCkInfo.Checked = info;
-            SakuraCkHelp.Checked = help;
-            SakuraCkDuplicates.Checked = duplicate;
-            SakuraCkCounter.Checked = counter;
-            SakuraCkConsole.Checked = console;
-            SakuraCkBanner.Checked = banner;
-            SakuraCkAlwaysOnTop.Checked = this.TopMost;
+            foreach (KnownColor knownColor in Enum.GetValues(typeof(KnownColor)))
+            {
+                Color color = Color.FromKnownColor(knownColor);
+                SakuraBgColor.Items.Add(color.Name);
+                SakuraTextColor.Items.Add(color.Name);
+            }
+            SakuraBgColor.SelectedIndex = Array.IndexOf(Enum.GetValues(typeof(KnownColor)), this.BackColor); ;
+            SakuraTextColor.SelectedIndex = Array.IndexOf(Enum.GetValues(typeof(KnownColor)), SakuraInfo.ForeColor);
+            if (this.TopMost)
+            {
+                this.TopMost = false;
+                SakuraCkAlwaysOnTop.Checked = true;
+            }
+            if (banner)
+            {
+                banner = false;
+                SakuraCkBanner.Checked = true;
+            }
+            if (console)
+            {
+                console = false;
+                SakuraCkConsole.Checked = true;
+            }
+            if (duplicate)
+            {
+                duplicate = false;
+                SakuraCkDuplicates.Checked = true;
+            }
+            if (help)
+            {
+                help = false;
+                SakuraCkHelp.Checked = true;
+            }
+            if (info)
+            {
+                info = false;
+                SakuraCkInfo.Checked = true;
+            }
+            if (loop)
+            {
+                loop = false;
+                SakuraCkLoop.Checked = true;
+            }
+            if (metadata)
+            {
+                metadata = false;
+                SakuraCkMetadata.Checked = true;
+            }
+            if (loadSubFolders)
+            {
+                loadSubFolders = false;
+                SakuraCkSubFolders.Checked = true;
+            }
+            if (counter)
+            {
+                counter = false;
+                SakuraCkCounter.Checked = true;
+            }
             SakuraButton10Lines.Visible = false;
             SakuraButtonClearConsole.Visible = false;
             SakuraButtonDirectory.Visible = false;
@@ -205,27 +258,36 @@ namespace SakuraView
             SakuraZoomLabel.Visible = false;
             SakuraZoomNumeric.Visible = false;
             SakuraZoomTrackBar.Visible = false;
+            SakuraBgColor.Visible = false;
+            SakuraBgColorLabel.Visible = false;
+            SakuraTextColor.Visible = false;
+            SakuraTextColorLabel.Visible = false;
+            SakuraImgcvtLabel.Visible = false;
+            SakuraImgcvt.Visible = false;
+            SakuraButtonHideSettings.Visible = false;
         }
         private void SetTxt()
         {
             txt = new string[] {
-                "SakuraView v1.0", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
+                "SakuraView v0.2", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
             "Scale mode {Fill, Fit, Stretch, VanillaFit, LeftFit, Center}","Fit",  // config[4]
             "Window Location Window Location {Minimized, Normal, Maximized, Normal2, Maximized2}", "Normal",  // config[6]
             "Text Colour (System.Drawing.Color)", "White",  // config[8]
             "Background Colour", "Black",  // config[10]
-            "Banner {View, Hide}", "View",  // config[12]
-            "Console {View, Hide}", "Hide",  // config[14]
-            "Help {View, Hide}", "View",  // config[16]
-            "Info {View, Hide}", "View",  // config[18]
+            "Fixed Padding (0 = disable)", "0", // config[12]
+            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // config[14]
+            "Metadata Length (in character count per line)", "200", // config[16]
+            "imgcvt.exe path", "C:\\Program Files\\Autodesk\\Maya2018\\bin\\imgcvt.exe", // config[18]
             "Always On Top {True, False}", "False", // config[20]
-            "Allow Duplicates {True, False}", "False", // config[22]
-            "Counter {True, False}", "True", // config[24]
-            "Load sub-folders {True, False}", "True", // config[26]
-            "Loop {True, False}", "True", // config[28]
-            "Fixed Padding (0 = disable)", "0", // config[30]
-            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // config[32]
-            "Metadata Length (in character count per line)", "200", // config[34]
+            "Banner {View, Hide}", "View",  // config[22]
+            "Console {View, Hide}", "Hide",  // config[24]
+            "Duplicates {True, False}", "False", // config[26]
+            "Help {View, Hide}", "View",  // config[28]
+            "Info {View, Hide}", "View",  // config[30]
+            "Loop {True, False}", "True", // config[32]
+            "Metadata {View, Hide}", "True", // config[34]
+            "Load sub-folders {True, False}", "True", // config[36]
+            "Counter {True, False}", "True", // config[38]
              };
         }
         private void SetMode()
@@ -237,15 +299,68 @@ namespace SakuraView
         }
         private void SetBackgroundColour(string backgroundColour)
         {
-            this.BackColor = System.Drawing.Color.FromName(backgroundColour);
-            SakuraBox.BackColor = System.Drawing.Color.FromName(backgroundColour);
+            color = System.Drawing.Color.FromName(backgroundColour);
+            this.BackColor = color;
+            SakuraBox.BackColor = color;
+            SakuraZoomLabel.BackColor = color;
+            SakuraImgcvtLabel.BackColor = color;
+            SakuraTextColorLabel.BackColor = color;
+            SakuraBgColorLabel.BackColor = color;
+            SakuraSideHelp.BackColor = color;
+            SakuraHelp.BackColor = color;
+            SakuraImgcvt.BackColor = color;
+            SakuraInfo.BackColor = color;
+            SakuraButtonEmpty.BackColor = color;
+            SakuraButtonGithub.BackColor = color;
+            SakuraButtonOpenFiles.BackColor = color;
+            SakuraButtonClearConsole.BackColor = color;
+            SakuraButtonDirectory.BackColor = color;
+            SakuraButton10Lines.BackColor = color;
+            SakuraButtonRotate.BackColor = color;
+            SakuraButtonSwapH.BackColor = color;
+            SakuraButtonSwapV.BackColor = color;
+            SakuraButtonSave.BackColor = color;
+            SakuraZoomNumeric.BackColor = color;
+            SakuraBgColor.BackColor = color;
+            SakuraTextColor.BackColor = color;
+            SakuraButtonHideSettings.BackColor = color;
         }
         private void SetTextColour(string textColour)
         {
-
-            SakuraInfo.ForeColor = System.Drawing.Color.FromName(textColour);
-            SakuraSideHelp.ForeColor = System.Drawing.Color.FromName(textColour);
-            SakuraHelp.ForeColor = System.Drawing.Color.FromName(textColour);
+            color = System.Drawing.Color.FromName(textColour);
+            this.ForeColor = color;
+            SakuraZoomLabel.ForeColor = color;
+            SakuraImgcvtLabel.ForeColor = color;
+            SakuraTextColorLabel.ForeColor = color;
+            SakuraBgColorLabel.ForeColor = color;
+            SakuraSideHelp.ForeColor = color;
+            SakuraHelp.ForeColor = color;
+            SakuraImgcvt.ForeColor = color;
+            SakuraInfo.ForeColor = color;
+            SakuraButtonEmpty.ForeColor = color;
+            SakuraButtonGithub.ForeColor = color;
+            SakuraButtonOpenFiles.ForeColor = color;
+            SakuraButtonClearConsole.ForeColor = color;
+            SakuraButtonDirectory.ForeColor = color;
+            SakuraButton10Lines.ForeColor = color;
+            SakuraButtonRotate.ForeColor = color;
+            SakuraButtonSwapH.ForeColor = color;
+            SakuraButtonSwapV.ForeColor = color;
+            SakuraButtonSave.ForeColor = color;
+            SakuraZoomNumeric.ForeColor = color;
+            SakuraBgColor.ForeColor = color;
+            SakuraTextColor.ForeColor = color;
+            SakuraCkAlwaysOnTop.ForeColor = color;
+            SakuraCkBanner.ForeColor = color;
+            SakuraCkConsole.ForeColor = color;
+            SakuraCkDuplicates.ForeColor = color;
+            SakuraCkHelp.ForeColor = color;
+            SakuraCkInfo.ForeColor = color;
+            SakuraCkLoop.ForeColor = color;
+            SakuraCkMetadata.ForeColor = color;
+            SakuraCkSubFolders.ForeColor = color;
+            SakuraCkCounter.ForeColor = color;
+            SakuraButtonHideSettings.ForeColor = color;
         }
         private void SetBanner()
         {
@@ -543,7 +658,7 @@ namespace SakuraView
         }
         private void PlaceMetadata()
         {
-            metadataLength = ushort.Parse(txt[32]);
+            metadataLength = ushort.Parse(txt[16]);
             UpPlaceMetadata();
         }
         private void FillMetadata()
@@ -759,7 +874,7 @@ namespace SakuraView
                 SakuraHidden.Text += Fill(imagesInfo[currentImage][i], padding);
             }
             SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
-            if (SakuraHidden.Width > ClientSize.Width && padding != 1 && fixed_padding != 0)
+            if (SakuraHidden.Width > ClientSize.Width && padding != 1 && fixed_padding == 0)
             {
                 padding--;
                 ScaleInfo();
@@ -1481,7 +1596,7 @@ namespace SakuraView
                 ScaleInfo();
                 SakuraInfo.Text = SakuraHidden.Text;
             }
-            else if (fixed_padding != 0 && SakuraInfo.Width > ClientSize.Width >> 1)
+            else if (fixed_padding == 0 && SakuraInfo.Width > ClientSize.Width >> 1)
             {
                 padding = 30;
                 ScaleInfo();
@@ -1589,6 +1704,7 @@ namespace SakuraView
             SakuraButtonSave.Visible = !SakuraButtonSave.Visible;
             SakuraButtonSwapH.Visible = !SakuraButtonSwapH.Visible;
             SakuraButtonSwapV.Visible = !SakuraButtonSwapV.Visible;
+            SakuraButtonHideSettings.Visible = !SakuraButtonHideSettings.Visible;
             SakuraCkAlwaysOnTop.Visible = !SakuraCkAlwaysOnTop.Visible;
             SakuraCkBanner.Visible = !SakuraCkBanner.Visible;
             SakuraCkConsole.Visible = !SakuraCkConsole.Visible;
@@ -1599,6 +1715,13 @@ namespace SakuraView
             SakuraCkLoop.Visible = !SakuraCkLoop.Visible;
             SakuraCkMetadata.Visible = !SakuraCkMetadata.Visible;
             SakuraCkSubFolders.Visible = !SakuraCkSubFolders.Visible;
+            SakuraBgColor.Visible = !SakuraBgColor.Visible;
+            SakuraBgColorLabel.Visible = !SakuraBgColorLabel.Visible;
+            SakuraTextColor.Visible = !SakuraTextColor.Visible;
+            SakuraTextColorLabel.Visible = !SakuraTextColorLabel.Visible;
+            SakuraImgcvtLabel.Visible = !SakuraImgcvtLabel.Visible;
+            SakuraImgcvt.Visible = !SakuraImgcvt.Visible;
+            this.Focus();
         }
 
         private void SakuraButtonEmpty_Click(object sender, EventArgs e)
@@ -1698,20 +1821,22 @@ namespace SakuraView
             txt[2] = upscaleAlgorithm;
             txt[4] = upscaleMode;
             txt[6] = windowPosition;
-            // txt[8] is only edited through the config
-            // txt[10] is only edited through the config
-            if (banner) { txt[12] = "view"; } else { txt[12] = "hide"; }
-            if (this.SakuraConsole.Visible) { txt[14] = "view"; } else { txt[14] = "hide"; }
-            if (help) { txt[16] = "view"; } else { txt[16] = "hide"; }
-            if (info) { txt[18] = "view"; } else { txt[18] = "hide"; }
+            txt[8] = SakuraTextColor.Text;
+            txt[10] = SakuraBgColor.Text;
+            txt[12] = fixed_padding.ToString();
+            txt[14] = mode.ToString();
+            txt[16] = metadataLength.ToString();
+            txt[18] = SakuraImgcvt.Text;
             if (this.TopMost) { txt[20] = "true"; } else { txt[20] = "false"; }
-            if (duplicate) { txt[22] = "true"; } else { txt[22] = "false"; }
-            if (counter) { txt[24] = "true"; } else { txt[24] = "false"; }
-            if (loadSubFolders) { txt[26] = "true"; } else { txt[26] = "false"; }
-            if (loop) { txt[28] = "true"; } else { txt[28] = "false"; }
-            txt[30] = fixed_padding.ToString();
-            txt[32] = mode.ToString();
-            txt[34] = metadataLength.ToString();
+            if (banner) { txt[22] = "view"; } else { txt[22] = "hide"; }
+            if (this.SakuraConsole.Visible) { txt[24] = "view"; } else { txt[24] = "hide"; }
+            if (duplicate) { txt[26] = "true"; } else { txt[26] = "false"; }
+            if (help) { txt[28] = "view"; } else { txt[28] = "hide"; }
+            if (info) { txt[30] = "view"; } else { txt[30] = "hide"; }
+            if (loop) { txt[32] = "true"; } else { txt[32] = "false"; }
+            if (metadata) { txt[34] = "view"; } else { txt[34] = "hide"; }
+            if (loadSubFolders) { txt[36] = "true"; } else { txt[36] = "false"; }
+            if (counter) { txt[38] = "true"; } else { txt[38] = "false"; }
             try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
             catch { } // continue execution without saving
         }
@@ -1785,6 +1910,21 @@ namespace SakuraView
         private void SakuraZoomNumeric_ValueChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void SakuraTextColor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetTextColour(SakuraTextColor.Text);
+        }
+
+        private void SakuraBgColor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetBackgroundColour(SakuraBgColor.Text);
+        }
+
+        private void SakuraButtonHideSettings_Click(object sender, EventArgs e)
+        {
+            ToggleSettings();
         }
     }
 }
