@@ -60,6 +60,8 @@ namespace SakuraView
         static bool loadSubFolders = true;
         static bool counter = true;
         static bool loop = true;
+        static bool console = false;
+        static bool metadata = false;
         static byte fixed_padding = 0;
         static byte mode = 0; // 0 = ImageViewer; 1 = ImageExplorer; 2 = TextViewer; 3 = TextExplorer; 4 = TextEditor; 5 = Settings; 6 = SongExplorer
         static byte currentScreen = 0;
@@ -171,13 +173,13 @@ namespace SakuraView
             SetMode();
             SakuraView_ClientSizeChanged(null, null);
             SakuraCkSubFolders.Checked = loadSubFolders;
-            SakuraCkMetadata.Checked = SakuraMetadata.Visible;
+            SakuraCkMetadata.Checked = metadata;
             SakuraCkLoop.Checked = loop;
             SakuraCkInfo.Checked = info;
             SakuraCkHelp.Checked = help;
             SakuraCkDuplicates.Checked = duplicate;
             SakuraCkCounter.Checked = counter;
-            SakuraCkConsole.Checked = SakuraConsole.Visible;
+            SakuraCkConsole.Checked = console;
             SakuraCkBanner.Checked = banner;
             SakuraCkAlwaysOnTop.Checked = this.TopMost;
             SakuraButton10Lines.Visible = false;
@@ -213,7 +215,7 @@ namespace SakuraView
             "Text Colour (System.Drawing.Color)", "White",  // config[8]
             "Background Colour", "Black",  // config[10]
             "Banner {View, Hide}", "View",  // config[12]
-            "Console {View, Hide}", "View",  // config[14]
+            "Console {View, Hide}", "Hide",  // config[14]
             "Help {View, Hide}", "View",  // config[16]
             "Info {View, Hide}", "View",  // config[18]
             "Always On Top {True, False}", "False", // config[20]
@@ -1360,27 +1362,27 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.T)
             {
-                SakuraCkBanner_CheckedChanged(null, null);
+                SakuraCkBanner.Checked = !banner;
             }
             else if (e.KeyCode == Keys.I)
             {
-                SakuraCkInfo_CheckedChanged(null, null);
+                SakuraCkInfo.Checked = !info;
             }
             else if (e.KeyCode == Keys.Q)
             {
-                SakuraCkSubFolders_CheckedChanged(null, null);
+                SakuraCkSubFolders.Checked = !loadSubFolders;
             }
             else if (e.KeyCode == Keys.U)
             {
-                SakuraCkCounter_CheckedChanged(null, null);
+                SakuraCkCounter.Checked = !counter;
             }
             else if (e.KeyCode == Keys.D)
             {
-                SakuraCkDuplicates_CheckedChanged(null, null);
+                SakuraCkDuplicates.Checked = !duplicate;
             }
             else if (e.KeyCode == Keys.A)
             {
-                SakuraCkAlwaysOnTop_CheckedChanged(null, null);
+                SakuraCkAlwaysOnTop.Checked = !this.TopMost;
             }
             else if (e.KeyCode == Keys.Oemcomma)
             {
@@ -1388,15 +1390,15 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.OemBackslash)
             {
-                SakuraCkLoop_CheckedChanged(null, null);
+                SakuraCkLoop.Checked = !loop;
             }
             else if (e.KeyCode == Keys.Oem7)
             {
-                SakuraCkMetadata_CheckedChanged(null, null);
+                SakuraCkMetadata.Checked = !metadata;
             }
             else if (e.KeyCode == Keys.C)
             {
-                SakuraCkConsole_CheckedChanged(null, null);
+                SakuraCkConsole.Checked = !console;
             }
             else if (e.KeyCode == Keys.K)
             {
@@ -1722,12 +1724,13 @@ namespace SakuraView
 
         private void SakuraCkBanner_CheckedChanged(object sender, EventArgs e)
         {
-            banner = banner != true;
+            banner = !banner;
             SetBanner();
         }
 
         private void SakuraCkConsole_CheckedChanged(object sender, EventArgs e)
         {
+            console = !console;
             this.SakuraConsole.Visible = this.SakuraConsole.Visible != true;
         }
 
@@ -1757,8 +1760,9 @@ namespace SakuraView
 
         private void SakuraCkMetadata_CheckedChanged(object sender, EventArgs e)
         {
-            SakuraMetadata.Visible = SakuraMetadata.Visible != true;
-            SakuraConsole.Text += "\nmetadata = " + SakuraMetadata.Visible;
+            metadata = !metadata;
+            SakuraMetadata.Visible = metadata;
+            SakuraConsole.Text += "\nmetadata = " + metadata;
         }
 
         private void SakuraCkSubFolders_CheckedChanged(object sender, EventArgs e)
