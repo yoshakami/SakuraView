@@ -556,7 +556,14 @@ namespace SakuraView
                                 return;
                             }
                             SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
-                            SakuraMetadata.Text = SakuraMetadata.Text = Encoding.UTF8.GetString(textBytes, 0x29, x).Replace('\0', '\n');
+                            SakuraMetadata.Text = Encoding.UTF8.GetString(textBytes, 0x29, x).Replace('\0', ':');
+                            y = 0x29 + 8 + x;
+                            while (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
+                            {
+                                x = (textBytes[0x2D + x] << 24) | (textBytes[0x2E + x] << 16) | (textBytes[0x2F + x] << 8) | textBytes[0x30 + x];
+                                SakuraMetadata.Text += "\n" + Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':');
+                                y += x + 12;
+                            }
                             return;
                         }
                         string text = Encoding.UTF8.GetString(textBytes, 0x34, x).Trim();
