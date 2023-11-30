@@ -549,18 +549,28 @@ namespace SakuraView
 
                         if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), Encoding.ASCII.GetBytes("tEXtparameters")))
                         {
+                            SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
+                            imagesMetadata.Add(null); // this list is hardcoded. TODO: add history for other types of metadata of images
                             if (!ByteArrayEquals(textBytes.Skip(0x25).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
                             {
-                                SakuraConsole.Text += $"\n{imagesPath[imageNumber]} has no png metadata";
-                                imagesMetadata.Add(null);
+                                y = 0x25;
+                                while(y < 8192)
+                                {
+                                    x = (textBytes[y - 4] << 24) | (textBytes[y - 3] << 16) | (textBytes[y - 2] << 8) | textBytes[y - 1];
+                                    if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
+                                    {
+                                        SakuraMetadata.Text += "\n" + Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':');
+                                    }
+                                    y += x + 12;
+                                }
                                 return;
                             }
-                            SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
                             SakuraMetadata.Text = Encoding.UTF8.GetString(textBytes, 0x29, x).Replace('\0', ':');
                             y = 0x29 + 8 + x;
+                            //while (textBytes[y] == 0x74 && textBytes[y+1] == 0x45 && textBytes[y+2] == 0x58 && textBytes[y+3] == 0x74)
                             while (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
                             {
-                                x = (textBytes[0x2D + x] << 24) | (textBytes[0x2E + x] << 16) | (textBytes[0x2F + x] << 8) | textBytes[0x30 + x];
+                                x = (textBytes[y-4] << 24) | (textBytes[y-3] << 16) | (textBytes[y-2] << 8) | textBytes[y-1];
                                 SakuraMetadata.Text += "\n" + Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':');
                                 y += x + 12;
                             }
@@ -592,7 +602,7 @@ namespace SakuraView
                         textLines = text.Split('\n');
                         y = textLines.Length - 1;
                         /*
-                        
+
                         j = 0;
                         if (textLines.Length == 2)  // either the prompt or the negative is not there
                         {
@@ -644,6 +654,7 @@ namespace SakuraView
                         }
                     }
                 }
+
                 catch (Exception ex)
                 {
                     SakuraConsole.Text += $"\nError parsing PNG file: {ex.Message}";
@@ -878,7 +889,7 @@ namespace SakuraView
             }
             return word;
         }
-        private void ScaleInfo(bool init=false)
+        private void ScaleInfo(bool init = false)
         {
             if (currentImage > imagesInfo.Count)
                 currentImage = imagesInfo.Count - 1;
@@ -1547,7 +1558,7 @@ namespace SakuraView
             }
             else if (e.KeyCode == Keys.X)
             {
-                SakuraButtonSwapH_Click(null,null);
+                SakuraButtonSwapH_Click(null, null);
             }
             else if (e.KeyCode == Keys.Y)
             {
