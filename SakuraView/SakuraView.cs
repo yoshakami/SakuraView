@@ -127,7 +127,7 @@ namespace SakuraView
                 SakuraImgcvt.Text = txt[18];
                 this.TopMost = txt[20].ToLower() == "true";
                 banner = txt[22].ToLower() == "view";
-                this.SakuraConsole.Visible = txt[24].ToLower() == "view";
+                this.SakuraConsole.Visible = console = txt[24].ToLower() == "view";
                 duplicate = txt[26].ToLower() == "true";
                 help = txt[28].ToLower() == "view";
                 info = txt[30].ToLower() == "view";
@@ -265,6 +265,13 @@ namespace SakuraView
             SakuraImgcvtLabel.Visible = false;
             SakuraImgcvt.Visible = false;
             SakuraButtonHideSettings.Visible = false;
+            if (fixed_padding == 0 && imagesInfo.Count > 0)
+            {
+                padding = 15;
+                ScaleInfo(true);
+                SakuraInfo.Text = SakuraHidden.Text;
+            }
+
         }
         private void SetTxt()
         {
@@ -864,7 +871,7 @@ namespace SakuraView
             }
             return word;
         }
-        private void ScaleInfo()
+        private void ScaleInfo(bool init=false)
         {
             if (currentImage > imagesInfo.Count)
                 currentImage = imagesInfo.Count - 1;
@@ -874,7 +881,7 @@ namespace SakuraView
                 SakuraHidden.Text += Fill(imagesInfo[currentImage][i], padding);
             }
             SakuraHidden.Text += imagesInfo[currentImage][imagesInfo[currentImage].Length - 1];
-            if (SakuraHidden.Width > ClientSize.Width && padding != 1 && fixed_padding == 0)
+            if (SakuraHidden.Width > ClientSize.Width && padding != 1 && fixed_padding == 0 && !init)
             {
                 padding--;
                 ScaleInfo();
@@ -1356,7 +1363,7 @@ namespace SakuraView
             else if (e.KeyCode == Keys.D0) { ViewImage(0); }
             else if (e.KeyCode == Keys.F1)
             {
-                SakuraCkHelp_CheckedChanged(null, null);
+                SakuraCkHelp.Checked = !help;
             }
             else if (e.KeyCode == Keys.F2)
             {
