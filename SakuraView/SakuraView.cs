@@ -72,6 +72,7 @@ namespace SakuraView
         static string specifier = "F";
         static string[] pngMetadata = { "Prompt: ", "Negative Prompt: ", "Steps: ", "Sampler: ", "CFG Scale: ", "Seed: ", "Width: ", "Height: ", "Subseed: ", "Subseed Strength: ", "Model: ", "Lora: " };
         static CultureInfo culture = CultureInfo.CreateSpecificCulture("en-CA");
+        Encoding latin1 = Encoding.GetEncoding("ISO-8859-1");
         static List<Image> images = new List<Image>();
         static List<string> imagesPath = new List<string>();
         static List<string[]> imagesInfo = new List<string[]>();
@@ -532,7 +533,6 @@ namespace SakuraView
             if (!counter || imagesType[imageNumber] == 0) // png
             {
                 string[] output = new string[13];
-
                 try
                 {
                     using (FileStream png = new FileStream(imagesPath[imageNumber], FileMode.Open, FileAccess.Read))
@@ -546,37 +546,33 @@ namespace SakuraView
                             return;
                         }
                         x = (textBytes[0x21] << 24) | (textBytes[0x22] << 16) | (textBytes[0x23] << 8) | textBytes[0x24];
-
-                        if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), Encoding.ASCII.GetBytes("tEXtparameters")))
+                        string text;
+                        if (ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("tEXtparameters")))
                         {
-                            SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
-                            imagesMetadata.Add(null); // this list is hardcoded. TODO: add history for other types of metadata of images
-                            if (!ByteArrayEquals(textBytes.Skip(0x25).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
+                            text = latin1.GetString(textBytes, 0x34, x).Trim();
+                        } else { 
+                            if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("iTXtparameters")))
                             {
+                                SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
+                                imagesMetadata.Add(null); // this list is hardcoded. TODO: add history for other types of metadata of images
                                 y = 0x25;
-                                while(y < 8192)
+                                while (y < 8192)
                                 {
                                     x = (textBytes[y - 4] << 24) | (textBytes[y - 3] << 16) | (textBytes[y - 2] << 8) | textBytes[y - 1];
-                                    if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
+                                    if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), latin1.GetBytes("tEXt")))
                                     {
-                                        SakuraMetadata.Text += "\n" + Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':');
+                                        SakuraMetadata.Text += "\n" + WrapText(latin1.GetString(textBytes, y + 4, x).Replace('\0', ':'), metadataLength);
+                                    }
+                                    if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), latin1.GetBytes("iTXt")))
+                                    {
+                                        SakuraMetadata.Text += "\n" + WrapText(Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':'), metadataLength);
                                     }
                                     y += x + 12;
                                 }
                                 return;
                             }
-                            SakuraMetadata.Text = Encoding.UTF8.GetString(textBytes, 0x29, x).Replace('\0', ':');
-                            y = 0x29 + 8 + x;
-                            //while (textBytes[y] == 0x74 && textBytes[y+1] == 0x45 && textBytes[y+2] == 0x58 && textBytes[y+3] == 0x74)
-                            while (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), Encoding.ASCII.GetBytes("tEXt")))
-                            {
-                                x = (textBytes[y-4] << 24) | (textBytes[y-3] << 16) | (textBytes[y-2] << 8) | textBytes[y-1];
-                                SakuraMetadata.Text += "\n" + Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':');
-                                y += x + 12;
-                            }
-                            return;
+                            text = Encoding.UTF8.GetString(textBytes, 0x38, x).Trim();
                         }
-                        string text = Encoding.UTF8.GetString(textBytes, 0x34, x).Trim();
                         text = text.Split('\x00')[0].Trim();
 
                         string[] textLines = text.Split(new[] { "Negative prompt: " }, StringSplitOptions.None);
