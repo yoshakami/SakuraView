@@ -137,10 +137,15 @@ namespace SakuraView
                 metadata = txt[34].ToLower() == "view";
                 loadSubFolders = txt[36].ToLower() == "true";
                 counter = txt[38].ToLower() == "true";
+                string[] s = txt[40].Split('s');
                 SetBanner();
                 SetHelp(true);
                 SetInfo(true);
                 SetWindowPosition();
+                for (x = 0; x < imagesFavourites.Length; x++)
+                {
+                    imagesFavourites[x] = int.Parse(s[x]);
+                }
             }
             catch
             {
