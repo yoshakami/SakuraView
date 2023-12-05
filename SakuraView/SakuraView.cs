@@ -554,7 +554,6 @@ namespace SakuraView
                             if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("iTXtparameters")))
                             {
                                 SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
-                                imagesMetadata.Add(null); // this list is hardcoded. TODO: add history for other types of metadata of images
                                 y = 0x25;
                                 while (y < 8192)
                                 {
@@ -569,6 +568,8 @@ namespace SakuraView
                                     }
                                     y += x + 12;
                                 }
+                                string[] pngMeta = { "\0", SakuraMetadata.Text.ToString() }; // stores a copy of the current text
+                                imagesMetadata.Add(pngMeta); // this list is hardcoded. TODO: add history for other types of metadata of images
                                 return;
                             }
                             text = Encoding.UTF8.GetString(textBytes, 0x38, x).Trim();
@@ -685,6 +686,14 @@ namespace SakuraView
         private void FillMetadata()
         {
             SakuraUnseen.Text = "";
+            if (imagesMetadata[currentImage][0] == "\0")
+            {
+                if (!string.IsNullOrEmpty(imagesMetadata[currentImage][1]))
+                {
+                    SakuraUnseen.Text = WrapText(imagesMetadata[currentImage][1], metadataLength);
+                }
+                return;
+            }
             for (i = 0; i < 2; i++)
             {
                 if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
@@ -696,7 +705,7 @@ namespace SakuraView
                     SakuraUnseen.Text += pngMetadata[i] + imagesMetadata[currentImage][i] + "\n";
             }
             if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
-                SakuraUnseen.Text += pngMetadata[i] + imagesMetadata[currentImage][i] + "\n"; // for the last one I won't put a new line at the end
+                SakuraUnseen.Text += pngMetadata[i] + imagesMetadata[currentImage][i]; // for the last one I won't put a new line at the end
         }
         public static string WrapText(string input, int maxLength)
         {
@@ -779,7 +788,7 @@ namespace SakuraView
                     {
                         pictureInfo[0] += " / " + imagesPath.Count;
                     }
-                    if (SakuraMetadata.Visible)
+                    if (metadata)
                     {
                         if (imagesMetadata.Count == currentImage)
                             LoadMetadata(currentImage);
