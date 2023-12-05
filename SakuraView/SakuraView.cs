@@ -74,6 +74,7 @@ namespace SakuraView
         static CultureInfo culture = CultureInfo.CreateSpecificCulture("en-CA");
         Encoding latin1 = Encoding.GetEncoding("ISO-8859-1");
         static List<Image> images = new List<Image>();
+        static int[] imagesFavourites = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
         static List<string> imagesPath = new List<string>();
         static List<string[]> imagesInfo = new List<string[]>();
         static List<string[]> imagesMetadata = new List<string[]>();
@@ -550,7 +551,9 @@ namespace SakuraView
                         if (ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("tEXtparameters")))
                         {
                             text = latin1.GetString(textBytes, 0x34, x).Trim();
-                        } else { 
+                        }
+                        else
+                        {
                             if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("iTXtparameters")))
                             {
                                 SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
@@ -1370,11 +1373,121 @@ namespace SakuraView
                 return ms.ToArray();
             }
         }
+        private void Favourite_Save(object sender, KeyEventArgs e)
+        {
+            ViewImage(imagesFavourites[(int)e.KeyCode]);
+            if (e.KeyCode == Keys.D0) { ViewImage(imagesFavourites[0]); }
+            else if (e.KeyCode == Keys.D1) { ViewImage(imagesFavourites[1]); }
+            else if (e.KeyCode == Keys.D2) { ViewImage(imagesFavourites[2]); }
+            else if (e.KeyCode == Keys.D3) { ViewImage(imagesFavourites[3]); }
+            else if (e.KeyCode == Keys.D4) { ViewImage(imagesFavourites[4]); }
+            else if (e.KeyCode == Keys.D5) { ViewImage(imagesFavourites[5]); }
+            else if (e.KeyCode == Keys.D6) { ViewImage(imagesFavourites[6]); }
+            else if (e.KeyCode == Keys.D7) { ViewImage(imagesFavourites[7]); }
+            else if (e.KeyCode == Keys.D8) { ViewImage(imagesFavourites[8]); }
+            else if (e.KeyCode == Keys.D9) { ViewImage(imagesFavourites[9]); }
+            else if (e.KeyCode == Keys.NumPad0) { ViewImage(imagesFavourites[10]); }
+            else if (e.KeyCode == Keys.NumPad1) { ViewImage(imagesFavourites[11]); }
+            else if (e.KeyCode == Keys.NumPad2) { ViewImage(imagesFavourites[12]); }
+            else if (e.KeyCode == Keys.NumPad3) { ViewImage(imagesFavourites[13]); }
+            else if (e.KeyCode == Keys.NumPad4) { ViewImage(imagesFavourites[14]); }
+            else if (e.KeyCode == Keys.NumPad5) { ViewImage(imagesFavourites[15]); }
+            else if (e.KeyCode == Keys.NumPad6) { ViewImage(imagesFavourites[16]); }
+            else if (e.KeyCode == Keys.NumPad7) { ViewImage(imagesFavourites[17]); }
+            else if (e.KeyCode == Keys.NumPad8) { ViewImage(imagesFavourites[18]); }
+            else if (e.KeyCode == Keys.NumPad9) { ViewImage(imagesFavourites[19]); }
+            else if (e.KeyCode == Keys.A) { ViewImage(imagesFavourites[20]); }
+            else if (e.KeyCode == Keys.B) { ViewImage(imagesFavourites[21]); }
+            else if (e.KeyCode == Keys.C) { ViewImage(imagesFavourites[22]); }
+            else if (e.KeyCode == Keys.D) { ViewImage(imagesFavourites[23]); }
+            else if (e.KeyCode == Keys.E) { ViewImage(imagesFavourites[24]); }
+            else if (e.KeyCode == Keys.F) { ViewImage(imagesFavourites[25]); }
+            else if (e.KeyCode == Keys.G) { ViewImage(imagesFavourites[26]); }
+            else if (e.KeyCode == Keys.H) { ViewImage(imagesFavourites[27]); }
+            else if (e.KeyCode == Keys.I) { ViewImage(imagesFavourites[28]); }
+            else if (e.KeyCode == Keys.J) { ViewImage(imagesFavourites[29]); }
+            else if (e.KeyCode == Keys.K) { ViewImage(imagesFavourites[30]); }
+            else if (e.KeyCode == Keys.L) { ViewImage(imagesFavourites[31]); }
+            else if (e.KeyCode == Keys.M) { ViewImage(imagesFavourites[32]); }
+            else if (e.KeyCode == Keys.N) { ViewImage(imagesFavourites[33]); }
+            else if (e.KeyCode == Keys.O) { ViewImage(imagesFavourites[34]); }
+            else if (e.KeyCode == Keys.P) { ViewImage(imagesFavourites[35]); }
+            else if (e.KeyCode == Keys.Q) { ViewImage(imagesFavourites[36]); }
+            else if (e.KeyCode == Keys.R) { ViewImage(imagesFavourites[37]); }
+            else if (e.KeyCode == Keys.S) { ViewImage(imagesFavourites[38]); }
+            else if (e.KeyCode == Keys.T) { ViewImage(imagesFavourites[39]); }
+            else if (e.KeyCode == Keys.U) { ViewImage(imagesFavourites[40]); }
+            else if (e.KeyCode == Keys.V) { ViewImage(imagesFavourites[41]); }
+            else if (e.KeyCode == Keys.W) { ViewImage(imagesFavourites[42]); }
+            else if (e.KeyCode == Keys.X) { ViewImage(imagesFavourites[43]); }
+            else if (e.KeyCode == Keys.Y) { ViewImage(imagesFavourites[44]); }
+            else if (e.KeyCode == Keys.Z) { ViewImage(imagesFavourites[45]); }
+            else if (e.KeyCode == Keys.Oem102) { ViewImage(imagesFavourites[46]); }
+            else if (e.KeyCode == Keys.OemBackslash) { ViewImage(imagesFavourites[47]); }
+            else if (e.KeyCode == Keys.OemCloseBrackets) { ViewImage(imagesFavourites[48]); }
+            else if (e.KeyCode == Keys.Oemcomma) { ViewImage(imagesFavourites[49]); }
+            else if (e.KeyCode == Keys.OemMinus) { ViewImage(imagesFavourites[50]); }
+            else if (e.KeyCode == Keys.F1) { ViewImage(imagesFavourites[51]); }
+            else if (e.KeyCode == Keys.F2) { ViewImage(imagesFavourites[52]); }
+            else if (e.KeyCode == Keys.F3) { ViewImage(imagesFavourites[53]); }
+            else if (e.KeyCode == Keys.F4) { ViewImage(imagesFavourites[54]); }
+            else if (e.KeyCode == Keys.F5) { ViewImage(imagesFavourites[55]); }
+            else if (e.KeyCode == Keys.F6) { ViewImage(imagesFavourites[56]); }
+            else if (e.KeyCode == Keys.F7) { ViewImage(imagesFavourites[57]); }
+            else if (e.KeyCode == Keys.F8) { ViewImage(imagesFavourites[58]); }
+            else if (e.KeyCode == Keys.F9) { ViewImage(imagesFavourites[59]); }
+            else if (e.KeyCode == Keys.F10) { ViewImage(imagesFavourites[60]); }
+            else if (e.KeyCode == Keys.F11) { ViewImage(imagesFavourites[61]); }
+            else if (e.KeyCode == Keys.F12) { ViewImage(imagesFavourites[62]); }
+            else if (e.KeyCode == Keys.F13) { ViewImage(imagesFavourites[63]); }
+            else if (e.KeyCode == Keys.F14) { ViewImage(imagesFavourites[64]); }
+            else if (e.KeyCode == Keys.F15) { ViewImage(imagesFavourites[65]); }
+            else if (e.KeyCode == Keys.F16) { ViewImage(imagesFavourites[66]); }
+            else if (e.KeyCode == Keys.F17) { ViewImage(imagesFavourites[67]); }
+            else if (e.KeyCode == Keys.F18) { ViewImage(imagesFavourites[68]); }
+            else if (e.KeyCode == Keys.F19) { ViewImage(imagesFavourites[69]); }
+            else if (e.KeyCode == Keys.F20) { ViewImage(imagesFavourites[70]); }
+            else if (e.KeyCode == Keys.F21) { ViewImage(imagesFavourites[71]); }
+            else if (e.KeyCode == Keys.F22) { ViewImage(imagesFavourites[72]); }
+            else if (e.KeyCode == Keys.F23) { ViewImage(imagesFavourites[73]); }
+            else if (e.KeyCode == Keys.F24) { ViewImage(imagesFavourites[74]); }
+            else if (e.KeyCode == Keys.OemOpenBrackets) { ViewImage(imagesFavourites[75]); }
+            else if (e.KeyCode == Keys.OemPeriod) { ViewImage(imagesFavourites[76]); }
+            else if (e.KeyCode == Keys.OemPipe) { ViewImage(imagesFavourites[77]); }
+            else if (e.KeyCode == Keys.Oemplus) { ViewImage(imagesFavourites[78]); }
+            else if (e.KeyCode == Keys.OemQuestion) { ViewImage(imagesFavourites[79]); }
+            else if (e.KeyCode == Keys.OemQuotes) { ViewImage(imagesFavourites[80]); }
+            else if (e.KeyCode == Keys.Oem1) { ViewImage(imagesFavourites[81]); }
+            else if (e.KeyCode == Keys.Oem2) { ViewImage(imagesFavourites[82]); }
+            else if (e.KeyCode == Keys.Oem3) { ViewImage(imagesFavourites[83]); }
+            else if (e.KeyCode == Keys.Oem4) { ViewImage(imagesFavourites[84]); }
+            else if (e.KeyCode == Keys.Oem5) { ViewImage(imagesFavourites[85]); }
+            else if (e.KeyCode == Keys.Oem6) { ViewImage(imagesFavourites[86]); }
+            else if (e.KeyCode == Keys.Oem7) { ViewImage(imagesFavourites[87]); }
+            else if (e.KeyCode == Keys.Oem8) { ViewImage(imagesFavourites[88]); }
+            else if (e.KeyCode == Keys.OemSemicolon) { ViewImage(imagesFavourites[89]); }
+            else if (e.KeyCode == Keys.Oemtilde) { ViewImage(imagesFavourites[90]); }
+            else if (e.KeyCode == Keys.Apps) { ViewImage(imagesFavourites[91]); }
+            else if (e.KeyCode == Keys.Back) { ViewImage(imagesFavourites[92]); }
+            else if (e.KeyCode == Keys.Cancel) { ViewImage(imagesFavourites[93]); }
+            else if (e.KeyCode == Keys.Decimal) { ViewImage(imagesFavourites[94]); }
+            else if (e.KeyCode == Keys.Enter) { ViewImage(imagesFavourites[95]); }
+            else if (e.KeyCode == Keys.FinalMode) { ViewImage(imagesFavourites[96]); }
+            else if (e.KeyCode == Keys.Attn) { ViewImage(imagesFavourites[97]); }
+            else if (e.KeyCode == Keys.KanaMode) { ViewImage(imagesFavourites[98]); }
+            else if (e.KeyCode == Keys.KanjiMode) { ViewImage(imagesFavourites[99]); }
+
+        }
+        private void Favourite_Load(object sender, KeyEventArgs e)
+        {
+        }
         private void SakuraView_KeyDown(object sender, KeyEventArgs e)
         {
             //Console.WriteLine("Keydown!" + e.KeyCode);
             // SakuraConsole.Text += "\nKeydown!" + e.KeyCode;
-            if (e.KeyCode == Keys.D1) { ViewImage(imagesPath.Count / 10); }
+            if (e.Control && e.Alt && e.Shift) { Favourite_Save(sender, e); }
+            else if (e.Control && e.Alt) { Favourite_Load(sender, e); }
+            else if (e.KeyCode == Keys.D1) { ViewImage(imagesPath.Count / 10); }
             else if (e.KeyCode == Keys.D2) { ViewImage(imagesPath.Count / 5); }
             else if (e.KeyCode == Keys.D3) { ViewImage(imagesPath.Count * 3 / 10); }
             else if (e.KeyCode == Keys.D4) { ViewImage((imagesPath.Count << 2) / 10); }
@@ -1384,6 +1497,35 @@ namespace SakuraView
             else if (e.KeyCode == Keys.D8) { ViewImage((imagesPath.Count << 3) / 10); }
             else if (e.KeyCode == Keys.D9) { ViewImage(imagesPath.Count * 9 / 10); }
             else if (e.KeyCode == Keys.D0) { ViewImage(0); }
+            else if (e.KeyCode == Keys.A) { SakuraCkAlwaysOnTop.Checked = !this.TopMost; }
+            else if (e.KeyCode == Keys.C) { SakuraCkConsole.Checked = !console; }
+            else if (e.KeyCode == Keys.D) { SakuraCkDuplicates.Checked = !duplicate; }
+            else if (e.KeyCode == Keys.Down) { ViewImage(imagesPath.Count - 1); }
+            else if (e.KeyCode == Keys.E) { SakuraButtonEmpty_Click(null, null); }
+            else if (e.KeyCode == Keys.Enter) { ScaleImage(); }
+            else if (e.KeyCode == Keys.Escape) { Environment.Exit(0); }
+            else if (e.KeyCode == Keys.F) { SakuraButtonOpenFiles_Click(null, null); }
+            else if (e.KeyCode == Keys.G) { SakuraButtonGithub_Click(null, null); }
+            else if (e.KeyCode == Keys.I) { SakuraCkInfo.Checked = !info; }
+            else if (e.KeyCode == Keys.K) { SakuraButtonClearConsole_Click(null, null); }
+            else if (e.KeyCode == Keys.Left) { ViewImage(currentImage - 1); }
+            else if (e.KeyCode == Keys.O) { SakuraButtonDirectory_Click(null, null); }
+            else if (e.KeyCode == Keys.Oem7) { SakuraCkMetadata.Checked = !metadata; }
+            else if (e.KeyCode == Keys.OemBackslash) { SakuraCkLoop.Checked = !loop; }
+            else if (e.KeyCode == Keys.Oemcomma) { ToggleSettings(); }
+            else if (e.KeyCode == Keys.OemMinus || e.KeyCode == Keys.Subtract) { DownscaleImage(); }
+            else if (e.KeyCode == Keys.Oemplus || e.KeyCode == Keys.Add) { UpscaleImage(); }
+            else if (e.KeyCode == Keys.P) { SakuraButton10Lines_Click(null, null); }
+            else if (e.KeyCode == Keys.Q) { SakuraCkSubFolders.Checked = !loadSubFolders; }
+            else if (e.KeyCode == Keys.R) { SakuraButtonRotate_Click(null, null); }
+            else if (e.KeyCode == Keys.Right) { ViewImage(currentImage + 1); }
+            else if (e.KeyCode == Keys.S) { SakuraButtonSave_Click(null, null); }
+            else if (e.KeyCode == Keys.T) { SakuraCkBanner.Checked = !banner; }
+            else if (e.KeyCode == Keys.U) { SakuraCkCounter.Checked = !counter; }
+            else if (e.KeyCode == Keys.Up) { ViewImage(0); }
+            else if (e.KeyCode == Keys.X) { SakuraButtonSwapH_Click(null, null); }
+            else if (e.KeyCode == Keys.Y) { SakuraButtonSwapV_Click(null, null); }
+            else if (e.KeyCode == Keys.Z) { ScaleImage(); }  // TODc
             else if (e.KeyCode == Keys.F1)
             {
                 SakuraCkHelp.Checked = !help;
@@ -1496,122 +1638,6 @@ namespace SakuraView
                 upscaleAlgorithm = "nearestneighbor";
                 SetAlgorithm();
                 SakuraBox.Refresh();
-            }
-            else if (e.KeyCode == Keys.Escape)
-            {
-                Environment.Exit(0);
-            }
-            else if (e.KeyCode == Keys.E)
-            {
-                SakuraButtonEmpty_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.T)
-            {
-                SakuraCkBanner.Checked = !banner;
-            }
-            else if (e.KeyCode == Keys.I)
-            {
-                SakuraCkInfo.Checked = !info;
-            }
-            else if (e.KeyCode == Keys.Q)
-            {
-                SakuraCkSubFolders.Checked = !loadSubFolders;
-            }
-            else if (e.KeyCode == Keys.U)
-            {
-                SakuraCkCounter.Checked = !counter;
-            }
-            else if (e.KeyCode == Keys.D)
-            {
-                SakuraCkDuplicates.Checked = !duplicate;
-            }
-            else if (e.KeyCode == Keys.A)
-            {
-                SakuraCkAlwaysOnTop.Checked = !this.TopMost;
-            }
-            else if (e.KeyCode == Keys.Oemcomma)
-            {
-                ToggleSettings();
-            }
-            else if (e.KeyCode == Keys.OemBackslash)
-            {
-                SakuraCkLoop.Checked = !loop;
-            }
-            else if (e.KeyCode == Keys.Oem7)
-            {
-                SakuraCkMetadata.Checked = !metadata;
-            }
-            else if (e.KeyCode == Keys.C)
-            {
-                SakuraCkConsole.Checked = !console;
-            }
-            else if (e.KeyCode == Keys.K)
-            {
-                SakuraButtonClearConsole_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.P)
-            {
-                SakuraButton10Lines_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.O)
-            {
-                SakuraButtonDirectory_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.F)
-            {
-                SakuraButtonOpenFiles_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.X)
-            {
-                SakuraButtonSwapH_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.Y)
-            {
-                SakuraButtonSwapV_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.R)
-            {
-                SakuraButtonRotate_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.G)
-            {
-                SakuraButtonGithub_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.S)
-            {
-                SakuraButtonSave_Click(null, null);
-            }
-            else if (e.KeyCode == Keys.Left)
-            {
-                ViewImage(currentImage - 1);
-            }
-            else if (e.KeyCode == Keys.Right)
-            {
-                ViewImage(currentImage + 1);
-            }
-            else if (e.KeyCode == Keys.Up)
-            {
-                ViewImage(0);
-            }
-            else if (e.KeyCode == Keys.Down)
-            {
-                ViewImage(imagesPath.Count - 1);
-            }
-            else if (e.KeyCode == Keys.Enter)
-            {
-                ScaleImage();
-            }
-            else if (e.KeyCode == Keys.Oemplus || e.KeyCode == Keys.Add)
-            {
-                UpscaleImage();
-            }
-            else if (e.KeyCode == Keys.OemMinus || e.KeyCode == Keys.Subtract)
-            {
-                DownscaleImage();
-            }
-            else if (e.KeyCode == Keys.Z)
-            {
-                ScaleImage(); // TODO
             }
         }
 
