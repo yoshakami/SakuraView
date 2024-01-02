@@ -49,6 +49,7 @@ namespace SakuraView
         static int y;
         static int z;
         static long fileSize;
+        static int maxNum = 5000;  // list.Count returns a int
         static ushort metadataLength = 200;
         static bool windowFound;
         static bool help = true;
@@ -62,6 +63,7 @@ namespace SakuraView
         static bool loop = true;
         static bool console = false;
         static bool metadata = false;
+        static bool starting = true;
         static byte fixed_padding = 0;
         static byte mode = 0; // 0 = ImageViewer; 1 = ImageExplorer; 2 = TextViewer; 3 = TextExplorer; 4 = TextEditor; 5 = Settings; 6 = SongExplorer
         static byte currentScreen = 0;
@@ -88,6 +90,7 @@ namespace SakuraView
         static List<TextBox> file_browser_list = new List<TextBox>();
         Point consoleLocation = new Point(0, 0);
         Point metadataLocation = new Point(100, 100);
+        Point boxLocation = new Point(0, 0);
         static string[] txt;
         // when escape is pressed 
         // Environment.Exit(0);
@@ -112,7 +115,7 @@ namespace SakuraView
             }
             try
             {
-                // read the config file
+                // read the txt file
                 txt = System.IO.File.ReadAllLines(execPath + "SakuraView.txt");
                 upscaleAlgorithm = txt[2].ToLower();
                 upscaleMode = txt[4].ToLower();
@@ -120,27 +123,27 @@ namespace SakuraView
                 SetAlgorithm();
                 SetSizeMode();
                 SetTextColour(txt[8]);
-                SetBackgroundColour(txt[10]);
                 SakuraTextColor.Text = txt[8];
+                SetBackgroundColour(txt[10]);
                 SakuraBgColor.Text = txt[10];
                 fixed_padding = padding = byte.Parse(txt[12]);
                 mode = byte.Parse(txt[14]);
-                metadataLength = ushort.Parse(txt[16]);
-                SakuraImgcvt.Text = txt[18];
-                this.TopMost = txt[20].ToLower() == "true";
-                banner = txt[22].ToLower() == "view";
-                this.SakuraConsole.Visible = console = txt[24].ToLower() == "view";
-                duplicate = txt[26].ToLower() == "true";
-                help = txt[28].ToLower() == "view";
-                info = txt[30].ToLower() == "view";
-                loop = txt[32].ToLower() == "true";
-                metadata = txt[34].ToLower() == "view";
-                loadSubFolders = txt[36].ToLower() == "true";
-                counter = txt[38].ToLower() == "true";
-                string[] s = txt[40].Split('s');
-                SetBanner();
-                SetHelp(true);
-                SetInfo(true);
+                maxNum = ushort.Parse(txt[16]);
+                SakuraMaxNum.Value = maxNum;
+                metadataLength = ushort.Parse(txt[18]);
+                SakuraImgcvt.Text = txt[20];
+                this.TopMost = txt[22].ToLower() == "true";
+                banner = txt[24].ToLower() == "view";
+                this.SakuraConsole.Visible = console = txt[26].ToLower() == "view";
+                duplicate = txt[28].ToLower() == "true";
+                help = txt[30].ToLower() == "view";
+                info = txt[32].ToLower() == "view";
+                loop = txt[34].ToLower() == "true";
+                metadata = txt[36].ToLower() == "view";
+                loadSubFolders = txt[38].ToLower() == "true";
+                counter = txt[40].ToLower() == "true";
+                string[] s = txt[42].Split(',');
+                SetBanner(true);
                 SetWindowPosition();
                 for (x = 0; x < imagesFavourites.Length; x++)
                 {
@@ -149,7 +152,7 @@ namespace SakuraView
             }
             catch
             {
-                // if the program doesn't have the rights to read, then load default config
+                // if the program doesn't have the rights to read, then load default txt
                 // this.WindowState = FormWindowState.Normal;
                 for (x = 0; x < 256; x++)
                 {
@@ -159,6 +162,68 @@ namespace SakuraView
                 SetAlgorithm();
                 SetSizeMode();
             }
+            Initialize();
+        }
+        private void SetTxt()
+        {
+            txt = new string[] {
+                "SakuraView v0.2", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // txt[2]
+            "Scale mode {Fill, Fit, Stretch, VanillaFit, LeftFit, Center}","Fit",  // txt[4]
+            "Window Location Window Location {Minimized, Normal, Maximized, Normal2, Maximized2}", "Normal",  // txt[6]
+            "Text Colour (System.Drawing.Color)", "White",  // txt[8]
+            "Background Colour", "Black",  // txt[10]
+            "Fixed Padding (0 = disable)", "0", // txt[12]
+            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // txt[14]
+            "Max Number of images loaded", "5000", // txt[16]
+            "Metadata Length (in character count per line)", "200", // txt[18]
+            "imgcvt.exe path", "C:\\Program Files\\Autodesk\\Maya2018\\bin\\imgcvt.exe", // txt[20]
+            "Always On Top {True, False}", "False", // txt[22]
+            "Banner {View, Hide}", "View",  // txt[24]
+            "Console {View, Hide}", "Hide",  // txt[26]
+            "Duplicates {True, False}", "False", // txt[28]
+            "Help {View, Hide}", "View",  // txt[30]
+            "Info {View, Hide}", "View",  // txt[32]
+            "Loop {True, False}", "True", // txt[34]
+            "Metadata {View, Hide}", "True", // txt[36]
+            "Load sub-folders {True, False}", "True", // txt[38]
+            "Counter {True, False}", "True", // txt[40]
+            "Favourites index", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255" // txt[42]
+             };
+        }
+        private void SakuraButtonSave_Click(object sender, EventArgs e)
+        {
+            txt[2] = upscaleAlgorithm;
+            txt[4] = upscaleMode;
+            txt[6] = windowPosition;
+            txt[8] = SakuraTextColor.Text;
+            txt[10] = SakuraBgColor.Text;
+            txt[12] = fixed_padding.ToString();
+            txt[14] = mode.ToString();
+            txt[16] = maxNum.ToString();
+            txt[18] = metadataLength.ToString();
+            txt[20] = SakuraImgcvt.Text;
+            if (this.TopMost) { txt[22] = "true"; } else { txt[22] = "false"; }
+            if (banner) { txt[24] = "view"; } else { txt[24] = "hide"; }
+            if (this.SakuraConsole.Visible) { txt[26] = "view"; } else { txt[26] = "hide"; }
+            if (duplicate) { txt[28] = "true"; } else { txt[28] = "false"; }
+            if (help) { txt[30] = "view"; } else { txt[30] = "hide"; }
+            if (info) { txt[32] = "view"; } else { txt[32] = "hide"; }
+            if (loop) { txt[34] = "true"; } else { txt[34] = "false"; }
+            if (metadata) { txt[36] = "view"; } else { txt[36] = "hide"; }
+            if (loadSubFolders) { txt[38] = "true"; } else { txt[38] = "false"; }
+            if (counter) { txt[40] = "true"; } else { txt[40] = "false"; }
+            txt[42] = "";
+            for (x = 0; x < 256; x++)
+            {
+                txt[42] += imagesFavourites[x].ToString() + ", ";
+            }
+            txt[42] = txt[42].Substring(0, txt[42].Length - 2);  // minus the comma
+            try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
+            catch { } // continue execution without saving
+        }
+        private void Initialize()
+        {
+
             string[] args = Environment.GetCommandLineArgs();
             foreach (string arg in args)
             {
@@ -170,20 +235,24 @@ namespace SakuraView
                 {
                     LoadImage(args[1]); // arg 1 is never a duplicate
                 }
-
             }
-            for (z = 2; z < args.Length; z++)
+            x = args.Length;
+            if (maxNum < args.Length)
+            {
+                x = maxNum;
+            }
+            for (y = 2; y < args.Length; y++)
             {
                 if (!duplicate)
                 {
-                    if (!imagesPath.Contains(args[z]))
+                    if (!imagesPath.Contains(args[y]))
                     {
-                        AddImage(args[z]);
+                        AddImage(args[y]);
                     }
                 }
                 else
                 {
-                    AddImage(args[z]);
+                    AddImage(args[y]);
                 }
             }
             SetMode();
@@ -276,38 +345,18 @@ namespace SakuraView
             SakuraImgcvtLabel.Visible = false;
             SakuraImgcvt.Visible = false;
             SakuraButtonHideSettings.Visible = false;
+            SakuraMaxNum.Visible = false;
+            SakuraMaxNumLabel.Visible = false;
             if (fixed_padding == 0 && imagesInfo.Count > 0)
             {
                 padding = 15;
                 ScaleInfo(true);
                 SakuraInfo.Text = SakuraHidden.Text;
             }
-
-        }
-        private void SetTxt()
-        {
-            txt = new string[] {
-                "SakuraView v0.2", "Scale Algorithm {Bicubic, Bilinear, Default, High, HighQualityBicubic, HighQualityBilinear, Low, NearestNeighbor}", "High",  // config[2]
-            "Scale mode {Fill, Fit, Stretch, VanillaFit, LeftFit, Center}","Fit",  // config[4]
-            "Window Location Window Location {Minimized, Normal, Maximized, Normal2, Maximized2}", "Normal",  // config[6]
-            "Text Colour (System.Drawing.Color)", "White",  // config[8]
-            "Background Colour", "Black",  // config[10]
-            "Fixed Padding (0 = disable)", "0", // config[12]
-            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // config[14]
-            "Metadata Length (in character count per line)", "200", // config[16]
-            "imgcvt.exe path", "C:\\Program Files\\Autodesk\\Maya2018\\bin\\imgcvt.exe", // config[18]
-            "Always On Top {True, False}", "False", // config[20]
-            "Banner {View, Hide}", "View",  // config[22]
-            "Console {View, Hide}", "Hide",  // config[24]
-            "Duplicates {True, False}", "False", // config[26]
-            "Help {View, Hide}", "View",  // config[28]
-            "Info {View, Hide}", "View",  // config[30]
-            "Loop {True, False}", "True", // config[32]
-            "Metadata {View, Hide}", "True", // config[34]
-            "Load sub-folders {True, False}", "True", // config[36]
-            "Counter {True, False}", "True", // config[38]
-            "Favourites index", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255" // config[40]
-             };
+            starting = false;
+            SetInfo(true);
+            SetHelp();
+            SakuraMaxNum.Maximum = int.MaxValue;
         }
         private void SetMode()
         {
@@ -328,6 +377,8 @@ namespace SakuraView
             SakuraSideHelp.BackColor = color;
             SakuraHelp.BackColor = color;
             SakuraImgcvt.BackColor = color;
+            SakuraMaxNum.BackColor = color;
+            SakuraMaxNumLabel.BackColor = color;
             SakuraInfo.BackColor = color;
             SakuraButtonEmpty.BackColor = color;
             SakuraButtonGithub.BackColor = color;
@@ -356,6 +407,8 @@ namespace SakuraView
             SakuraHelp.ForeColor = color;
             SakuraImgcvt.ForeColor = color;
             SakuraInfo.ForeColor = color;
+            SakuraMaxNum.ForeColor = color;
+            SakuraMaxNumLabel.ForeColor = color;
             SakuraButtonEmpty.ForeColor = color;
             SakuraButtonGithub.ForeColor = color;
             SakuraButtonOpenFiles.ForeColor = color;
@@ -381,7 +434,7 @@ namespace SakuraView
             SakuraCkCounter.ForeColor = color;
             SakuraButtonHideSettings.ForeColor = color;
         }
-        private void SetBanner()
+        private void SetBanner(bool start=false)
         {
             if (this.WindowState == FormWindowState.Maximized)
                 this.WindowState = FormWindowState.Normal;
@@ -393,7 +446,10 @@ namespace SakuraView
             {
                 FormBorderStyle = FormBorderStyle.None;
             }
-            ScaleImage();
+            if (!start)
+            {
+                ScaleImage();
+            }
         }
         private void SetHelp(bool init = false)
         {
@@ -402,7 +458,7 @@ namespace SakuraView
                 SakuraSideHelp.Visible = true;
                 SakuraHelp.Visible = true;
                 bottomSpace = SakuraInfo.Height + SakuraHelp.Height + 35;  // add the height of SakuraHelp + padding
-                rightSpace += SakuraSideHelp.Width;
+                rightSpace = SakuraSideHelp.Width;
             }
             else
             {
@@ -411,12 +467,15 @@ namespace SakuraView
                 if (!init)
                 {
                     bottomSpace = SakuraInfo.Height;  // sub the height of SakuraHelp + padding
-                    rightSpace -= SakuraSideHelp.Width;
+                    rightSpace = 0;
                     if (!info)
                         bottomSpace = 0;
                 }
             }
-            ScaleImage();
+            if (!init)
+            {
+                ScaleImage();
+            }
         }
         private void SetInfo(bool init = false)
         {
@@ -434,7 +493,10 @@ namespace SakuraView
                     bottomSpace -= SakuraInfo.Height;
                 }
             }
-            ScaleImage();
+            if (!init)
+            {
+                ScaleImage();
+            }
         }
         private void SetAlgorithm()
         {
@@ -745,7 +807,6 @@ namespace SakuraView
             sb.Append(input); // Append the remaining text
             return sb.ToString();
         }
-
         private bool ByteArrayEquals(byte[] a1, byte[] a2)
         {
             if (a1.Length != a2.Length)
@@ -759,7 +820,6 @@ namespace SakuraView
 
             return true;
         }
-
         private string GetParamValue(string text, string paramName)
         {
             string pattern = $"{paramName}([^,]+)";
@@ -964,6 +1024,10 @@ namespace SakuraView
         }
         private void ScaleImage()
         {
+            if (starting)
+            {
+                return;
+            }
             windowFound = false;
             if (this.WindowState == FormWindowState.Maximized)
             {
@@ -989,17 +1053,20 @@ namespace SakuraView
                     // y = Screen.AllScreens[currentScreen].Bounds.Location.Y;
                 }
             }
-            for (i = 0; i < Screen.AllScreens.Length; i++)
+            else
             {
-                screenWidth = this.ClientSize.Width;
-                screenHeight = this.ClientSize.Height;
-                x = Screen.AllScreens[i].Bounds.Location.X;
-                y = Screen.AllScreens[i].Bounds.Location.Y;
-                if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
+                for (i = 0; i < Screen.AllScreens.Length; i++)
                 {
-                    currentScreen = i;
-                    windowFound = true;
-                    break;
+                    screenWidth = this.ClientSize.Width;
+                    screenHeight = this.ClientSize.Height;
+                    x = Screen.AllScreens[i].Bounds.Location.X;
+                    y = Screen.AllScreens[i].Bounds.Location.Y;
+                    if (x <= this.Location.X && this.Location.X <= (x + screenWidth) && y <= this.Location.Y && this.Location.Y <= (y + screenHeight))  // finds the screen boundaries the window is currently in
+                    {
+                        currentScreen = i;
+                        windowFound = true;
+                        break;
+                    }
                 }
             }
             if (!windowFound)
@@ -1023,7 +1090,7 @@ namespace SakuraView
                 }
                 SakuraSideHelp.Location = new Point(width, 0);
                 SakuraHelp.Location = new Point(0, height);
-                SakuraInfo.Location = new Point(0, height + bottomSpace - SakuraInfo.Height);
+                SakuraInfo.Location = new Point(0, height + 1 + bottomSpace - SakuraInfo.Height);
                 return;
             }
             LoadInfo();
@@ -1085,13 +1152,13 @@ namespace SakuraView
         {
             SakuraSideHelp.Location = new Point(width, 0);
             SakuraHelp.Location = new Point(0, height);
-            SakuraInfo.Location = new Point(0, height + bottomSpace - SakuraInfo.Height);
+            SakuraInfo.Location = new Point(0, height + 1 + bottomSpace - SakuraInfo.Height);
         }
         private void UpdateLayoutMaximized()
         {
             this.Location = Screen.AllScreens[currentScreen].Bounds.Location;
             SakuraHelp.Location = new Point(0, this.ClientSize.Height - SakuraInfo.Height - 35 - SakuraHelp.Height);
-            SakuraInfo.Location = new Point(0, this.ClientSize.Height - SakuraInfo.Height);
+            SakuraInfo.Location = new Point(0, this.ClientSize.Height + 1 - SakuraInfo.Height);
             SakuraSideHelp.Location = new Point(this.ClientSize.Width - SakuraSideHelp.Width, 0);
         }
         private void Fill()
@@ -1139,6 +1206,10 @@ namespace SakuraView
         }
         private bool AddImage(string filepath)
         {
+            if (imagesPath.Count > maxNum)
+            {
+                return false;
+            }
             if (!counter)
             {
                 imagesPath.Add(filepath);
@@ -1190,36 +1261,41 @@ namespace SakuraView
         private void SakuraViewClass_DragDrop(object sender, DragEventArgs e)
         {
             bool done = false;
-            string[] file = (string[])e.Data.GetData(DataFormats.FileDrop);  // gets all the files or folders name that were dragged in an array, but I'll only use the first
-            if (file != null) // prevent crashes if it's for example a google chrome favourite that was dragged
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);  // gets all the files or folders name that were dragged in an array, but I'll only use the first
+            x = files.Length;
+            if (maxNum < files.Length)
             {
-                for (z = 0; z < file.Length; z++)
+                x = maxNum;
+            }
+            if (files != null) // prevent crashes if it's for example a google chrome favourite that was dragged
+            {
+                for (z = 0; z < x; z++)
                 {
-                    if (System.IO.File.GetAttributes(file[z]).HasFlag(System.IO.FileAttributes.Directory))
+                    if (System.IO.File.GetAttributes(files[z]).HasFlag(System.IO.FileAttributes.Directory))
                     {
-                        LoadFolder(file[z]);
+                        LoadFolder(files[z]);
                         continue;
                     }
                     else  // that means it's a file.
                     {
                         if (!duplicate)
                         {
-                            if (!imagesPath.Contains(file[z]))
+                            if (!imagesPath.Contains(files[z]))
                             {
-                                AddImage(file[z]);
+                                AddImage(files[z]);
                             }
                         }
                         else
                         {
-                            AddImage(file[z]);
+                            AddImage(files[z]);
                         }
                     }
                 }
                 if (!done)
                 {
                     done = true;
-                    currentImage = imagesPath.IndexOf(file[0]);
-                    LoadImage(file[0]);
+                    currentImage = imagesPath.IndexOf(files[0]);
+                    LoadImage(files[0]);
                 }
             }
         }
@@ -1246,18 +1322,17 @@ namespace SakuraView
                     {
                         currentImage = imagesPath.Count - 1;
                         imageNumber = currentImage;
-                        if (images[imageNumber] != null)
+                        if (imageNumber >= images.Count)
+                        {
+                            LoadImage(imagesPath[imageNumber]);
+                        }
+                        else if (images[imageNumber] != null)
                         {
                             currentImage = imageNumber;
                             SakuraBox.Image = images[currentImage];
                             imagesInfo[imageNumber][0] = (imageNumber + 1) + " / " + imagesPath.Count;
                             imagesInfo[imageNumber][5] = upscaleMode;
                             LoadInfo();
-                        }
-                        else if (imageNumber < imagesPath.Count)
-                        {
-                            currentImage = imageNumber;
-                            LoadImage(imagesPath[imageNumber]);
                         }
                     }
                     else if (currentImage != 0)
@@ -1338,6 +1413,10 @@ namespace SakuraView
         private void LoadFolder(string currentDirectory)
         {
             string[] file;
+            if (images.Count > maxNum)
+            {
+                return;
+            }
             try { file = Directory.GetFiles(currentDirectory); }
             catch { return; }
             if (loadSubFolders)
@@ -1622,7 +1701,6 @@ namespace SakuraView
                 UpPlaceMetadata();
                 Task.Delay(500).ContinueWith(t => endthis());
             }
-
         }
 
         private void SakuraConsole_MouseMove(object sender, MouseEventArgs e)
@@ -1679,6 +1757,8 @@ namespace SakuraView
             SakuraTextColorLabel.Visible = !SakuraTextColorLabel.Visible;
             SakuraImgcvtLabel.Visible = !SakuraImgcvtLabel.Visible;
             SakuraImgcvt.Visible = !SakuraImgcvt.Visible;
+            SakuraMaxNum.Visible = !SakuraMaxNum.Visible;
+            SakuraMaxNumLabel.Visible = !SakuraMaxNumLabel.Visible;
             this.Focus();
         }
 
@@ -1773,37 +1853,7 @@ namespace SakuraView
             SakuraBox.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
             SakuraBox.Refresh();
         }
-
-        private void SakuraButtonSave_Click(object sender, EventArgs e)
-        {
-            txt[2] = upscaleAlgorithm;
-            txt[4] = upscaleMode;
-            txt[6] = windowPosition;
-            txt[8] = SakuraTextColor.Text;
-            txt[10] = SakuraBgColor.Text;
-            txt[12] = fixed_padding.ToString();
-            txt[14] = mode.ToString();
-            txt[16] = metadataLength.ToString();
-            txt[18] = SakuraImgcvt.Text;
-            if (this.TopMost) { txt[20] = "true"; } else { txt[20] = "false"; }
-            if (banner) { txt[22] = "view"; } else { txt[22] = "hide"; }
-            if (this.SakuraConsole.Visible) { txt[24] = "view"; } else { txt[24] = "hide"; }
-            if (duplicate) { txt[26] = "true"; } else { txt[26] = "false"; }
-            if (help) { txt[28] = "view"; } else { txt[28] = "hide"; }
-            if (info) { txt[30] = "view"; } else { txt[30] = "hide"; }
-            if (loop) { txt[32] = "true"; } else { txt[32] = "false"; }
-            if (metadata) { txt[34] = "view"; } else { txt[34] = "hide"; }
-            if (loadSubFolders) { txt[36] = "true"; } else { txt[36] = "false"; }
-            if (counter) { txt[38] = "true"; } else { txt[38] = "false"; }
-            txt[40] = "";
-            for (x = 0; x < 256; x++)
-            {
-                txt[40] += imagesFavourites[x].ToString() + ", ";
-            }
-            txt[40] = txt[40].Substring(0, txt[40].Length - 2);  // minus the comma
-            try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
-            catch { } // continue execution without saving
-        }
+        
 
         private void SakuraCkAlwaysOnTop_CheckedChanged(object sender, EventArgs e)
         {
@@ -1889,6 +1939,42 @@ namespace SakuraView
         private void SakuraButtonHideSettings_Click(object sender, EventArgs e)
         {
             ToggleSettings();
+        }
+
+        private void SakuraMaxNum_ValueChanged(object sender, EventArgs e)
+        {
+            maxNum = (int)SakuraMaxNum.Value;
+        }
+
+        private void SakuraBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.None)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    boxLocation.X += e.X - mouse_x;
+                    boxLocation.Y += e.Y - mouse_y;
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    boxLocation.Y += e.Y - mouse_y;
+                }
+                else if (e.Button == MouseButtons.Middle || e.Button == (MouseButtons.Left | MouseButtons.Right))
+                {
+                    boxLocation.X += e.X - mouse_x;
+                }
+                SakuraBox.Location = boxLocation;
+                mouse_x = e.X;
+                mouse_y = e.Y;
+            }
+        }
+
+        private void SakuraBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouse_x = e.X;
+            mouse_y = e.Y;
+            boxLocation.X = SakuraBox.Location.X;
+            boxLocation.Y = SakuraBox.Location.Y;
         }
     }
 }

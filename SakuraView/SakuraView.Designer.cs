@@ -67,7 +67,6 @@ namespace SakuraView
             this.SakuraZoomNumeric = new System.Windows.Forms.NumericUpDown();
             this.SakuraZoomTrackBar = new System.Windows.Forms.TrackBar();
             this.SakuraZoomLabel = new System.Windows.Forms.Label();
-            this.SakuraBox = new PictureBoxWithInterpolationMode();
             this.SakuraImgcvtLabel = new System.Windows.Forms.Label();
             this.SakuraImgcvt = new System.Windows.Forms.TextBox();
             this.SakuraTextColorLabel = new System.Windows.Forms.Label();
@@ -75,8 +74,12 @@ namespace SakuraView
             this.SakuraBgColor = new System.Windows.Forms.ComboBox();
             this.SakuraBgColorLabel = new System.Windows.Forms.Label();
             this.SakuraButtonHideSettings = new System.Windows.Forms.Button();
+            this.SakuraMaxNumLabel = new System.Windows.Forms.Label();
+            this.SakuraMaxNum = new System.Windows.Forms.NumericUpDown();
+            this.SakuraBox = new PictureBoxWithInterpolationMode();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SakuraMaxNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -489,7 +492,7 @@ namespace SakuraView
             // SakuraButtonSave
             // 
             this.SakuraButtonSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SakuraButtonSave.Location = new System.Drawing.Point(477, 173);
+            this.SakuraButtonSave.Location = new System.Drawing.Point(480, 255);
             this.SakuraButtonSave.Margin = new System.Windows.Forms.Padding(0);
             this.SakuraButtonSave.Name = "SakuraButtonSave";
             this.SakuraButtonSave.Size = new System.Drawing.Size(116, 44);
@@ -558,19 +561,6 @@ namespace SakuraView
             this.SakuraZoomLabel.Size = new System.Drawing.Size(100, 21);
             this.SakuraZoomLabel.TabIndex = 40;
             this.SakuraZoomLabel.Text = "<-- zoom --v";
-            // 
-            // SakuraBox
-            // 
-            this.SakuraBox.Enabled = false;
-            this.SakuraBox.ErrorImage = null;
-            this.SakuraBox.InitialImage = null;
-            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
-            this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
-            this.SakuraBox.Name = "SakuraBox";
-            this.SakuraBox.Size = new System.Drawing.Size(36, 39);
-            this.SakuraBox.TabIndex = 0;
-            this.SakuraBox.TabStop = false;
             // 
             // SakuraImgcvtLabel
             // 
@@ -657,6 +647,44 @@ namespace SakuraView
             this.SakuraButtonHideSettings.UseVisualStyleBackColor = true;
             this.SakuraButtonHideSettings.Click += new System.EventHandler(this.SakuraButtonHideSettings_Click);
             // 
+            // SakuraMaxNumLabel
+            // 
+            this.SakuraMaxNumLabel.AllowDrop = true;
+            this.SakuraMaxNumLabel.AutoSize = true;
+            this.SakuraMaxNumLabel.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.SakuraMaxNumLabel.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.SakuraMaxNumLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.SakuraMaxNumLabel.Location = new System.Drawing.Point(463, 178);
+            this.SakuraMaxNumLabel.Margin = new System.Windows.Forms.Padding(0);
+            this.SakuraMaxNumLabel.Name = "SakuraMaxNumLabel";
+            this.SakuraMaxNumLabel.Size = new System.Drawing.Size(152, 21);
+            this.SakuraMaxNumLabel.TabIndex = 49;
+            this.SakuraMaxNumLabel.Text = "Max images number";
+            // 
+            // SakuraMaxNum
+            // 
+            this.SakuraMaxNum.Location = new System.Drawing.Point(475, 206);
+            this.SakuraMaxNum.Margin = new System.Windows.Forms.Padding(2);
+            this.SakuraMaxNum.Name = "SakuraMaxNum";
+            this.SakuraMaxNum.Size = new System.Drawing.Size(121, 20);
+            this.SakuraMaxNum.TabIndex = 48;
+            this.SakuraMaxNum.ValueChanged += new System.EventHandler(this.SakuraMaxNum_ValueChanged);
+            // 
+            // SakuraBox
+            // 
+            this.SakuraBox.Enabled = false;
+            this.SakuraBox.ErrorImage = null;
+            this.SakuraBox.InitialImage = null;
+            this.SakuraBox.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+            this.SakuraBox.Location = new System.Drawing.Point(0, 0);
+            this.SakuraBox.Margin = new System.Windows.Forms.Padding(0);
+            this.SakuraBox.Name = "SakuraBox";
+            this.SakuraBox.Size = new System.Drawing.Size(36, 39);
+            this.SakuraBox.TabIndex = 0;
+            this.SakuraBox.TabStop = false;
+            this.SakuraBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SakuraBox_MouseDown);
+            this.SakuraBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SakuraBox_MouseMove);
+            // 
             // SakuraView
             // 
             this.AllowDrop = true;
@@ -664,6 +692,8 @@ namespace SakuraView
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Purple;
             this.ClientSize = new System.Drawing.Size(1245, 760);
+            this.Controls.Add(this.SakuraMaxNumLabel);
+            this.Controls.Add(this.SakuraMaxNum);
             this.Controls.Add(this.SakuraButtonHideSettings);
             this.Controls.Add(this.SakuraBgColor);
             this.Controls.Add(this.SakuraBgColorLabel);
@@ -715,8 +745,11 @@ namespace SakuraView
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.SakuraViewClass_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SakuraView_KeyDown);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SakuraBox_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SakuraBox_MouseMove);
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraZoomTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SakuraMaxNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SakuraBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -766,6 +799,8 @@ namespace SakuraView
         private ComboBox SakuraBgColor;
         private Label SakuraBgColorLabel;
         private Button SakuraButtonHideSettings;
+        private Label SakuraMaxNumLabel;
+        private NumericUpDown SakuraMaxNum;
     }
 }
 
