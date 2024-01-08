@@ -270,6 +270,28 @@ namespace SakuraView
             }
             SakuraBgColor.SelectedIndex = Array.IndexOf(Enum.GetValues(typeof(KnownColor)), this.BackColor); ;
             SakuraTextColor.SelectedIndex = Array.IndexOf(Enum.GetValues(typeof(KnownColor)), SakuraInfo.ForeColor);
+            SakuraConvert.Items.Add("Nothing");
+            SakuraConvert.Items.Add("Current image");
+            SakuraConvert.Items.Add("Current image if other");
+            SakuraConvert.Items.Add("All images");
+            SakuraConvert.Items.Add("All other images");
+            SakuraConvert.SelectedIndex = 2;
+            SakuraTo.Items.Add("png");
+            SakuraTo.Items.Add("jpeg");
+            SakuraTo.Items.Add("jpg");
+            SakuraTo.Items.Add("bmp");
+            SakuraTo.Items.Add("gif");
+            SakuraTo.Items.Add("ico");
+            SakuraTo.Items.Add("tif");
+            SakuraTo.Items.Add("tiff");
+            SakuraTo.Items.Add("bti");
+            SakuraTo.Items.Add("tex0");
+            SakuraTo.Items.Add("tpl");
+            SakuraTo.Items.Add("tga");
+            SakuraTo.Items.Add("dds");
+            SakuraTo.Items.Add("xpm");
+            SakuraTo.Items.Add("webp");
+            SakuraTo.SelectedIndex = 0;
             if (this.TopMost)
             {
                 this.TopMost = false;
@@ -354,6 +376,12 @@ namespace SakuraView
             SakuraMaxNumLabel.Visible = false;
             SakuraZoomIncrement.Visible = false;
             SakuraZoomIncrementLabel.Visible = false;
+            SakuraConvert.Visible = false;
+            SakuraConvertLabel.Visible = false;
+            SakuraToLabel.Visible = false;
+            SakuraTo.Visible = false;
+            SakuraPlt0Label.Visible = false;
+            SakuraPlt0Textbox.Visible = false;
             if (fixed_padding == 0 && imagesInfo.Count > 0)
             {
                 padding = 15;
@@ -396,6 +424,12 @@ namespace SakuraView
             SakuraBgColor.BackColor = color;
             SakuraTextColor.BackColor = color;
             SakuraButtonHideSettings.BackColor = color;
+            SakuraConvert.BackColor = color;
+            SakuraConvertLabel.BackColor = color;
+            SakuraToLabel.BackColor = color;
+            SakuraTo.BackColor = color;
+            SakuraPlt0Label.BackColor = color;
+            SakuraPlt0Textbox.BackColor = color;
         }
         private void SetTextColour(string textColour)
         {
@@ -437,6 +471,12 @@ namespace SakuraView
             SakuraCkSubFolders.ForeColor = color;
             SakuraCkCounter.ForeColor = color;
             SakuraButtonHideSettings.ForeColor = color;
+            SakuraConvert.ForeColor = color;
+            SakuraConvertLabel.ForeColor = color;
+            SakuraToLabel.ForeColor = color;
+            SakuraTo.ForeColor = color;
+            SakuraPlt0Label.ForeColor = color;
+            SakuraPlt0Textbox.ForeColor = color;
         }
         private void ToggleSettings()
         {
@@ -474,6 +514,12 @@ namespace SakuraView
             SakuraZoomIncrement.Visible = !SakuraZoomIncrement.Visible;
             SakuraZoomIncrementLabel.Visible = !SakuraZoomIncrementLabel.Visible;
             SakuraMaxNumLabel.Visible = !SakuraMaxNumLabel.Visible;
+            SakuraConvert.Visible = !SakuraConvert.Visible;
+            SakuraConvertLabel.Visible = !SakuraConvertLabel.Visible;
+            SakuraToLabel.Visible = !SakuraToLabel.Visible;
+            SakuraTo.Visible = !SakuraTo.Visible;
+            SakuraPlt0Label.Visible = !SakuraPlt0Label.Visible;
+            SakuraPlt0Textbox.Visible = !SakuraPlt0Textbox.Visible;
             this.Focus();
         }
         private void SetMode()
@@ -1553,14 +1599,14 @@ namespace SakuraView
             else if (e.KeyCode == Keys.O) { SakuraButtonDirectory_Click(null, null); }
             else if (e.KeyCode == Keys.Oem7) { SakuraCkMetadata.Checked = !metadata; }
             else if (e.KeyCode == Keys.OemBackslash) { SakuraCkLoop.Checked = !loop; }
-            else if (e.KeyCode == Keys.Oemcomma) { ToggleSettings(); }
+            else if (e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.S) { ToggleSettings(); }
             else if (e.KeyCode == Keys.OemMinus || e.KeyCode == Keys.Subtract) { DownscaleImage(); }
             else if (e.KeyCode == Keys.Oemplus || e.KeyCode == Keys.Add) { UpscaleImage(); }
             else if (e.KeyCode == Keys.P) { SakuraButton10Lines_Click(null, null); }
             else if (e.KeyCode == Keys.Q) { SakuraCkSubFolders.Checked = !loadSubFolders; }
             else if (e.KeyCode == Keys.R) { SakuraButtonRotate_Click(null, null); }
             else if (e.KeyCode == Keys.Right) { ViewImage(currentImage + 1); }
-            else if (e.KeyCode == Keys.S) { SakuraButtonSave_Click(null, null); }
+            else if (e.KeyCode == Keys.S && e.Control) { SakuraButtonSave_Click(null, null); }
             else if (e.KeyCode == Keys.T) { SakuraCkBanner.Checked = !banner; }
             else if (e.KeyCode == Keys.U) { SakuraCkCounter.Checked = !counter; }
             else if (e.KeyCode == Keys.Up) { ViewImage(0); }
