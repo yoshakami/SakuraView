@@ -88,6 +88,8 @@ namespace SakuraView
           24 tga  - 25 rla   - 26 xpm   - 27 hdr  - 28 apng  - 29 rgb565 */
         static List<Object> imageViewerComponents = new List<Object>();
         static List<TextBox> file_browser_list = new List<TextBox>();
+        static List<PictureBoxWithInterpolationMode> sakuraBoxes = new List<PictureBoxWithInterpolationMode>();
+        static List<Label> sakuraLabels = new List<Label>();
         Point consoleLocation = new Point(0, 0);
         Point metadataLocation = new Point(100, 100);
         Point boxLocation = new Point(0, 0);
@@ -99,17 +101,7 @@ namespace SakuraView
         {
             SetTxt();
             InitializeComponent();
-            imageViewerComponents.Add(SakuraBox);
-            imageViewerComponents.Add(SakuraHelp);
-            imageViewerComponents.Add(SakuraInfo);
-            imageViewerComponents.Add(SakuraSideHelp);
-            imageViewerComponents.Add(SakuraBox);
-            imageViewerComponents.Add(SakuraBox);
-            imageViewerComponents.Add(SakuraBox);
-            file_browser_list.Add(textBox1);
-            file_browser_list.Add(textBox2);
-            file_browser_list.Add(textBox3);
-            file_browser_list.Add(textBox4);
+            FillLists();
             foreach (TextBox e in file_browser_list)
             {
                 e.Visible = false;
@@ -129,6 +121,7 @@ namespace SakuraView
                 SakuraBgColor.Text = txt[10];
                 fixed_padding = padding = byte.Parse(txt[12]);
                 mode = byte.Parse(txt[14]);
+                SakuraLayout.SelectedIndex = mode;
                 maxNum = ushort.Parse(txt[16]);
                 SakuraMaxNum.Value = maxNum;
                 metadataLength = ushort.Parse(txt[18]);
@@ -144,7 +137,12 @@ namespace SakuraView
                 metadata = txt[38].ToLower() == "view";
                 loadSubFolders = txt[40].ToLower() == "true";
                 counter = txt[42].ToLower() == "true";
-                string[] s = txt[44].Split(',');
+                SakuraDisplayNumeric.Value = int.Parse(txt[44]);
+                SakuraBorderNumeric.Value = int.Parse(txt[46]);
+                SakuraHeightNumeric.Value = int.Parse(txt[48]);
+                SakuraWidthNumeric.Value = int.Parse(txt[50]);
+                SakuraStyle.SelectedIndex = int.Parse(txt[52]);
+                string[] s = txt[54].Split(',');
                 SetBanner(true);
                 SetWindowPosition();
                 for (x = 0; x < imagesFavourites.Length; x++)
@@ -152,7 +150,7 @@ namespace SakuraView
                     imagesFavourites[x] = int.Parse(s[x]);
                 }
             }
-            catch
+            catch (Exception e)
             {
                 // if the program doesn't have the rights to read, then load default txt
                 // this.WindowState = FormWindowState.Normal;
@@ -175,7 +173,7 @@ namespace SakuraView
             "Text Colour (System.Drawing.Color)", "White",  // txt[8]
             "Background Colour", "Black",  // txt[10]
             "Fixed Padding (0 = disable)", "0", // txt[12]
-            "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // txt[14]
+            "Mode (Layout) {0, 1, 2, 3, 4, 5, 6}", "0", // txt[14]
             "Max Number of images loaded", "5000", // txt[16]
             "Metadata Length (in character count per line)", "200", // txt[18]
             "Zoom increment", "25", // txt[20]
@@ -190,7 +188,12 @@ namespace SakuraView
             "Metadata {View, Hide}", "True", // txt[38]
             "Load sub-folders {True, False}", "True", // txt[40]
             "Counter {True, False}", "True", // txt[42]
-            "Favourites index", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255" // txt[44]
+            "Display images", "1", // txt[44]
+            "Border", "1", // txt[46]
+            "Fixed image height", "256", // txt[48]
+            "Fixed image width", "256", // txt[50]
+            "Style", "Squared", // txt[52]
+            "Favourites index", "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255" // txt[54]
              };
         }
         private void SakuraButtonSave_Click(object sender, EventArgs e)
@@ -217,12 +220,18 @@ namespace SakuraView
             if (metadata) { txt[b + 14] = "view"; } else { txt[b + 14] = "hide"; }
             if (loadSubFolders) { txt[b + 16] = "true"; } else { txt[b + 16] = "false"; }
             if (counter) { txt[b + 18] = "true"; } else { txt[b + 18] = "false"; }
-            txt[b + 20] = "";
+            txt[b + 20] = SakuraDisplayNumeric.Value.ToString();
+            txt[b + 22] = SakuraBorderNumeric.Value.ToString();
+            txt[b + 24] = SakuraHeightNumeric.Value.ToString();
+            txt[b + 26] = SakuraWidthNumeric.Value.ToString();
+            txt[b + 28] = SakuraStyle.SelectedIndex.ToString();
+            byte c = (byte)(b + 30);
+            txt[c] = "";
             for (x = 0; x < 256; x++)
             {
-                txt[b + 20] += imagesFavourites[x].ToString() + ", ";
+                txt[c] += imagesFavourites[x].ToString() + ", ";
             }
-            txt[b + 20] = txt[b + 20].Substring(0, txt[b + 20].Length - 2);  // minus the comma
+            txt[c] = txt[c].Substring(0, txt[c].Length - 2);  // minus the comma
             try { System.IO.File.WriteAllLines(execPath + "SakuraView.txt", txt); }
             catch { } // continue execution without saving
         }
@@ -270,28 +279,8 @@ namespace SakuraView
             }
             SakuraBgColor.SelectedIndex = Array.IndexOf(Enum.GetValues(typeof(KnownColor)), this.BackColor); ;
             SakuraTextColor.SelectedIndex = Array.IndexOf(Enum.GetValues(typeof(KnownColor)), SakuraInfo.ForeColor);
-            SakuraConvert.Items.Add("Nothing");
-            SakuraConvert.Items.Add("Current image");
-            SakuraConvert.Items.Add("Current image if other");
-            SakuraConvert.Items.Add("All images");
-            SakuraConvert.Items.Add("All other images");
-            SakuraConvert.SelectedIndex = 2;
-            SakuraTo.Items.Add("png");
-            SakuraTo.Items.Add("jpeg");
-            SakuraTo.Items.Add("jpg");
-            SakuraTo.Items.Add("bmp");
-            SakuraTo.Items.Add("gif");
-            SakuraTo.Items.Add("ico");
-            SakuraTo.Items.Add("tif");
-            SakuraTo.Items.Add("tiff");
-            SakuraTo.Items.Add("bti");
-            SakuraTo.Items.Add("tex0");
-            SakuraTo.Items.Add("tpl");
-            SakuraTo.Items.Add("tga");
-            SakuraTo.Items.Add("dds");
-            SakuraTo.Items.Add("xpm");
-            SakuraTo.Items.Add("webp");
             SakuraTo.SelectedIndex = 0;
+            SakuraConvert.SelectedIndex = 2;
             if (this.TopMost)
             {
                 this.TopMost = false;
@@ -382,6 +371,39 @@ namespace SakuraView
             SakuraTo.Visible = false;
             SakuraPlt0Label.Visible = false;
             SakuraPlt0Textbox.Visible = false;
+            SakuraDisplayLabel.Visible = false;
+            SakuraDisplayNumeric.Visible = false;
+            SakuraDisplayTrackBar.Visible = false;
+            SakuraBorderLabel.Visible = false;
+            SakuraBorderNumeric.Visible = false;
+            SakuraBorderTrackBar.Visible = false;
+            SakuraWidthLabel.Visible = false;
+            SakuraWidthNumeric.Visible = false;
+            SakuraWidthTrackBar.Visible = false;
+            SakuraHeightLabel.Visible = false;
+            SakuraHeightNumeric.Visible = false;
+            SakuraHeightTrackBar.Visible = false;
+            SakuraStyleLabel.Visible = false;
+            SakuraStyle.Visible = false;
+            SakuraStyleTrackBar.Visible = false;
+            SakuraLayout.Visible = false;
+            SakuraLayoutLabel.Visible = false;
+            SakuraLayoutTrackBar.Visible = false;
+            SakuraUnsavedChanges.Visible = false;
+            SakuraCkVariableHeight.Visible = false;
+            SakuraCkVariableWidth.Visible = false;
+            SakuraCkSkip.Visible = false;
+            SakuraInfoPaddingLabel.Visible = false;
+            SakuraInfoPaddingNumeric.Visible = false;
+            foreach (Label label in sakuraLabels)
+            {
+                label.Visible = false;
+            }
+            foreach (PictureBoxWithInterpolationMode box in sakuraBoxes)
+            {
+                box.Visible = false;
+            }
+            SakuraBox.Visible = true;
             if (fixed_padding == 0 && imagesInfo.Count > 0)
             {
                 padding = 15;
@@ -430,6 +452,38 @@ namespace SakuraView
             SakuraTo.BackColor = color;
             SakuraPlt0Label.BackColor = color;
             SakuraPlt0Textbox.BackColor = color;
+            SakuraDisplayLabel.BackColor = color;
+            SakuraDisplayNumeric.BackColor = color;
+            SakuraDisplayTrackBar.BackColor = color;
+            SakuraBorderLabel.BackColor = color;
+            SakuraBorderNumeric.BackColor = color;
+            SakuraBorderTrackBar.BackColor = color;
+            SakuraWidthLabel.BackColor = color;
+            SakuraWidthNumeric.BackColor = color;
+            SakuraWidthTrackBar.BackColor = color;
+            SakuraHeightLabel.BackColor = color;
+            SakuraHeightNumeric.BackColor = color;
+            SakuraHeightTrackBar.BackColor = color;
+            SakuraStyleLabel.BackColor = color;
+            SakuraStyle.BackColor = color;
+            SakuraStyleTrackBar.BackColor = color;
+            SakuraLayout.BackColor = color;
+            SakuraLayoutLabel.BackColor = color;
+            SakuraLayoutTrackBar.BackColor = color;
+            SakuraUnsavedChanges.BackColor = color;
+            SakuraCkVariableHeight.BackColor = color;
+            SakuraCkVariableWidth.BackColor = color;
+            SakuraCkSkip.BackColor = color;
+            SakuraInfoPaddingLabel.BackColor = color;
+            SakuraInfoPaddingNumeric.BackColor = color;
+            foreach (Label label in sakuraLabels)
+            {
+                label.BackColor = color;
+            }
+            foreach (PictureBoxWithInterpolationMode box in sakuraBoxes)
+            {
+                box.BackColor = color;
+            }
         }
         private void SetTextColour(string textColour)
         {
@@ -477,6 +531,34 @@ namespace SakuraView
             SakuraTo.ForeColor = color;
             SakuraPlt0Label.ForeColor = color;
             SakuraPlt0Textbox.ForeColor = color;
+            SakuraDisplayLabel.ForeColor = color;
+            SakuraDisplayNumeric.ForeColor = color;
+            SakuraDisplayTrackBar.ForeColor = color;
+            SakuraBorderLabel.ForeColor = color;
+            SakuraBorderNumeric.ForeColor = color;
+            SakuraBorderTrackBar.ForeColor = color;
+            SakuraWidthLabel.ForeColor = color;
+            SakuraWidthNumeric.ForeColor = color;
+            SakuraWidthTrackBar.ForeColor = color;
+            SakuraHeightLabel.ForeColor = color;
+            SakuraHeightNumeric.ForeColor = color;
+            SakuraHeightTrackBar.ForeColor = color;
+            SakuraStyleLabel.ForeColor = color;
+            SakuraStyle.ForeColor = color;
+            SakuraStyleTrackBar.ForeColor = color;
+            SakuraLayout.ForeColor = color;
+            SakuraLayoutLabel.ForeColor = color;
+            SakuraLayoutTrackBar.ForeColor = color;
+            SakuraUnsavedChanges.ForeColor = color;
+            SakuraCkVariableHeight.ForeColor = color;
+            SakuraCkVariableWidth.ForeColor = color;
+            SakuraCkSkip.ForeColor = color;
+            SakuraInfoPaddingLabel.ForeColor = color;
+            SakuraInfoPaddingNumeric.ForeColor = color;
+            foreach (Label label in sakuraLabels)
+            {
+                label.ForeColor = color;
+            }
         }
         private void ToggleSettings()
         {
@@ -520,7 +602,199 @@ namespace SakuraView
             SakuraTo.Visible = !SakuraTo.Visible;
             SakuraPlt0Label.Visible = !SakuraPlt0Label.Visible;
             SakuraPlt0Textbox.Visible = !SakuraPlt0Textbox.Visible;
+            SakuraDisplayLabel.Visible = !SakuraDisplayLabel.Visible;
+            SakuraDisplayNumeric.Visible = !SakuraDisplayNumeric.Visible;
+            SakuraDisplayTrackBar.Visible = !SakuraDisplayTrackBar.Visible;
+            SakuraBorderLabel.Visible = !SakuraBorderLabel.Visible;
+            SakuraBorderNumeric.Visible = !SakuraBorderNumeric.Visible;
+            SakuraBorderTrackBar.Visible = !SakuraBorderTrackBar.Visible;
+            SakuraWidthLabel.Visible = !SakuraWidthLabel.Visible;
+            SakuraWidthNumeric.Visible = !SakuraWidthNumeric.Visible;
+            SakuraWidthTrackBar.Visible = !SakuraWidthTrackBar.Visible;
+            SakuraHeightLabel.Visible = !SakuraHeightLabel.Visible;
+            SakuraHeightNumeric.Visible = !SakuraHeightNumeric.Visible;
+            SakuraHeightTrackBar.Visible = !SakuraHeightTrackBar.Visible;
+            SakuraStyleLabel.Visible = !SakuraStyleLabel.Visible;
+            SakuraStyle.Visible = !SakuraStyle.Visible;
+            SakuraStyleTrackBar.Visible = !SakuraStyleTrackBar.Visible;
+            SakuraLayout.Visible = !SakuraLayout.Visible;
+            SakuraLayoutLabel.Visible = !SakuraLayoutLabel.Visible;
+            SakuraLayoutTrackBar.Visible = !SakuraLayoutTrackBar.Visible;
+            SakuraUnsavedChanges.Visible = !SakuraUnsavedChanges.Visible;
+            SakuraCkVariableHeight.Visible = !SakuraCkVariableHeight.Visible;
+            SakuraCkVariableWidth.Visible = !SakuraCkVariableWidth.Visible;
+            SakuraCkSkip.Visible = !SakuraCkSkip.Visible;
+            SakuraInfoPaddingLabel.Visible = !SakuraInfoPaddingLabel.Visible;
+            SakuraInfoPaddingNumeric.Visible = !SakuraInfoPaddingNumeric.Visible;
             this.Focus();
+        }
+        private void FillLists()
+        {
+            imageViewerComponents.Add(SakuraBox);
+            imageViewerComponents.Add(SakuraHelp);
+            imageViewerComponents.Add(SakuraInfo);
+            imageViewerComponents.Add(SakuraSideHelp);
+            imageViewerComponents.Add(SakuraBox);
+            imageViewerComponents.Add(SakuraBox);
+            imageViewerComponents.Add(SakuraBox);
+            file_browser_list.Add(textBox1);
+            file_browser_list.Add(textBox2);
+            file_browser_list.Add(textBox3);
+            file_browser_list.Add(textBox4);
+            sakuraBoxes.Add(SakuraBox);
+            sakuraBoxes.Add(SakuraBox1);
+            sakuraBoxes.Add(SakuraBox2);
+            sakuraBoxes.Add(SakuraBox3);
+            sakuraBoxes.Add(SakuraBox4);
+            sakuraBoxes.Add(SakuraBox5);
+            sakuraBoxes.Add(SakuraBox6);
+            sakuraBoxes.Add(SakuraBox7);
+            sakuraBoxes.Add(SakuraBox8);
+            sakuraBoxes.Add(SakuraBox9);
+            sakuraBoxes.Add(SakuraBox10);
+            sakuraBoxes.Add(SakuraBox11);
+            sakuraBoxes.Add(SakuraBox12);
+            sakuraBoxes.Add(SakuraBox13);
+            sakuraBoxes.Add(SakuraBox14);
+            sakuraBoxes.Add(SakuraBox15);
+            sakuraBoxes.Add(SakuraBox16);
+            sakuraBoxes.Add(SakuraBox17);
+            sakuraBoxes.Add(SakuraBox18);
+            sakuraBoxes.Add(SakuraBox19);
+            sakuraBoxes.Add(SakuraBox20);
+            sakuraBoxes.Add(SakuraBox21);
+            sakuraBoxes.Add(SakuraBox22);
+            sakuraBoxes.Add(SakuraBox23);
+            sakuraBoxes.Add(SakuraBox24);
+            sakuraBoxes.Add(SakuraBox25);
+            sakuraBoxes.Add(SakuraBox26);
+            sakuraBoxes.Add(SakuraBox27);
+            sakuraBoxes.Add(SakuraBox28);
+            sakuraBoxes.Add(SakuraBox29);
+            sakuraBoxes.Add(SakuraBox30);
+            sakuraBoxes.Add(SakuraBox31);
+            sakuraBoxes.Add(SakuraBox32);
+            sakuraBoxes.Add(SakuraBox33);
+            sakuraBoxes.Add(SakuraBox34);
+            sakuraBoxes.Add(SakuraBox35);
+            sakuraBoxes.Add(SakuraBox36);
+            sakuraBoxes.Add(SakuraBox37);
+            sakuraBoxes.Add(SakuraBox38);
+            sakuraBoxes.Add(SakuraBox39);
+            sakuraBoxes.Add(SakuraBox40);
+            sakuraBoxes.Add(SakuraBox41);
+            sakuraBoxes.Add(SakuraBox42);
+            sakuraBoxes.Add(SakuraBox43);
+            sakuraBoxes.Add(SakuraBox44);
+            sakuraBoxes.Add(SakuraBox45);
+            sakuraBoxes.Add(SakuraBox46);
+            sakuraBoxes.Add(SakuraBox47);
+            sakuraBoxes.Add(SakuraBox48);
+            sakuraBoxes.Add(SakuraBox49);
+            sakuraBoxes.Add(SakuraBox50);
+            sakuraBoxes.Add(SakuraBox51);
+            sakuraBoxes.Add(SakuraBox52);
+            sakuraBoxes.Add(SakuraBox53);
+            sakuraBoxes.Add(SakuraBox54);
+            sakuraBoxes.Add(SakuraBox55);
+            sakuraBoxes.Add(SakuraBox56);
+            sakuraBoxes.Add(SakuraBox57);
+            sakuraBoxes.Add(SakuraBox58);
+            sakuraBoxes.Add(SakuraBox59);
+            sakuraBoxes.Add(SakuraBox60);
+            sakuraBoxes.Add(SakuraBox61);
+            sakuraBoxes.Add(SakuraBox62);
+            sakuraBoxes.Add(SakuraBox63);
+            sakuraLabels.Add(SakuraText);
+            sakuraLabels.Add(SakuraText1);
+            sakuraLabels.Add(SakuraText2);
+            sakuraLabels.Add(SakuraText3);
+            sakuraLabels.Add(SakuraText4);
+            sakuraLabels.Add(SakuraText5);
+            sakuraLabels.Add(SakuraText6);
+            sakuraLabels.Add(SakuraText7);
+            sakuraLabels.Add(SakuraText8);
+            sakuraLabels.Add(SakuraText9);
+            sakuraLabels.Add(SakuraText10);
+            sakuraLabels.Add(SakuraText11);
+            sakuraLabels.Add(SakuraText12);
+            sakuraLabels.Add(SakuraText13);
+            sakuraLabels.Add(SakuraText14);
+            sakuraLabels.Add(SakuraText15);
+            sakuraLabels.Add(SakuraText16);
+            sakuraLabels.Add(SakuraText17);
+            sakuraLabels.Add(SakuraText18);
+            sakuraLabels.Add(SakuraText19);
+            sakuraLabels.Add(SakuraText20);
+            sakuraLabels.Add(SakuraText21);
+            sakuraLabels.Add(SakuraText22);
+            sakuraLabels.Add(SakuraText23);
+            sakuraLabels.Add(SakuraText24);
+            sakuraLabels.Add(SakuraText25);
+            sakuraLabels.Add(SakuraText26);
+            sakuraLabels.Add(SakuraText27);
+            sakuraLabels.Add(SakuraText28);
+            sakuraLabels.Add(SakuraText29);
+            sakuraLabels.Add(SakuraText30);
+            sakuraLabels.Add(SakuraText31);
+            sakuraLabels.Add(SakuraText32);
+            sakuraLabels.Add(SakuraText33);
+            sakuraLabels.Add(SakuraText34);
+            sakuraLabels.Add(SakuraText35);
+            sakuraLabels.Add(SakuraText36);
+            sakuraLabels.Add(SakuraText37);
+            sakuraLabels.Add(SakuraText38);
+            sakuraLabels.Add(SakuraText39);
+            sakuraLabels.Add(SakuraText40);
+            sakuraLabels.Add(SakuraText41);
+            sakuraLabels.Add(SakuraText42);
+            sakuraLabels.Add(SakuraText43);
+            sakuraLabels.Add(SakuraText44);
+            sakuraLabels.Add(SakuraText45);
+            sakuraLabels.Add(SakuraText46);
+            sakuraLabels.Add(SakuraText47);
+            sakuraLabels.Add(SakuraText48);
+            sakuraLabels.Add(SakuraText49);
+            sakuraLabels.Add(SakuraText50);
+            sakuraLabels.Add(SakuraText51);
+            sakuraLabels.Add(SakuraText52);
+            sakuraLabels.Add(SakuraText53);
+            sakuraLabels.Add(SakuraText54);
+            sakuraLabels.Add(SakuraText55);
+            sakuraLabels.Add(SakuraText56);
+            sakuraLabels.Add(SakuraText57);
+            sakuraLabels.Add(SakuraText58);
+            sakuraLabels.Add(SakuraText59);
+            sakuraLabels.Add(SakuraText60);
+            sakuraLabels.Add(SakuraText61);
+            sakuraLabels.Add(SakuraText62);
+            sakuraLabels.Add(SakuraText63);
+            SakuraConvert.Items.Add("Nothing");
+            SakuraConvert.Items.Add("Current image");
+            SakuraConvert.Items.Add("Current image if other");
+            SakuraConvert.Items.Add("All images");
+            SakuraConvert.Items.Add("All other images");
+            SakuraTo.Items.Add("png");
+            SakuraTo.Items.Add("jpeg");
+            SakuraTo.Items.Add("jpg");
+            SakuraTo.Items.Add("bmp");
+            SakuraTo.Items.Add("gif");
+            SakuraTo.Items.Add("ico");
+            SakuraTo.Items.Add("tif");
+            SakuraTo.Items.Add("tiff");
+            SakuraTo.Items.Add("bti");
+            SakuraTo.Items.Add("tex0");
+            SakuraTo.Items.Add("tpl");
+            SakuraTo.Items.Add("tga");
+            SakuraTo.Items.Add("dds");
+            SakuraTo.Items.Add("xpm");
+            SakuraTo.Items.Add("webp");
+            SakuraStyle.Items.Add("grid");
+            SakuraStyle.Items.Add("row");
+            SakuraStyle.Items.Add("column");
+            SakuraLayout.Items.Add("Image Viewer");
+            SakuraLayout.Items.Add("Explorer");
+            SakuraLayout.Items.Add("Text Viewer");
         }
         private void SetMode()
         {
@@ -922,6 +1196,10 @@ namespace SakuraView
 
             return match.Success ? $"{match.Groups[1].Value.Trim()}" : "";
         }
+        private void LoadMultipleImages()
+        {
+            // TODO
+        }
         private void LoadImage(String filePath)
         {
             if (System.IO.File.Exists(filePath))
@@ -978,7 +1256,7 @@ namespace SakuraView
                         imagesInfo.Add(pictureInfo);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //Console.WriteLine("Invalid input Image -> " + filePath);
                     SakuraConsole.Text += "\nInvalid input Image -> " + filePath;
@@ -1408,6 +1686,12 @@ namespace SakuraView
         private void DownscaleImage()
         {
             // SakuraBox.Size = new System.Drawing.Size(SakuraBox.Width - (SakuraBox.Width >> 3), SakuraBox.Height - (SakuraBox.Height >> 3));  // for some reason there's a pixel of margin.
+            if (SakuraZoomNumeric.Value - SakuraZoomIncrement.Value < 0)
+            {
+                SakuraDisplayNumeric.Value += 1;
+                LoadMultipleImages();
+                return;
+            }
             SakuraZoomNumeric.Value -= SakuraZoomIncrement.Value;
         }
         private void SakuraZoomTrackBar_Scroll(object sender, EventArgs e)
