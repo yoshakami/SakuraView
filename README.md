@@ -18,14 +18,6 @@ this topic will need more research toward available plugins\
 \
 v0.1 Standalone\
 v0.2 webp support\
-v0.25: code these
-Display Images: number of images displayed on screen at the same time
-Border: The size of the black space between the displayed images
-Fixed image height: minimum height (if display images is too high)
-Fixed image width: minimum width (if display images is too high)
-style: the arrangement of the images (rows, columns, or Default)
-Layout (mode): either make the layout to be the image viewer, a file explorer (with folders) and filters, or a text viewer.
-
 v0.3 tex0, tpl, bti\
 v0.4 pix, dds, cin, iff, eps, yuv, rgb, pic, tim, tga, rla, xpm, and hdr support\
 v0.5 heic support\
