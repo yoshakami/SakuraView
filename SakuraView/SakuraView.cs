@@ -50,7 +50,6 @@ namespace SakuraView
         static int z;
         static long fileSize;
         static int maxNum = 5000;  // list.Count returns a int
-        static ushort metadataLength = 200;
         static bool windowFound;
         static bool help = true;
         static bool info = true;
@@ -62,7 +61,6 @@ namespace SakuraView
         static bool counter = true;
         static bool loop = true;
         static bool console = false;
-        static bool metadata = false;
         static bool starting = true;
         static byte fixed_padding = 0;
         static byte mode = 0; // 0 = ImageViewer; 1 = ImageExplorer; 2 = TextViewer; 3 = TextExplorer; 4 = TextEditor; 5 = Settings; 6 = SongExplorer
@@ -70,6 +68,7 @@ namespace SakuraView
         static byte padding = 30;
         static string currentInfo;
         static string text;
+        static string[] metadata = new string[13];
         static Color color;
         static string specifier = "F";
         static string[] pngMetadata = { "Prompt: ", "Negative Prompt: ", "Steps: ", "Sampler: ", "CFG Scale: ", "Seed: ", "Width: ", "Height: ", "Subseed: ", "Subseed Strength: ", "Model: ", "Lora: " };
@@ -79,8 +78,6 @@ namespace SakuraView
         static int[] imagesFavourites = new int[256];
         static List<string> imagesPath = new List<string>();
         static List<string[]> imagesInfo = new List<string[]>();
-        static List<string[]> imagesMetadata = new List<string[]>();
-        static List<byte> imagesType = new List<byte>();
         /* 0 png  -  1 jpeg  -  2 webp  -  3 ico  -  4 tiff  -  5 bmp
            6 gif  -  7 bti   -  8 tpl   -  9 tex0 - 10 heic  - 11 pdf
           12 bmd  - 13 brres - 14 u8    - 15 pix  - 16 dds   - 17 cin
@@ -127,11 +124,11 @@ namespace SakuraView
                 SakuraTextColor.Text = txt[8];
                 SetBackgroundColour(txt[10]);
                 SakuraBgColor.Text = txt[10];
-                fixed_padding = padding = byte.Parse(txt[12]);
+                fixed_padding = byte.Parse(txt[12]);
                 mode = byte.Parse(txt[14]);
                 maxNum = ushort.Parse(txt[16]);
                 SakuraMaxNum.Value = maxNum;
-                metadataLength = ushort.Parse(txt[18]);
+                SakuraMetadataLengthNumeric.Value = ushort.Parse(txt[18]);
                 SakuraZoomIncrement.Value = int.Parse(txt[20]);
                 SakuraImgcvt.Text = txt[22];
                 this.TopMost = txt[24].ToLower() == "true";
@@ -141,7 +138,6 @@ namespace SakuraView
                 help = txt[32].ToLower() == "view";
                 info = txt[34].ToLower() == "view";
                 loop = txt[36].ToLower() == "true";
-                metadata = txt[38].ToLower() == "view";
                 loadSubFolders = txt[40].ToLower() == "true";
                 counter = txt[42].ToLower() == "true";
                 string[] s = txt[44].Split(',');
@@ -177,7 +173,7 @@ namespace SakuraView
             "Fixed Padding (0 = disable)", "0", // txt[12]
             "Mode {0, 1, 2, 3, 4, 5, 6}", "0", // txt[14]
             "Max Number of images loaded", "5000", // txt[16]
-            "Metadata Length (in character count per line)", "200", // txt[18]
+            "Metadata Length (in character count per line)", "75", // txt[18]
             "Zoom increment", "25", // txt[20]
             "imgcvt.exe path", "C:\\Program Files\\Autodesk\\Maya2018\\bin\\imgcvt.exe", // txt[22]
             "Always On Top {True, False}", "False", // txt[24]
@@ -203,7 +199,7 @@ namespace SakuraView
             txt[12] = fixed_padding.ToString();
             txt[14] = mode.ToString();
             txt[16] = maxNum.ToString();
-            txt[18] = metadataLength.ToString();
+            txt[18] = SakuraMetadataLengthNumeric.Value.ToString();
             txt[20] = SakuraZoomIncrement.Value.ToString();
             txt[22] = SakuraImgcvt.Text;
             byte b = 24;
@@ -214,7 +210,6 @@ namespace SakuraView
             if (help) { txt[b + 8] = "view"; } else { txt[b + 8] = "hide"; }
             if (info) { txt[b + 10] = "view"; } else { txt[b + 10] = "hide"; }
             if (loop) { txt[b + 12] = "true"; } else { txt[b + 12] = "false"; }
-            if (metadata) { txt[b + 14] = "view"; } else { txt[b + 14] = "hide"; }
             if (loadSubFolders) { txt[b + 16] = "true"; } else { txt[b + 16] = "false"; }
             if (counter) { txt[b + 18] = "true"; } else { txt[b + 18] = "false"; }
             txt[b + 20] = "";
@@ -327,20 +322,10 @@ namespace SakuraView
                 loop = false;
                 SakuraCkLoop.Checked = true;
             }
-            if (metadata)
-            {
-                metadata = false;
-                SakuraCkMetadata.Checked = true;
-            }
             if (loadSubFolders)
             {
                 loadSubFolders = false;
                 SakuraCkSubFolders.Checked = true;
-            }
-            if (counter)
-            {
-                counter = false;
-                SakuraCkCounter.Checked = true;
             }
             SakuraButton10Lines.Visible = false;
             SakuraButtonClearConsole.Visible = false;
@@ -355,12 +340,10 @@ namespace SakuraView
             SakuraCkAlwaysOnTop.Visible = false;
             SakuraCkBanner.Visible = false;
             SakuraCkConsole.Visible = false;
-            SakuraCkCounter.Visible = false;
             SakuraCkDuplicates.Visible = false;
             SakuraCkHelp.Visible = false;
             SakuraCkInfo.Visible = false;
             SakuraCkLoop.Visible = false;
-            SakuraCkMetadata.Visible = false;
             SakuraCkSubFolders.Visible = false;
             SakuraZoomLabel.Visible = false;
             SakuraZoomNumeric.Visible = false;
@@ -382,6 +365,8 @@ namespace SakuraView
             SakuraTo.Visible = false;
             SakuraPlt0Label.Visible = false;
             SakuraPlt0Textbox.Visible = false;
+            SakuraMetadataLengthLabel.Visible = false;
+            SakuraMetadataLengthNumeric.Visible = false;
             if (fixed_padding == 0 && imagesInfo.Count > 0)
             {
                 padding = 15;
@@ -430,6 +415,8 @@ namespace SakuraView
             SakuraTo.BackColor = color;
             SakuraPlt0Label.BackColor = color;
             SakuraPlt0Textbox.BackColor = color;
+            SakuraMetadataLengthLabel.BackColor = color;
+            SakuraMetadataLengthNumeric.BackColor = color;
         }
         private void SetTextColour(string textColour)
         {
@@ -467,9 +454,7 @@ namespace SakuraView
             SakuraCkHelp.ForeColor = color;
             SakuraCkInfo.ForeColor = color;
             SakuraCkLoop.ForeColor = color;
-            SakuraCkMetadata.ForeColor = color;
             SakuraCkSubFolders.ForeColor = color;
-            SakuraCkCounter.ForeColor = color;
             SakuraButtonHideSettings.ForeColor = color;
             SakuraConvert.ForeColor = color;
             SakuraConvertLabel.ForeColor = color;
@@ -477,9 +462,13 @@ namespace SakuraView
             SakuraTo.ForeColor = color;
             SakuraPlt0Label.ForeColor = color;
             SakuraPlt0Textbox.ForeColor = color;
+            SakuraMetadataLengthLabel.ForeColor = color;
+            SakuraMetadataLengthNumeric.ForeColor = color;
         }
         private void ToggleSettings()
         {
+            LoadMetadata(currentImage);
+            SakuraMetadata.Visible = !SakuraMetadata.Visible;
             SakuraZoomLabel.Visible = !SakuraZoomLabel.Visible;
             SakuraZoomNumeric.Visible = !SakuraZoomNumeric.Visible;
             SakuraZoomTrackBar.Visible = !SakuraZoomTrackBar.Visible;
@@ -497,12 +486,10 @@ namespace SakuraView
             SakuraCkAlwaysOnTop.Visible = !SakuraCkAlwaysOnTop.Visible;
             SakuraCkBanner.Visible = !SakuraCkBanner.Visible;
             SakuraCkConsole.Visible = !SakuraCkConsole.Visible;
-            SakuraCkCounter.Visible = !SakuraCkCounter.Visible;
             SakuraCkDuplicates.Visible = !SakuraCkDuplicates.Visible;
             SakuraCkHelp.Visible = !SakuraCkHelp.Visible;
             SakuraCkInfo.Visible = !SakuraCkInfo.Visible;
             SakuraCkLoop.Visible = !SakuraCkLoop.Visible;
-            SakuraCkMetadata.Visible = !SakuraCkMetadata.Visible;
             SakuraCkSubFolders.Visible = !SakuraCkSubFolders.Visible;
             SakuraBgColor.Visible = !SakuraBgColor.Visible;
             SakuraBgColorLabel.Visible = !SakuraBgColorLabel.Visible;
@@ -520,6 +507,8 @@ namespace SakuraView
             SakuraTo.Visible = !SakuraTo.Visible;
             SakuraPlt0Label.Visible = !SakuraPlt0Label.Visible;
             SakuraPlt0Textbox.Visible = !SakuraPlt0Textbox.Visible;
+            SakuraMetadataLengthLabel.Visible = !SakuraMetadataLengthLabel.Visible;
+            SakuraMetadataLengthNumeric.Visible = !SakuraMetadataLengthNumeric.Visible;
             this.Focus();
         }
         private void SetMode()
@@ -698,184 +687,155 @@ namespace SakuraView
         private void LoadMetadata(int imageNumber)
         {
             SakuraMetadata.Text = "";
-            if (!counter || imagesType[imageNumber] == 0) // png
+            try
             {
-                string[] output = new string[13];
-                try
+                using (FileStream png = new FileStream(imagesPath[imageNumber], FileMode.Open, FileAccess.Read))
                 {
-                    using (FileStream png = new FileStream(imagesPath[imageNumber], FileMode.Open, FileAccess.Read))
+                    byte[] textBytes = new byte[8192];
+                    int bytesRead = png.Read(textBytes, 0, 8192);
+                    if (!ByteArrayEquals(textBytes.Take(4).ToArray(), new byte[] { 0x89, 0x50, 0x4E, 0x47 }))
                     {
-                        byte[] textBytes = new byte[8192];
-                        int bytesRead = png.Read(textBytes, 0, 8192);
-                        if (!ByteArrayEquals(textBytes.Take(4).ToArray(), new byte[] { 0x89, 0x50, 0x4E, 0x47 }))
+                        SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a PNG file";
+                        return;
+                    }
+                    x = (textBytes[0x21] << 24) | (textBytes[0x22] << 16) | (textBytes[0x23] << 8) | textBytes[0x24];
+                    string text;
+                    if (ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("tEXtparameters")))
+                    {
+                        text = latin1.GetString(textBytes, 0x34, x).Trim();
+                    }
+                    else
+                    {
+                        if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("iTXtparameters")))
                         {
-                            SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a PNG file";
-                            imagesMetadata.Add(null);
+                            SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
+                            y = 0x25;
+                            while (y < 8192)
+                            {
+                                x = (textBytes[y - 4] << 24) | (textBytes[y - 3] << 16) | (textBytes[y - 2] << 8) | textBytes[y - 1];
+                                if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), latin1.GetBytes("tEXt")))
+                                {
+                                    SakuraMetadata.Text += "\n" + WrapText(latin1.GetString(textBytes, y + 4, x).Replace('\0', ':'), (int)SakuraMetadataLengthNumeric.Value);
+                                }
+                                if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), latin1.GetBytes("iTXt")))
+                                {
+                                    SakuraMetadata.Text += "\n" + WrapText(Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':'), (int)SakuraMetadataLengthNumeric.Value);
+                                }
+                                y += x + 12;
+                            }
                             return;
                         }
-                        x = (textBytes[0x21] << 24) | (textBytes[0x22] << 16) | (textBytes[0x23] << 8) | textBytes[0x24];
-                        string text;
-                        if (ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("tEXtparameters")))
+                        text = Encoding.UTF8.GetString(textBytes, 0x38, x).Trim();
+                    }
+                    text = text.Split('\x00')[0].Trim();
+
+                    string[] textLines = text.Split(new[] { "Negative prompt: " }, StringSplitOptions.None);
+
+                    if (textLines.Length == 1)  // there's no negative prompt
+                    {
+                        string[] promptParts = textLines[0].Split(new[] { "Steps: " }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (promptParts.Length == 2)  // if there's a prompt
                         {
-                            text = latin1.GetString(textBytes, 0x34, x).Trim();
+                            metadata[0] += promptParts[0].Substring(0, promptParts[0].Length - 1);  //  prompt
+                        }
+                    }
+                    else if (textLines.Length == 2)  // there's a negative prompt
+                    {
+                        if (textLines[0] != "")  // if there's a prompt
+                        {
+                            metadata[0] += textLines[0].Substring(0, textLines[0].Length - 1);  // prompt
+                        }
+                        string[] stepsParts = textLines[1].Split(new[] { "Steps: " }, StringSplitOptions.None);
+                        metadata[1] += stepsParts[0].Substring(0, stepsParts[0].Length - 1).Replace("\\n", "\n");  // negative prompt
+                    }
+                    textLines = text.Split('\n');
+                    y = textLines.Length - 1;
+                    /*
+
+                    j = 0;
+                    if (textLines.Length == 2)  // either the prompt or the negative is not there
+                    {
+                        if (textLines[0].StartsWith("Negative prompt: "))
+                        {
+                            output[1] = textLines[0].Substring(17);  // negative prompt
                         }
                         else
                         {
-                            if (!ByteArrayEquals(textBytes.Skip(0x25).Take(14).ToArray(), latin1.GetBytes("iTXtparameters")))
-                            {
-                                SakuraConsole.Text += $"\n{imagesPath[imageNumber]} is not a AI Generated PNG file";
-                                y = 0x25;
-                                while (y < 8192)
-                                {
-                                    x = (textBytes[y - 4] << 24) | (textBytes[y - 3] << 16) | (textBytes[y - 2] << 8) | textBytes[y - 1];
-                                    if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), latin1.GetBytes("tEXt")))
-                                    {
-                                        SakuraMetadata.Text += "\n" + WrapText(latin1.GetString(textBytes, y + 4, x).Replace('\0', ':'), metadataLength);
-                                    }
-                                    if (ByteArrayEquals(textBytes.Skip(y).Take(4).ToArray(), latin1.GetBytes("iTXt")))
-                                    {
-                                        SakuraMetadata.Text += "\n" + WrapText(Encoding.UTF8.GetString(textBytes, y + 4, x).Replace('\0', ':'), metadataLength);
-                                    }
-                                    y += x + 12;
-                                }
-                                string[] pngMeta = { "\0", SakuraMetadata.Text.ToString() }; // stores a copy of the current text
-                                imagesMetadata.Add(pngMeta); // this list is hardcoded. TODO: add history for other types of metadata of images
-                                return;
-                            }
-                            text = Encoding.UTF8.GetString(textBytes, 0x38, x).Trim();
+                            output[0] = textLines[0];  // prompt
                         }
-                        text = text.Split('\x00')[0].Trim();
+                        textLines = new string[] { "", textLines[0] };
+                        j = 1;
+                    }
+                    else if (textLines.Length == 3)  // both are there
+                    {
+                        output[0] = textLines[0].TrimEnd();  // prompt
+                        output[1] = textLines[1].Substring(17);  // negative prompt
+                        j = 2;
+                    }*/
+                    metadata[2] = GetParamValue(textLines[y], "Steps:");
+                    metadata[3] = GetParamValue(textLines[y], "Sampler:");
+                    metadata[4] = GetParamValue(textLines[y], "CFG scale:");
+                    metadata[5] = GetParamValue(textLines[y], "Seed:");
 
-                        string[] textLines = text.Split(new[] { "Negative prompt: " }, StringSplitOptions.None);
-
-                        if (textLines.Length == 1)  // there's no negative prompt
-                        {
-                            string[] promptParts = textLines[0].Split(new[] { "Steps: " }, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (promptParts.Length == 2)  // if there's a prompt
-                            {
-                                output[0] += promptParts[0].Substring(0, promptParts[0].Length - 1);  //  prompt
-                            }
-                        }
-                        else if (textLines.Length == 2)  // there's a negative prompt
-                        {
-                            if (textLines[0] != "")  // if there's a prompt
-                            {
-                                output[0] += textLines[0].Substring(0, textLines[0].Length - 1);  // prompt
-                            }
-                            string[] stepsParts = textLines[1].Split(new[] { "Steps: " }, StringSplitOptions.None);
-                            output[1] += stepsParts[0].Substring(0, stepsParts[0].Length - 1).Replace("\\n", "\n");  // negative prompt
-                        }
-                        textLines = text.Split('\n');
-                        y = textLines.Length - 1;
-                        /*
-
-                        j = 0;
-                        if (textLines.Length == 2)  // either the prompt or the negative is not there
-                        {
-                            if (textLines[0].StartsWith("Negative prompt: "))
-                            {
-                                output[1] = textLines[0].Substring(17);  // negative prompt
-                            }
-                            else
-                            {
-                                output[0] = textLines[0];  // prompt
-                            }
-                            textLines = new string[] { "", textLines[0] };
-                            j = 1;
-                        }
-                        else if (textLines.Length == 3)  // both are there
-                        {
-                            output[0] = textLines[0].TrimEnd();  // prompt
-                            output[1] = textLines[1].Substring(17);  // negative prompt
-                            j = 2;
-                        }*/
-                        output[2] = GetParamValue(textLines[y], "Steps:");
-                        output[3] = GetParamValue(textLines[y], "Sampler:");
-                        output[4] = GetParamValue(textLines[y], "CFG scale:");
-                        output[5] = GetParamValue(textLines[y], "Seed:");
-
-                        text = GetParamValue(textLines[y], "Size:");
-                        if (text.Contains("x"))
-                        {
-                            string[] dimensions = text.Split('x');
-                            output[6] = dimensions[0];  // width
-                            output[7] = dimensions[1];  // height
-                        }
-                        text = GetParamValue(textLines[y], "Variation seed:");
-                        if (!string.IsNullOrEmpty(text))
-                        {
-                            output[8] = text;  // subseed
-                        }
-                        text = GetParamValue(textLines[y], "Variation seed strength:");
-                        if (!string.IsNullOrEmpty(text))
-                        {
-                            output[9] = text;  // subseed strength between 0.0 and 1.0
-                        }
-                        output[10] = GetParamValue(textLines[y], "Model:");
-                        string[] loraSplit = textLines[y].Split(new string[] { "Lora hashes: \"" }, StringSplitOptions.None);
-                        if (loraSplit.Length > 1)
-                        {
-                            text = loraSplit[1].Split(':')[0].Trim();
-                            output[11] = text;  // lora
-                        }
+                    text = GetParamValue(textLines[y], "Size:");
+                    if (text.Contains("x"))
+                    {
+                        string[] dimensions = text.Split('x');
+                        metadata[6] = dimensions[0];  // width
+                        metadata[7] = dimensions[1];  // height
+                    }
+                    text = GetParamValue(textLines[y], "Variation seed:");
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        metadata[8] = text;  // subseed
+                    }
+                    text = GetParamValue(textLines[y], "Variation seed strength:");
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        metadata[9] = text;  // subseed strength between 0.0 and 1.0
+                    }
+                    metadata[10] = GetParamValue(textLines[y], "Model:");
+                    string[] loraSplit = textLines[y].Split(new string[] { "Lora hashes: \"" }, StringSplitOptions.None);
+                    if (loraSplit.Length > 1)
+                    {
+                        text = loraSplit[1].Split(':')[0].Trim();
+                        metadata[11] = text;  // lora
                     }
                 }
+            }
 
-                catch (Exception ex)
-                {
-                    SakuraConsole.Text += $"\nError parsing PNG file: {ex.Message}";
-                    imagesMetadata.Add(null);
-                    return;
-                }
-                imagesMetadata.Add(output);
-                PlaceMetadata();
-            }
-            else { imagesMetadata.Add(null); }
-        }
-        private void UpPlaceMetadata()
-        {
-            if (imagesMetadata.Count <= currentImage)
-                return;
-            SakuraMetadata.Text = "";
-            if (imagesMetadata[currentImage] == null)
-                return;
-            FillMetadata();
-            while (SakuraMetadata.Location.X + SakuraUnseen.Width > screenWidth && metadataLength > 20)
+            catch (Exception ex)
             {
-                metadataLength -= 5;
-                FillMetadata();
+                SakuraConsole.Text += $"\nError parsing PNG file: {ex.Message}";
+                return;
             }
-            SakuraMetadata.Text = SakuraUnseen.Text;
-        }
-        private void PlaceMetadata()
-        {
-            metadataLength = ushort.Parse(txt[16]);
-            UpPlaceMetadata();
+            FillMetadata();
         }
         private void FillMetadata()
         {
             SakuraUnseen.Text = "";
-            if (imagesMetadata[currentImage][0] == "\0")
+            if (metadata[0] == "\0")
             {
-                if (!string.IsNullOrEmpty(imagesMetadata[currentImage][1]))
+                if (!string.IsNullOrEmpty(metadata[1]))
                 {
-                    SakuraUnseen.Text = WrapText(imagesMetadata[currentImage][1], metadataLength);
+                    SakuraUnseen.Text = WrapText(metadata[1], (int)SakuraMetadataLengthNumeric.Value);
                 }
                 return;
             }
             for (i = 0; i < 2; i++)
             {
-                if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
-                    SakuraUnseen.Text += pngMetadata[i] + "\n" + WrapText(imagesMetadata[currentImage][i], metadataLength) + "\n\n";
+                if (!string.IsNullOrEmpty(metadata[i]))
+                    SakuraUnseen.Text += pngMetadata[i] + "\n" + WrapText(metadata[i], (int)SakuraMetadataLengthNumeric.Value) + "\n\n";
             }
-            for (; i < imagesMetadata[currentImage].Length - 1; i++)
+            for (; i < metadata.Length - 1; i++)
             {
-                if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
-                    SakuraUnseen.Text += pngMetadata[i] + imagesMetadata[currentImage][i] + "\n";
+                if (!string.IsNullOrEmpty(metadata[i]))
+                    SakuraUnseen.Text += pngMetadata[i] + metadata[i] + "\n";
             }
-            if (!string.IsNullOrEmpty(imagesMetadata[currentImage][i]))
-                SakuraUnseen.Text += pngMetadata[i] + imagesMetadata[currentImage][i]; // for the last one I won't put a new line at the end
+            if (!string.IsNullOrEmpty(metadata[i]))
+                SakuraUnseen.Text += pngMetadata[i] + metadata[i]; // for the last one I won't put a new line at the end
+            SakuraMetadata.Text = SakuraUnseen.Text;
         }
         public static string WrapText(string input, int maxLength)
         {
@@ -949,23 +909,19 @@ namespace SakuraView
                     {
                         images.Add(null);
                         imagesInfo.Add(null);
-                        imagesMetadata.Add(null);
                     }
                     string[] pictureInfo = { "" + (currentImage + 1), GetFileSize(), GetPixelFormat(), SakuraBox.Image.Width + "x" + SakuraBox.Image.Height, File.GetCreationTime(filePath).ToString(), upscaleMode, upscaleAlgorithm, Path.GetFileName(filePath) };
                     if (counter)
                     {
                         pictureInfo[0] += " / " + imagesPath.Count;
                     }
-                    if (metadata)
+                    if (SakuraMetadata.Visible)
                     {
-                        if (imagesMetadata.Count == currentImage)
-                            LoadMetadata(currentImage);
-                        else if (imagesMetadata[currentImage] == null)
-                            LoadMetadata(currentImage);
+                        LoadMetadata(currentImage);
                     }
                     else
                     {
-                        imagesMetadata.Add(null);
+                        SakuraMetadata.Text = "";
                     }
                     if (currentImage < images.Count)
                     {
@@ -1082,10 +1038,6 @@ namespace SakuraView
         {
             ScaleInfo();
             SakuraInfo.Text = SakuraHidden.Text;
-            if (imagesMetadata[currentImage] == null)
-                LoadMetadata(currentImage);
-            else
-                PlaceMetadata();
         }
         private Image LoadImageFromFile(string path)  // allows the image not to be locked by the program
         {
@@ -1302,16 +1254,13 @@ namespace SakuraView
         }
         private bool AddImage(string filepath)
         {
-            if (imagesPath.Count > maxNum)
+            if (imagesPath.Count >= maxNum)
             {
                 return false;
             }
-            if (!counter)
-            {
-                imagesPath.Add(filepath);
-                return true;
-            }
-            byte[] id = new byte[12];
+            imagesPath.Add(filepath);
+            return true;
+            /* byte[] id = new byte[12];
             try
             {
                 using (System.IO.FileStream file = System.IO.File.Open(filepath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
@@ -1352,7 +1301,7 @@ namespace SakuraView
             else
             { return false; }
             imagesPath.Add(filepath);
-            return true;
+            return true; */
         }
         private void SakuraViewClass_DragDrop(object sender, DragEventArgs e)
         {
@@ -1403,11 +1352,19 @@ namespace SakuraView
         private void UpscaleImage()
         {
             // SakuraBox.Size = new System.Drawing.Size(SakuraBox.Width + (SakuraBox.Width >> 3), SakuraBox.Height + (SakuraBox.Height >> 3));  // for some reason there's a pixel of margin.
+            if (SakuraZoomNumeric.Value < 1 || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum - SakuraZoomIncrement.Value - 1)
+            {
+                SakuraZoomNumeric.Value = 100;
+            }
             SakuraZoomNumeric.Value += SakuraZoomIncrement.Value;
         }
         private void DownscaleImage()
         {
             // SakuraBox.Size = new System.Drawing.Size(SakuraBox.Width - (SakuraBox.Width >> 3), SakuraBox.Height - (SakuraBox.Height >> 3));  // for some reason there's a pixel of margin.
+            if (SakuraZoomNumeric.Value < 1 || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum - SakuraZoomIncrement.Value - 1)
+            {
+                SakuraZoomNumeric.Value = 100;
+            }
             SakuraZoomNumeric.Value -= SakuraZoomIncrement.Value;
         }
         private void SakuraZoomTrackBar_Scroll(object sender, EventArgs e)
@@ -1416,6 +1373,10 @@ namespace SakuraView
         }
         private void SakuraZoomNumeric_ValueChanged(object sender, EventArgs e)
         {
+            if (SakuraZoomNumeric.Value < 1 || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum - SakuraZoomIncrement.Value - 1)
+            {
+                SakuraZoomNumeric.Value = 100;
+            }
             SakuraBox.Size = new Size((int)(boxSize.Width * (int)SakuraZoomNumeric.Value / 100), (int)(boxSize.Height * (int)SakuraZoomNumeric.Value / 100));
         }
         private void ViewImage(int imageNumber)
@@ -1597,7 +1558,6 @@ namespace SakuraView
             else if (e.KeyCode == Keys.K) { SakuraButtonClearConsole_Click(null, null); }
             else if (e.KeyCode == Keys.Left) { ViewImage(currentImage - 1); }
             else if (e.KeyCode == Keys.O) { SakuraButtonDirectory_Click(null, null); }
-            else if (e.KeyCode == Keys.Oem7) { SakuraCkMetadata.Checked = !metadata; }
             else if (e.KeyCode == Keys.OemBackslash) { SakuraCkLoop.Checked = !loop; }
             else if (e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.S) { ToggleSettings(); }
             else if (e.KeyCode == Keys.OemMinus || e.KeyCode == Keys.Subtract) { DownscaleImage(); }
@@ -1608,7 +1568,6 @@ namespace SakuraView
             else if (e.KeyCode == Keys.Right) { ViewImage(currentImage + 1); }
             else if (e.KeyCode == Keys.S && e.Control) { SakuraButtonSave_Click(null, null); }
             else if (e.KeyCode == Keys.T) { SakuraCkBanner.Checked = !banner; }
-            else if (e.KeyCode == Keys.U) { SakuraCkCounter.Checked = !counter; }
             else if (e.KeyCode == Keys.Up) { ViewImage(0); }
             else if (e.KeyCode == Keys.X) { SakuraButtonSwapH_Click(null, null); }
             else if (e.KeyCode == Keys.Y) { SakuraButtonSwapV_Click(null, null); }
@@ -1798,7 +1757,6 @@ namespace SakuraView
                 if (prevent_execution || this.WindowState == FormWindowState.Minimized)
                     return;
                 prevent_execution = true;
-                PlaceMetadata();
                 Task.Delay(500).ContinueWith(t => endthis());
             }
             else if (e.Button == MouseButtons.Right)
@@ -1809,7 +1767,6 @@ namespace SakuraView
                 if (prevent_execution || this.WindowState == FormWindowState.Minimized)
                     return;
                 prevent_execution = true;
-                UpPlaceMetadata();
                 Task.Delay(500).ContinueWith(t => endthis());
             }
         }
@@ -1841,8 +1798,6 @@ namespace SakuraView
             images.Clear();
             imagesPath.Clear();
             imagesInfo.Clear();
-            imagesType.Clear();
-            imagesMetadata.Clear();
             SakuraInfo.Text = "";
             GC.Collect(2, GCCollectionMode.Forced, false, false);
         }
@@ -1971,13 +1926,6 @@ namespace SakuraView
             SakuraConsole.Text += "\nloop = " + loop;
         }
 
-        private void SakuraCkMetadata_CheckedChanged(object sender, EventArgs e)
-        {
-            metadata = !metadata;
-            SakuraMetadata.Visible = metadata;
-            SakuraConsole.Text += "\nmetadata = " + metadata;
-        }
-
         private void SakuraCkSubFolders_CheckedChanged(object sender, EventArgs e)
         {
             loadSubFolders = loadSubFolders != true;
@@ -2043,7 +1991,20 @@ namespace SakuraView
 
         private void SakuraZoomIncrement_ValueChanged(object sender, EventArgs e)
         {
+            if (SakuraZoomIncrement.Value < 0)
+            {
+                SakuraZoomIncrement.Value = 25;
+            }
             SakuraZoomNumeric.Increment = SakuraZoomIncrement.Value;
+        }
+
+        private void SakuraMetadataLengthNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            if (SakuraMetadataLengthNumeric.Value < 25)
+            {
+                SakuraMetadataLengthNumeric.Value = 25;
+            }
+            FillMetadata();
         }
     }
 }
