@@ -27,7 +27,7 @@ v0.7 brres, bmd, and u8 support\
 ## Keyboard Shortcuts
 press F1 to show them, then F1 again to hide them. The text below is also shown in the application for people too lazy to come here.
 <pre>
-F1: Toogle Help
+F1: Toggle Help
 F2: Fill
 F3: Fit
 F4: Stretch
@@ -57,7 +57,7 @@ C: Toggle Console
 D: Toggle Duplicates
 E: Empty List
 F: Open Files
-G: Github Releases
+G: GitHub Releases
 I: Toggle Info
 K: Clear Console Output
 O: Open Directory
