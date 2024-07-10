@@ -1546,6 +1546,7 @@ namespace SakuraView
             else if (e.KeyCode == Keys.D9) { ViewImage(imagesPath.Count * 9 / 10); }
             else if (e.KeyCode == Keys.D0) { ViewImage(0); }
             else if (e.KeyCode == Keys.A) { SakuraCkAlwaysOnTop.Checked = !this.TopMost; }
+            // B Bicubic
             else if (e.KeyCode == Keys.C) { SakuraCkConsole.Checked = !console; }
             else if (e.KeyCode == Keys.D) { SakuraCkDuplicates.Checked = !duplicate; }
             else if (e.KeyCode == Keys.Down) { ViewImage(imagesPath.Count - 1); }
@@ -1554,8 +1555,13 @@ namespace SakuraView
             else if (e.KeyCode == Keys.Escape) { Environment.Exit(0); }
             else if (e.KeyCode == Keys.F) { SakuraButtonOpenFiles_Click(null, null); }
             else if (e.KeyCode == Keys.G) { SakuraButtonGithub_Click(null, null); }
+            // H  High
             else if (e.KeyCode == Keys.I) { SakuraCkInfo.Checked = !info; }
+            // J  HighQualityBicubic
             else if (e.KeyCode == Keys.K) { SakuraButtonClearConsole_Click(null, null); }
+            // L  Low
+            // M  Bilinear
+            // N  NearestNeighbour
             else if (e.KeyCode == Keys.Left) { ViewImage(currentImage - 1); }
             else if (e.KeyCode == Keys.O) { SakuraButtonDirectory_Click(null, null); }
             else if (e.KeyCode == Keys.OemBackslash) { SakuraCkLoop.Checked = !loop; }
@@ -1568,7 +1574,10 @@ namespace SakuraView
             else if (e.KeyCode == Keys.Right) { ViewImage(currentImage + 1); }
             else if (e.KeyCode == Keys.S && e.Control) { SakuraButtonSave_Click(null, null); }
             else if (e.KeyCode == Keys.T) { SakuraCkBanner.Checked = !banner; }
+            else if (e.KeyCode == Keys.U) { this.Size = new Size(1280, 640); }
             else if (e.KeyCode == Keys.Up) { ViewImage(0); }
+            // V  HighQualityBilinear
+            // W  Default
             else if (e.KeyCode == Keys.X) { SakuraButtonSwapH_Click(null, null); }
             else if (e.KeyCode == Keys.Y) { SakuraButtonSwapV_Click(null, null); }
             else if (e.KeyCode == Keys.Z)
