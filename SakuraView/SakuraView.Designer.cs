@@ -518,7 +518,7 @@ namespace SakuraView
             this.SakuraZoomNumeric.Location = new System.Drawing.Point(315, 73);
             this.SakuraZoomNumeric.Margin = new System.Windows.Forms.Padding(2);
             this.SakuraZoomNumeric.Maximum = new decimal(new int[] {
-            2147483647,
+            2000,
             0,
             0,
             0});

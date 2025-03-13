@@ -89,6 +89,7 @@ namespace SakuraView
         Point metadataLocation = new Point(100, 100);
         Point boxLocation = new Point(0, 0);
         Size boxSize = new Size(0, 0);
+        Size imageSize = new Size(0, 0);
         static string[] txt;
         // when escape is pressed 
         // Environment.Exit(0);
@@ -1351,21 +1352,34 @@ namespace SakuraView
         }
         private void UpscaleImage()
         {
+            boxLocation = new Point(SakuraBox.Location.X, SakuraBox.Location.Y);
+            imageSize = new Size(SakuraBox.Size.Width, SakuraBox.Size.Height);
             // SakuraBox.Size = new System.Drawing.Size(SakuraBox.Width + (SakuraBox.Width >> 3), SakuraBox.Height + (SakuraBox.Height >> 3));  // for some reason there's a pixel of margin.
-            if (SakuraZoomNumeric.Value < 1 || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum - SakuraZoomIncrement.Value - 1)
+            if (SakuraZoomNumeric.Value < 1 || (SakuraZoomNumeric.Value + SakuraZoomIncrement.Value) > SakuraZoomNumeric.Maximum)
             {
                 SakuraZoomNumeric.Value = 100;
+                ScaleImage();
+                return;
             }
             SakuraZoomNumeric.Value += SakuraZoomIncrement.Value;
+            //SakuraBox.Size = new Size((int)(SakuraBox.Size.Width / (SakuraZoomNumeric.Value / previousVal)), (int)(SakuraBox.Size.Height / (SakuraZoomNumeric.Value / previousVal)));
+            SakuraBox.Location = new Point((int)(boxLocation.X + (imageSize.Width-SakuraBox.Size.Width)/2), (int)(boxLocation.Y + (imageSize.Height-SakuraBox.Size.Height)/2));
+            boxLocation = new Point(SakuraBox.Location.X, SakuraBox.Location.Y);
         }
         private void DownscaleImage()
         {
+            boxLocation = new Point(SakuraBox.Location.X, SakuraBox.Location.Y);
+            imageSize = new Size(SakuraBox.Size.Width, SakuraBox.Size.Height);
             // SakuraBox.Size = new System.Drawing.Size(SakuraBox.Width - (SakuraBox.Width >> 3), SakuraBox.Height - (SakuraBox.Height >> 3));  // for some reason there's a pixel of margin.
-            if (SakuraZoomNumeric.Value < 1 || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum - SakuraZoomIncrement.Value - 1)
+            if ((SakuraZoomNumeric.Value - SakuraZoomIncrement.Value) < 1  || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum)
             {
                 SakuraZoomNumeric.Value = 100;
+                ScaleImage();
+                return;
             }
             SakuraZoomNumeric.Value -= SakuraZoomIncrement.Value;
+            SakuraBox.Location = new Point((int)(boxLocation.X + (imageSize.Width - SakuraBox.Size.Width) / 2), (int)(boxLocation.Y + (imageSize.Height - SakuraBox.Size.Height) / 2));
+            boxLocation = new Point(SakuraBox.Location.X, SakuraBox.Location.Y);
         }
         private void SakuraZoomTrackBar_Scroll(object sender, EventArgs e)
         {
@@ -1373,9 +1387,11 @@ namespace SakuraView
         }
         private void SakuraZoomNumeric_ValueChanged(object sender, EventArgs e)
         {
-            if (SakuraZoomNumeric.Value < 1 || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum - SakuraZoomIncrement.Value - 1)
+            if (SakuraZoomNumeric.Value < 1 || SakuraZoomNumeric.Value > SakuraZoomNumeric.Maximum)
             {
                 SakuraZoomNumeric.Value = 100;
+                ScaleImage();
+                return;
             }
             SakuraBox.Size = new Size((int)(boxSize.Width * (int)SakuraZoomNumeric.Value / 100), (int)(boxSize.Height * (int)SakuraZoomNumeric.Value / 100));
         }
@@ -1760,23 +1776,23 @@ namespace SakuraView
         {
             if (e.Button == MouseButtons.Left)
             {
-                metadataLocation.X += e.X - mouse_x;
-                metadataLocation.Y += e.Y - mouse_y;
-                SakuraMetadata.Location = metadataLocation;
                 if (prevent_execution || this.WindowState == FormWindowState.Minimized)
                     return;
                 prevent_execution = true;
-                Task.Delay(500).ContinueWith(t => endthis());
+                metadataLocation.X += e.X - mouse_x;
+                metadataLocation.Y += e.Y - mouse_y;
+                SakuraMetadata.Location = metadataLocation;
+                Task.Delay(20).ContinueWith(t => endthis());
             }
             else if (e.Button == MouseButtons.Right)
             {
-                metadataLocation.X += e.X - mouse_x;
-                metadataLocation.Y += e.Y - mouse_y;
-                SakuraMetadata.Location = metadataLocation;
                 if (prevent_execution || this.WindowState == FormWindowState.Minimized)
                     return;
                 prevent_execution = true;
-                Task.Delay(500).ContinueWith(t => endthis());
+                metadataLocation.X += e.X - mouse_x;
+                metadataLocation.Y += e.Y - mouse_y;
+                SakuraMetadata.Location = metadataLocation;
+                Task.Delay(20).ContinueWith(t => endthis());
             }
         }
 
